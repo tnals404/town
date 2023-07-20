@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Dao.BoardDAO">
+
+ <!-- 선택된 게시물 조회수 1 증가 -->
+<update id="updateViewcnt" parameterType="int">
+	update board set view_cnt = view_cnt +1 where board_id=#{board_id}
+</update>
+
+ <!-- 선택된 게시물 조회 -->
+<select id="getDetail" resultType="boarddto" parameterType="int">
+	select * from board where board_id=#{board_id}
+</select>
+
+<!-- 해당글의 댓글, 대댓글 전체 개수 가져오기  -->
+<select id="getTotalCommentcnt" resultType="int" parameterType="int">
+	select count(*) from comment where board_id=#{board_id}
+</select>
+
+<!-- 해당글의 댓글, 대댓글 전체조회 + 페이징처리 
+<select id="commentPagingList" resultType="commentdto" parameterType="hashmap">
+	select * from comment where ${colname} = #{colvalue} order by comment_time asc limit ${limitindex}, ${limitcount}
+</select>-->
+
+
+<!-- 글쓴사람 정보(게시판 프사) -->
+<select id="boardWriterProfile" resultType="memberdto" parameterType="String">
+	select * from member where member_id=#{writer}
+</select>
+
+<!-- 해당글의 댓글, 대댓글 전체 가져오기 -->
+<select id="oneBoardComments" resultType="commentdto" parameterType="int">
+	select * from comment where board_id=#{board_id}
+</select> 
+
+<!-- 댓글쓰기 (사진O) -->
+ <insert id="insertComment" parameterType="commentdto">
+	insert into comment (comment_writer, comment_contents, comment_imgurl, board_id, comment_secret) 
+			values (#{comment_writer}, #{comment_contents}, #{comment_imgurl}, #{board_id}, #{comment_secret})
+</insert>
+
+<!-- 댓글 삭제 -->
+<delete id="deleteComment" parameterType="int">
+	delete from comment where comment_id=#{comment_id}
+</delete>
+
+<!-- 글 좋아요 여부 -->
+<select id="isGoodOrHate" resultType="goodhatedto" parameterType="goodhatedto">
+	select * from good_or_hate where board_id = #{board_id} and member_id = #{member_id}
+</select>
+
+<!-- 좋아요 추가 -->
+ <insert id="addGood" parameterType="goodhatedto">
+ 	insert into good_or_hate (board_id, member_id, good) value (#{board_id}, #{member_id}, #{good})
+</insert>
+
+<!-- 싫어요 추가 -->
+ <insert id="addHate" parameterType="goodhatedto">
+ 	insert into good_or_hate (board_id, member_id, hate) value (#{board_id}, #{member_id}, #{hate})
+</insert>
+
+<!-- 좋아요, 싫어요 삭제 -->
+<delete id="deleteGoodOrHate" parameterType="goodhatedto">
+	delete from good_or_hate where board_id = #{board_id} and member_id = #{member_id}
+</delete>
+
+<!-- 좋아요 추가시 보드cnt 업데이트 -->
+ <update id="plusGoodCnt" parameterType="int">
+ 	update board set good_cnt = good_cnt +1, sum = sum + 1 where board_id = #{board_id}
+</update>
+
+<!-- 좋아요 취소시 보드cnt 업데이트 / cnt값 음수로 가지 않게 조건주기 -->
+ <update id="minusGoodCnt" parameterType="int">
+ 	update board set good_cnt = CASE WHEN good_cnt > 0 THEN good_cnt -1 ELSE 0 END , sum = CASE WHEN sum > 0 THEN sum - 1 ELSE 0 END where board_id = #{board_id}
+</update>
+
+<!-- 싫어요 추가시 보드cnt 업데이트 / cnt값 음수로 가지 않게 조건주기 -->
+ <update id="plusHateCnt" parameterType="int">
+ 	update board set hate_cnt = hate_cnt +1, sum = CASE WHEN sum > 0 THEN sum - 1 ELSE 0 END where board_id = #{board_id}
+</update>
+
+<!-- 싫어요 취소시 보드cnt 업데이트 / cnt값 음수로 가지 않게 조건주기 -->
+ <update id="minusHateCnt" parameterType="int">
+ 	update board set hate_cnt = CASE WHEN hate_cnt > 0 THEN hate_cnt -1 ELSE 0 END, sum = sum + 1 where board_id = #{board_id}
+</update>
+
+
+<!-- Paging -->
+<!-- 사진게시판 글 갯수 -->
+<select id="getBoardCnt" resultType="int" parameterType="Pagination.SearchDTO">
+	select count(*) 
+	from board 
+	where board_name_inner = #{searchType1} and town_id = #{searchType2}
+</select> 
+
+<!-- 사진게시판 글 목록 가져오기 -->
+<select id="getBoardList" resultType="boarddto" parameterType="Pagination.SearchDTO">
+	select * 
+	from board 
+	where board_name_inner = #{searchType1} and town_id = #{searchType2}
+	order by writing_time desc, board_id desc
+	limit #{pagination.limitStart}, #{recordSize}
+</select>
+
+
+<!-- 글 삭제 -->
+<delete id="deleteBoard" parameterType="int">
+	delete from board where board_id=#{board_id}
+</delete>
+
+<!-- 대댓글 작성(사진O) -->
+ <insert id="insertRecomment" parameterType="commentdto">
+	insert into comment (comment_writer, comment_contents, comment_imgurl, parent_id, board_id, comment_secret) 
+			values (#{comment_writer}, #{comment_contents}, #{comment_imgurl}, #{parent_id}, #{board_id}, #{comment_secret})
+</insert>
+
+<!-- 댓글 수정(사진X)-->
+<update id="updateComment" parameterType="commentdto">
+	update comment set comment_contents=#{comment_contents}, comment_imgurl=#{comment_imgurl}, comment_updateTime=now(), comment_secret=#{comment_secret} where comment_id=#{comment_id}
+</update>
+
+
+<!-- paging -->
+<!-- 댓글 갯수 -->
+<select id="getCommentCnt" resultType="int" parameterType="Pagination.SearchDTO">
+	select count(*) 
+	from comment
+	where board_id = #{searchType1}
+</select> 
+
+<!-- 해당 글의 댓글 목록 가져오기 -->
+<select id="getCommentList" resultType="commentdto" parameterType="Pagination.SearchDTO">
+	SELECT *
+	FROM comment
+	where board_id = #{searchType1}
+	ORDER BY IF(parent_id=0, comment_id, parent_id), comment_time
+	limit #{pagination.limitStart}, #{recordSize}
+</select>
+
+<!-- 해당 댓글의 대댓글이 있는지 확인 -->
+<select id="getRecommentCnt" resultType="int" parameterType="int">
+	select count(*) from comment where parent_id = #{comment_id}
+</select> 
+<!-- 댓글 삭제(지만 실은 수정) -->
+<update id="deleteUpdateComment" parameterType="commentdto">
+	update comment set comment_writer=null, comment_contents=#{comment_contents}, comment_imgurl=null, comment_secret=false where comment_id=#{comment_id}
+</update>
+
+
+</mapper>
+

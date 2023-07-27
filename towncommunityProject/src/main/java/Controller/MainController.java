@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tomcat.websocket.PojoHolder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 import Dto.BoardDTO;
 import Dto.MemberDTO;
 import Dto.TownDTO;
+import Service.BoardService;
 import Service.MainService;
 import jakarta.servlet.http.HttpSession;
 
@@ -39,6 +41,8 @@ public class MainController {
 		if (ti == 0) {
 			ti = town_id;
 		}
+		String profile = service.profile((String)session.getAttribute("member_id")).getProfile_image();
+		session.setAttribute("profile", profile);
 		TownDTO town = service.townView(ti); 
 		List<BoardDTO> popular = service.popularArticles(ti);
 		List<BoardDTO> news = service.villageNews(ti);
@@ -47,21 +51,26 @@ public class MainController {
 		int board_id = 0;
 		if(photo != null) {
 			board_id = photo.getBoard_id();
+			Document doc2 = Jsoup.parse(photo.getBoard_contents());
+			photo.setBoard_contents(doc2.text());
+			if(photo.getBoard_fileurl() == null) {
+				photo.setBoard_fileurl("img/displayimg.png");
+			}			
 		}
 		List<BoardDTO> photoComment = service.photoComment(board_id);
 		BoardDTO youKnow = service.youKnow(ti);
 		for(BoardDTO data : popular) {
+			Document doc = Jsoup.parse(data.getBoard_contents());
+			data.setBoard_contents(doc.text());
 			if(data.getBoard_imgurl() == null) {
 				int i = (int)((Math.random()*3)+1);
 				data.setBoard_imgurl("img/basic_image"+i+".jpg");
 			}
 		}
-		if(photo != null) {
-			if(photo.getBoard_fileurl() == null) {
-				photo.setBoard_fileurl("img/displayimg.png");
-			}
-		}
-
+		if(youKnow != null) {
+			Document doc3 = Jsoup.parse(youKnow.getBoard_contents());
+			youKnow.setBoard_contents(doc3.text());	
+		}	
         try {
             String url = "https://search.naver.com/search.naver?query="+town.getTown_name()+"날씨";
             Document doc = Jsoup.connect(url).get();
@@ -103,6 +112,7 @@ public class MainController {
     		mv.addObject("youKnow",youKnow);
     		mv.addObject("ti",ti);
     		mv.addObject("town_id",town_id);
+    		mv.addObject("profile",profile);
         } catch (Exception e) {
             e.printStackTrace();
         }

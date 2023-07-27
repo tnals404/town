@@ -41,7 +41,7 @@
 							<td>
 								${empty param.page || param.page == 1 
 								? totalPostCnt - vs.index
-								: totalPostCnt - param.page * 10 - vs.index}
+								: totalPostCnt - (param.page - 1) * postCntPerPage - vs.index}
 							</td>
 							<td><a href="/boarddetail?bi=${boardlist.board_id}" class="writing-title">${boardlist.board_title}</a></td>
 							<td>${boardlist.writer}</td>
@@ -124,6 +124,7 @@
 				location.href = "/basicBoard?ctgy=" + ctgy + "&ti=${param.ti}" + "&sort=" + sort + "&keyword=" + keyword;
 			}); //onclick
 		}); //ready
+		
 		</script>
 		
 	</div>

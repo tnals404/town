@@ -36,92 +36,92 @@ public class BoardController { //안휘주 작성
 	BoardService service;
 	
 	//선택된 게시물 조회&조회수증가&댓글,대댓글 조회
-	@RequestMapping("/boarddetail")
-	public ModelAndView boarddetail(int bi, @RequestParam(value="page", required=false, defaultValue="0" ) int page, HttpSession session) {
-		ModelAndView signin = new ModelAndView();
-		if (session.getAttribute("member_id") == null) {
-			signin.setViewName("/Signin");
-			return signin;
-		}
-
-		int board_id = bi;
-		BoardDTO dto = service.updateViewcntAndGetDetail(board_id);
-		//글쓴사람 정보
-		MemberDTO writerDto = service.boardWriterProfile(dto.getWriter());
-		
-		int commentCnt = service.getTotalCommentcnt(board_id);
-		List<CommentDTO> commentDto = service.oneBoardComments(board_id);
-		HashMap<String, String> commentWriterProfileMap = new HashMap<String, String>();
-		for(CommentDTO cmt : commentDto) {
-			MemberDTO commentWriterDto = service.boardWriterProfile(cmt.getComment_writer());
-			commentWriterProfileMap.put(cmt.getComment_writer(),commentWriterDto.getProfile_image() );
-		}
-		
-		//댓글 목록 불러오기
-		String str_bi = String.valueOf(board_id);
-		SearchDTO searchdto = new SearchDTO();
-		searchdto.setSearchType1(str_bi);
-	    searchdto.setRecordSize(20);
-	    
-		//처음 로드될때 최신댓글이 있는 마지막 페이지로 & page값 있을땐 그 page가 로드되도록
-		int returnPage = 0;
-		if(commentCnt > 0) {
-			if(page==0) {
-				if(commentCnt % 20 == 0){
-					returnPage = commentCnt / 20;
-				}
-				else {
-					returnPage = commentCnt / 20 + 1;
-				}
-			}else {
-				returnPage = page;
-			}
-		}
-		else {
-			returnPage = 1;
-		}
-
-	   searchdto.setPage(returnPage);		    	
-	    
-		PagingResponse<CommentDTO> list = service.getCommentList(searchdto);
-
-		//로그인한 사용자 해당 글에 좋아요,싫어요 체크 여부
-		String memid = (String)session.getAttribute("member_id");
-		//System.out.println(memid);
-		GoodHateDTO ghdto = new GoodHateDTO();
-		ghdto.setBoard_id(board_id);
-		ghdto.setMember_id(memid);
-		
-		GoodHateDTO gohresultdto = service.isGoodOrHate(ghdto);
-		String gohresult="";
-		
-		if(gohresultdto != null) {
-			if(gohresultdto.isGood()) {
-				gohresult = "good";
-			}
-			else if(gohresultdto.isHate()){
-				gohresult = "hate";
-			}				
-		}
-		else {
-			gohresult = "none";
-		}
-		
-		ModelAndView mv = new ModelAndView();
-		mv.addObject("detaildto", dto);
-		mv.addObject("boardName", dto.getBoard_name_inner());
-		mv.addObject("town_id", dto.getTown_id());
-		mv.addObject("writerDto", writerDto);
-		mv.addObject("commentWriterProfileMap", commentWriterProfileMap);				
-		mv.addObject("commentCnt", commentCnt );
-		mv.addObject("searchdto", searchdto);
-		mv.addObject("response", list);
-		mv.addObject("gohresult", gohresult );
-		//mv.setViewName("boardDetail2");
-		mv.setViewName("photoBoardDetail3");
-		return mv;	
-		
-	}
+//	@RequestMapping("/boarddetail")
+//	public ModelAndView boarddetail(int bi, @RequestParam(value="page", required=false, defaultValue="0" ) int page, HttpSession session) {
+//		ModelAndView signin = new ModelAndView();
+//		if (session.getAttribute("member_id") == null) {
+//			signin.setViewName("/Signin");
+//			return signin;
+//		}
+//
+//		int board_id = bi;
+//		BoardDTO dto = service.updateViewcntAndGetDetail(board_id);
+//		//글쓴사람 정보
+//		MemberDTO writerDto = service.boardWriterProfile(dto.getWriter());
+//		
+//		int commentCnt = service.getTotalCommentcnt(board_id);
+//		List<CommentDTO> commentDto = service.oneBoardComments(board_id);
+//		HashMap<String, String> commentWriterProfileMap = new HashMap<String, String>();
+//		for(CommentDTO cmt : commentDto) {
+//			MemberDTO commentWriterDto = service.boardWriterProfile(cmt.getComment_writer());
+//			commentWriterProfileMap.put(cmt.getComment_writer(),commentWriterDto.getProfile_image() );
+//		}
+//		
+//		//댓글 목록 불러오기
+//		String str_bi = String.valueOf(board_id);
+//		SearchDTO searchdto = new SearchDTO();
+//		searchdto.setSearchType1(str_bi);
+//	    searchdto.setRecordSize(20);
+//	    
+//		//처음 로드될때 최신댓글이 있는 마지막 페이지로 & page값 있을땐 그 page가 로드되도록
+//		int returnPage = 0;
+//		if(commentCnt > 0) {
+//			if(page==0) {
+//				if(commentCnt % 20 == 0){
+//					returnPage = commentCnt / 20;
+//				}
+//				else {
+//					returnPage = commentCnt / 20 + 1;
+//				}
+//			}else {
+//				returnPage = page;
+//			}
+//		}
+//		else {
+//			returnPage = 1;
+//		}
+//
+//	   searchdto.setPage(returnPage);		    	
+//	    
+//		PagingResponse<CommentDTO> list = service.getCommentList(searchdto);
+//
+//		//로그인한 사용자 해당 글에 좋아요,싫어요 체크 여부
+//		String memid = (String)session.getAttribute("member_id");
+//		//System.out.println(memid);
+//		GoodHateDTO ghdto = new GoodHateDTO();
+//		ghdto.setBoard_id(board_id);
+//		ghdto.setMember_id(memid);
+//		
+//		GoodHateDTO gohresultdto = service.isGoodOrHate(ghdto);
+//		String gohresult="";
+//		
+//		if(gohresultdto != null) {
+//			if(gohresultdto.isGood()) {
+//				gohresult = "good";
+//			}
+//			else if(gohresultdto.isHate()){
+//				gohresult = "hate";
+//			}				
+//		}
+//		else {
+//			gohresult = "none";
+//		}
+//		
+//		ModelAndView mv = new ModelAndView();
+//		mv.addObject("detaildto", dto);
+//		mv.addObject("boardName", dto.getBoard_name_inner());
+//		mv.addObject("town_id", dto.getTown_id());
+//		mv.addObject("writerDto", writerDto);
+//		mv.addObject("commentWriterProfileMap", commentWriterProfileMap);				
+//		mv.addObject("commentCnt", commentCnt );
+//		mv.addObject("searchdto", searchdto);
+//		mv.addObject("response", list);
+//		mv.addObject("gohresult", gohresult );
+//		//mv.setViewName("boardDetail2");
+//		mv.setViewName("photoBoardDetail3");
+//		return mv;	
+//		
+//	}
 	
 	//댓글쓰기
 	@RequestMapping(value="/commentwrite", produces = {"application/json;charset=utf-8"})
@@ -170,7 +170,8 @@ public class BoardController { //안휘주 작성
 	}	
 	
 	//photoBoard 선택된 게시물 조회&조회수증가&댓글,대댓글 조회
-	@RequestMapping("/photoboarddetail")
+	//@RequestMapping("/photoboarddetail")
+	@RequestMapping("/boarddetail")
 	public ModelAndView photoboarddetail(int bi, @RequestParam(value="page", required=false, defaultValue="0" ) int page, HttpSession session) {
 		
 		ModelAndView signin = new ModelAndView();
@@ -347,6 +348,87 @@ public class BoardController { //안휘주 작성
 		public @ResponseBody int deleteUpdateComment (CommentDTO dto) {
 			return service.deleteUpdateComment(dto);
 		}
+		
+		//글 수정폼 열기
+		@RequestMapping("/boardUpdateForm")
+		public ModelAndView boardUpdateForm(int board_id, int town_id) {
+			BoardDTO dto = service.getDetail(board_id);
+			ModelAndView mv = new ModelAndView();
+			mv.addObject("dto", dto);
+			mv.addObject("boardTi", town_id);
+			mv.setViewName("boardUpdateForm2");
+			return mv;
+		}
+		
+	  	//글 수정
+		@RequestMapping(value="/boardupdate", produces = {"application/json;charset=utf-8"})
+		public @ResponseBody int boardUpdate (BoardDTO dto) {
+			return service.updateBoard(dto);
+		}
+	  	
+		//포토보드 검색
+		@RequestMapping("/photoSearch")
+		public ModelAndView photoSearch(String select, String searchword, String ctgy, String ti, 
+				@RequestParam(value="page", required=false, defaultValue="1" ) int page, HttpSession session) {
+			ModelAndView signin = new ModelAndView();
+			if (session.getAttribute("member_id") == null) {
+				signin.setViewName("/Signin");
+				return signin;
+			}
+			
+			String type ="";
+			if(select == "title") {
+				type = "board_title";
+			}
+			else if(select == "contents") {
+				type = "board_contents";
+			}
+			else if(select == "writer") {
+				type = "writer";	
+			}
+			else {
+				type = "all";				
+			}
+			
+			String str_ti = String.valueOf(ti);
+			SearchDTO searchdto = new SearchDTO();
+			searchdto.setKeyword(searchword);
+			searchdto.setSearchType1(ctgy);
+			searchdto.setSearchType2(str_ti);
+			searchdto.setSearchType3(type);
+		    searchdto.setRecordSize(25);
+		    searchdto.setPage(page);
+			
+			PagingResponse<BoardDTO> searchlist = service.searchPhotoBoardList(searchdto);
+			
+			//각 글마다 댓글 수
+			HashMap<Integer, Integer> boardCommentCnt = new HashMap<Integer, Integer>();
+			for(BoardDTO b : searchlist.getList()) {
+				int cmtCnt = service.getTotalCommentcnt(b.getBoard_id());
+				boardCommentCnt.put(b.getBoard_id(), cmtCnt);
+			}
+
+			ModelAndView mv = new ModelAndView();
+			mv.addObject("boardName", ctgy);
+			mv.addObject("town_id", ti);		
+			mv.addObject("searchdto", searchdto);
+			mv.addObject("boardCommentCnt", boardCommentCnt);
+			mv.addObject("response", searchlist);
+			mv.addObject("selected", select);
+			mv.setViewName("photoBoard_Search");
+			return mv;			
+		}
+		
+		//존재하는 글인지 아닌지 판단
+		@RequestMapping("/existBoard")
+		public ModelAndView existBoard(int bi) {
+			int result = service.existBoard(bi);
+			ModelAndView mv = new ModelAndView();
+			mv.addObject("bi", bi);
+			mv.addObject("boardCnt", result);
+			mv.setViewName("boardExistResult");
+			return mv;		
+		};
 		
 		
 }//class

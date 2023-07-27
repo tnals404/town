@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<link href="css/SearchResult.css" rel="stylesheet" type="text/css" />
+<link href="css/Main.css" rel="stylesheet" type="text/css" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -113,6 +113,26 @@ $("#ajaxbtn").on('click',function(){
 		},
 		error:function(){}
 	});//ajax
+});
+$(document).ready(function() {
+	// 전역 변수
+    let board = "/basicBoard"; // 글 or 사진 게시판
+    let ctgy = "?ctgy=${boardName}"; // 게시판 카테고리
+    let ti = "&ti=${town_id}"; // 동네 아이디
+
+	// 게시판 소분류 클릭시
+	$("li.innerMenu").on("click", function(e) {
+        ctgy = "?ctgy=" + $(this).text().trim();
+        if (ctgy === "?ctgy=오늘의 사진"||  
+                ctgy === "?ctgy=역대 당선작"||  
+                ctgy === "?ctgy=분실물센터") {
+            board = "/photoBoard";
+        } else {
+            board = "/basicBoard";
+        }
+        window.location.href = board + ctgy + ti;
+        e.stopPropagation();
+	}); //onclick
 });
 
 </script>	

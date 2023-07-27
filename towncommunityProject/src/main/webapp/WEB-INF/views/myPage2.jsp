@@ -69,7 +69,7 @@ $(document).ready(function() {
 				<thead>
 					<tr>
 						<c:if test="${param.ctgy eq '내가 쓴 글' || param.ctgy eq '좋아요 한 글'}">
-							<th>글번호</th>
+							<th>번호</th>
 							<th>게시글 분류</th>
 							<th>제목</th>
 							<th>작성자</th>
@@ -77,12 +77,12 @@ $(document).ready(function() {
 							<th>조회수</th>
 						</c:if>
 						<c:if test="${!(param.ctgy eq '내가 쓴 글' || param.ctgy eq '좋아요 한 글')}">
-							<th>댓글 번호</th>
-							<th>게시글 분류</th>
-							<th>댓글 내용</th>
-							<th>게시글 제목</th>
-							<th>작성자</th>
-							<th>작성일</th>
+							<th style="width: 7%;">번호</th>
+							<th style="width: 13%;">게시글 분류</th>
+							<th style="width: 35%;">댓글 내용</th>
+							<th style="width: 20%;">게시글 제목</th>
+							<th style="width: 13%;">작성자</th>
+							<th style="width: 12%;">작성일</th>
 						</c:if>
 					</tr>
 				</thead>
@@ -93,10 +93,10 @@ $(document).ready(function() {
 								<td>
 									${empty param.page || param.page == 1 
 									? totalPostCnt - vs.index
-									: totalPostCnt - param.page * 10 - vs.index}
+									: totalPostCnt - (param.page - 1) * postCntPerPage - vs.index}
 								</td>
 								<td>${boardlist.board_name_inner}</td>
-								<td><a href="/boarddetail?board_id=${boardlist.board_id}" class="writing-title">${boardlist.board_title}</a></td>
+								<td><a href="/boarddetail?bi=${boardlist.board_id}" class="writing-title">${boardlist.board_title}</a></td>
 								<td>${boardlist.writer}</td>
 								<td>${fn:split(boardlist.writing_time, " ")[0]}</td>
 								<td>${boardlist.view_cnt}</td>
@@ -105,10 +105,10 @@ $(document).ready(function() {
 								<td>
 									${empty param.page || param.page == 1 
 									? totalPostCnt - vs.index
-									: totalPostCnt - param.page * 10 - vs.index}
+									: totalPostCnt - (param.page - 1) * postCntPerPage - vs.index}
 								</td>
 								<td>${boardlist.board_name_inner}</td>
-								<td><a href="/boarddetail?board_id=${boardlist.board_id}" class="writing-title">${boardlist.comment_contents}</a></td>
+								<td><a href="/boarddetail?bi=${boardlist.board_id}" class="writing-title">${boardlist.comment_contents}</a></td>
 								<td>${boardlist.board_title}</td>
 								<td>${boardlist.comment_writer}</td>
 								<td>${fn:split(boardlist.comment_time, " ")[0]}</td>

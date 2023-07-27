@@ -85,5 +85,9 @@ public class MainServiceImpl implements MainService {
 		// TODO Auto-generated method stub
 		return dao.changeVillage(town_name);
 	}
+	
+	public MemberDTO profile(String member_id) {
+		return dao.profile(member_id); 
+	}
 
 }

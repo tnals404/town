@@ -87,4 +87,7 @@ select * from board where town_id=#{town_id} and ((board_name_inner='행사 소�
 	SELECT * FROM town 
 	WHERE address LIKE CONCAT('%', #{address}, '%')
 </select>
+<select id="profile" resultType="memberdto" parameterType="String">
+	select * from member where member_id=#{member_id}
+</select>
 </mapper>

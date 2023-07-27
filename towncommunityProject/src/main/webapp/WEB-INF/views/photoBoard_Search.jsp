@@ -28,8 +28,8 @@
 	background-color : #6D829B;
 	color : white;			
 } 
-.one_board {
-	width : 210px; height : 250px;
+.one_searchBoard {
+	width : 210px; height : 300px;
 	margin-right : 20px;
 	margin-bottom : 20px;
 	cursor: pointer;
@@ -59,6 +59,21 @@
 .one_title {
 	width : 210px; height : 40px;
   	margin: 5px 0px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	/* white-space: normal; */
+	line-height: 1.3;
+	height: 2.6em;
+	/* text-align: left; */
+	word-wrap: break-word;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+.one_contents {
+	width : 210px; height : 60px;
+  	margin: 5px 0px;
+  	font-size : 13px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	/* white-space: normal; */
@@ -176,27 +191,12 @@ $(document).ready(function(){
 	});//pageNumBtn클릭
 	
 	//글 누르면 해당 글 상세페이지로 이동
-	$(".one_board").on('click', function(){
+	$(".one_searchBoard").on('click', function(){
 		const boardId = $(this).attr('id');
-		//location.href = "/photoboarddetail?bi="+boardId;
-		location.href = "/existBoard?bi="+boardId;
-		
+		location.href = "/photoboarddetail?bi="+boardId;
+
 	});//글 1개 조회
 	
-	
-	//검색버튼 클릭
-	$("#photo_search_btn").on('click', function(e){
-		e.preventDefault();
-		let searchWord = $("#photo_searchword").val();
-		
-		if(searchWord.trim() !== "") {
-			$("#photoSearchForm").submit();
-		}
-		else {
-			alert("검색할 내용을 입력해주세요.");
-		}
-		
-	});//검색버튼클릭
 	
 });//ready
 </script>
@@ -209,11 +209,17 @@ $(document).ready(function(){
 	 <div id="board_name">
 			${boardName}
 	</div>
-	<div id="top_btnBox"><input type="button" id="writeBtn" value="글쓰기"></div>
+	<!-- <div id="top_btnBox"><input type="button" id="writeBtn" value="글쓰기"></div> -->
 	
 	<div id="board_page">
+		<c:if test="${fn:length(response.list) == 0 }">
+			<div class="one_board">
+				일치하는 검색 결과가 없습니다.
+			</div>
+		</c:if>
+		
 		<c:forEach items="${response.list}" var="dto" varStatus="status">
-				<div class="one_board" id="${dto.board_id }">
+				<div class="one_searchBoard" id="${dto.board_id }">
 					<div class="one_photo">
 						<img class="one_photo" src="${dto.board_imgurl }">
 					</div>
@@ -230,30 +236,26 @@ $(document).ready(function(){
 					<div class="one_title">
 						${dto.board_title }
 					</div>
+ 					<div class="one_contents">
+						${dto.board_preview}
+					</div>
 					<div class="one_photoInfo">
 						<div class="one_photoWriter">작성자 : ${dto.writer }</div>
 	 					<div class="one_writingTime">
-							<!-- 오늘 날짜랑 같으면 시간만 출력, 날짜 다르면 년월일 출력 / 댓글 수정했으면 수정시간 표시 -->
-							<jsp:useBean id="now" class="java.util.Date" />
-							<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="nowDate" />
-							<c:choose>
-							 	<c:when test="${dto.update_time != null}">
-									<fmt:parseDate value="${dto.update_time}" pattern="yyyy-MM-dd HH:mm:ss" var="reg" />
-							 	</c:when>
-							 	<c:otherwise>
-									<fmt:parseDate value="${dto.writing_time}" pattern="yyyy-MM-dd HH:mm:ss" var="reg" />
-							 	</c:otherwise>
-							</c:choose> 
-							<fmt:formatDate value="${reg}" pattern="yyyy-MM-dd" var="regDate" />
-							<fmt:formatDate value="${reg}" pattern="HH:mm" var="regTime" />
-							<c:choose>
-							 	<c:when test="${nowDate == regDate}">
-									${regTime}
-							 	</c:when>
-							 	<c:otherwise>
-									${regDate}
-							 	</c:otherwise>
-							</c:choose> 										
+								<!-- 오늘 날짜랑 같으면 시간만 출력, 날짜 다르면 년월일 출력 -->
+								<jsp:useBean id="now" class="java.util.Date" />
+								<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="nowDate" />
+								<fmt:parseDate value="${dto.writing_time}" pattern="yyyy-MM-dd HH:mm:ss" var="reg" />
+								<fmt:formatDate value="${reg}" pattern="yyyy-MM-dd" var="regDate" />
+								<fmt:formatDate value="${reg}" pattern="HH:mm" var="regTime" />
+								<c:choose>
+								 	<c:when test="${nowDate == regDate}">
+										${regTime}
+								 	</c:when>
+								 	<c:otherwise>
+										${regDate}
+								 	</c:otherwise>
+								</c:choose> 										
 						</div>
 					</div>
 				</div>
@@ -304,13 +306,20 @@ $(document).ready(function(){
 			<option value="contents"> 내용 </option>
 			<option value="writer"> 작성자 </option>
           </select>
-		<input type=text id="photo_searchword" name="searchword">
+		<input type=text id="photo_searchword" name="searchword" value="${searchdto.keyword }">
 		<input type=hidden id="photo_search_ctgy" name="ctgy" value="${boardName}">
 		<input type=hidden id="photo_search_ti" name="ti" value="${town_id}">
 		<input type="submit" id="photo_search_btn" value="검색">
 		</div>
 	</form> 
 	</div>
+	<script>
+    $("#photoSelectBox option").each(function(index, item) {
+			if ($(item).val() == "${selected}") {
+				$(item).prop("selected", true);
+			}
+		});
+	</script>
 </div>
 </div>
 </body>

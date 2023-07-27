@@ -25,4 +25,5 @@ public interface MainDAO {
 	public List<BoardDTO> getContentByKeyword(Map<String, Object> map);
 	public MemberDTO memberInfo(String member_id);
 	public ArrayList<TownDTO> changeVillage(String town_name);
+	public MemberDTO profile(String member_id);
 }

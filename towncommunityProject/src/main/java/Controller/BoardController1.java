@@ -45,7 +45,7 @@ public class BoardController1 { //김종인 작성
 			@RequestParam(value="sort", required=false, defaultValue="")String sort,
 			@RequestParam(value="keyword", required=false, defaultValue="") String keyword,
 			@RequestParam(value="page", required=false, defaultValue="1") int page
-		) {
+	) {
 		ModelAndView mv = new ModelAndView();
 		
 		// session으로 전달된 회원 아이디, 회원 동네 아이디
@@ -160,7 +160,7 @@ public class BoardController1 { //김종인 작성
 		return mv;
 	}
 	
-	// 글 작성 페이지
+	// 글 쓰기 버튼 클릭했을 때 writingForm.jsp 보여주기
 	@GetMapping("/writingForm")
 	public ModelAndView writingForm(HttpSession session,
 			@RequestParam(value="ti", required=false, defaultValue="")String ti, 
@@ -187,6 +187,23 @@ public class BoardController1 { //김종인 작성
 		return mv;
 	}
 	
+	// 장소 추가 버튼 누르면 카카오맵 api 새창으로 띄우기
+	@GetMapping("/kakaoMap")
+	public ModelAndView kakaoMap(HttpSession session, int ti) {
+		ModelAndView mv = new ModelAndView();
+		if (session.getAttribute("member_id") == null) {
+			mv.setViewName("Signin");
+			return mv;
+		}
+		// 회원 동네 아이디에 해당하는 동 이름 가져오기
+		int member_town_id = (int) session.getAttribute("town_id");
+		String dongAddress = service.getMemberDongAddress(member_town_id);
+		mv.addObject("dongAddress", dongAddress);
+		mv.setViewName("kakaoMap");
+		return mv;
+	}
+	
+	// 작성완료 버튼 눌렀을 때 게시글 데이터 db에 insert 하고 게시판으로 돌아가기
 	@PostMapping("/writingForm")
 	@ResponseBody
 	public HashMap<String, Object> writingFormResult(HttpSession session, BoardDTO dto) {
@@ -279,55 +296,25 @@ public class BoardController1 { //김종인 작성
 	    return result;
 	}
 	
-	/* 이 아래부터는 삭제할 예정인 부분 */
-	// 파일 업로드 예제
-	@GetMapping("/uploadTest")
-	public String uploadTestGet() {
-		return "uploadTest";
+	// 프로필 사진 변경 폼 열기
+	@RequestMapping("/changeProfileImg")
+	public String changeProfileImg() {
+		return "changeProfileImg";
 	}
 	
-	@PostMapping("/uploadTest")
+	@PostMapping("/updateProfileImg")
 	@ResponseBody
-	public String uploadTestPOST(MultipartFile[] uploadFile) {
-		String result = null;
-        // 내가 업로드 파일을 저장할 경로
-        String uploadFolder = "C:\\upload";
-        
-        // 날짜 폴더 생성
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
-        String formatDate = sdf.format(date);
-        String datePath = formatDate.replace("-", File.separator);
-        File uploadPath = new File(uploadFolder, datePath);
-        if (uploadPath.exists() == false) {
-            uploadPath.mkdirs();
-        }
-        
-        // 파일 업로드
-        for (MultipartFile multipartFile : uploadFile) {
-            String uploadFileName = multipartFile.getOriginalFilename();
-            
-            // UUID로 업로드 하는 파일명 생성
-            String uuid = UUID.randomUUID().toString();
-            uploadFileName = uuid + "_" + uploadFileName;
-            
-            // 저장할 파일, 생성자로 경로와 이름을 지정해줌.
-            File saveFile = new File(uploadPath, uploadFileName);
-
-            try {
-                // void transferTo(File dest) throws IOException 업로드한 파일 데이터를 지정한 파일에 저장
-                multipartFile.transferTo(saveFile);    
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            result = "{\"uploadFolder\":\"" + uploadFolder + "\", \"uploadFileName\":\"" + uploadFileName + "\"}";
-        }
-        return result;
-	}
-	
-	@RequestMapping("/kakaoMap")
-	public String kakaoMap() {
-		return "kakaoMap";
+	public HashMap<String, Object> updateProfileImg(HttpSession session, String imgSrc) {
+		HashMap<String, Object> resultMap = new HashMap<>();
+		String member_id = String.valueOf(session.getAttribute("member_id"));
+		if (member_id == null) {
+			resultMap.put("result", 0); // 로그인 되어 있지 않은 경우 로그인 화면으로 이동
+			return resultMap;
+		}
+		// 로그인 되어 있는 경우 프로필 사진 업데이트
+		resultMap.put("result", service.updateProfileImage(member_id, imgSrc));
+		
+		return resultMap;
 	}
 	
 }

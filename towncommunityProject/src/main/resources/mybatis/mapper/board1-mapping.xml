@@ -10,12 +10,16 @@
 		board_name_inner, 
 		board_title, 
 		board_contents, 
+		board_preview,
 		board_imgurl, 
 		board_videourl, 
 		board_fileurl, 
 		place_name, 
+		place_road_address, 
+		place_address,
+		place_tel, 
 		place_lat, 
-		place_long, 
+		place_long,
 		writer, 
 		town_id
 	)
@@ -24,12 +28,16 @@
 		#{board_name_inner}, 
 		#{board_title}, 
 		#{board_contents}, 
+		#{board_preview},
 		#{board_imgurl}, 
 		#{board_videourl}, 
 		#{board_fileurl}, 
 		#{place_name}, 
+		#{place_road_address}, 
+		#{place_address},
+		#{place_tel}, 
 		#{place_lat}, 
-		#{place_long}, 
+		#{place_long},
 		#{writer}, 
 		#{town_id}
 	)
@@ -76,6 +84,14 @@
 	limit #{limitindex}, #{limitcount}
 </select>
 
+<select id="getMemberDongAddress" parameterType="int" resultType="String">
+	select town_name from town where town_id = #{member_town_id}
+</select>
+
+<update id="updateProfileImage" parameterType="hashmap">
+	update member set profile_image = #{profile_image}
+	where member_id = #{member_id}
+</update>
 
 </mapper>
 

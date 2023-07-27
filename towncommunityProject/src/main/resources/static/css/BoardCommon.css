@@ -18,10 +18,10 @@ body {
 	width : 80%; 
 	margin : 50px auto; 
 	padding : 0px 20px; 
-	/* background : #F2F2F2; */
+	background : #F2F2F2;
 	padding-top : 10px;
 	padding-bottom : 30px;
-	background-image: url(/img/newspaper2.svg);
+	/* background-image: url(/img/newspaper2.svg); */
 	background-size: cover;
 	filter: drop-shadow(5px 5px 5px gray);
 }

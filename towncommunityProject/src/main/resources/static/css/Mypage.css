@@ -91,3 +91,14 @@
   }
 	
 }
+
+#my_profile_img a {
+	width: 25px;
+	height: 25px;
+	position: absolute;
+	top: 486px;
+	left: 450px;
+	background-image: url(/img/camera-icon.png);
+	background-size: 25px 25px;
+	cursor: pointer;
+}

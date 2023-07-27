@@ -147,6 +147,78 @@
 	update comment set comment_writer=null, comment_contents=#{comment_contents}, comment_imgurl=null, comment_secret=false where comment_id=#{comment_id}
 </update>
 
+<!-- 글 수정하기 -->
+<update id="updateBoard" parameterType="boarddto">
+	update board set 
+	board_name_inner=#{board_name_inner}, 
+	board_title=#{board_title}, 
+	board_contents=#{board_contents}, 
+	board_imgurl=#{board_imgurl}, 
+	board_preview=#{board_preview}, 
+	place_name=#{place_name}, 
+	place_road_address=#{place_road_address}, 
+	place_address=#{place_address}, 
+	place_tel=#{place_tel}, 
+	place_lat=#{place_lat}, 
+	place_long=#{place_long}, 
+	update_time=now() 
+	where 
+	board_id=#{board_id}
+</update>
+
+
+<!-- 포토 보드 검색 -->
+<!-- 검색에 맞는 보드 갯수 조회 -->
+<select id="searchPhotoBoardCnt" resultType="int" parameterType="Pagination.SearchDTO">
+	select count(*) 
+	from board 
+	where board_name_inner = #{searchType1} and town_id = #{searchType2}
+	<choose>
+		<!-- 검색 조건 있을때 -->
+		<when test="searchType3 != 'all'">
+			and ${searchType3} LIKE CONCAT('%', #{keyword}, '%')
+		</when>	
+		
+		<!-- 전체 검색일 때 -->
+		<otherwise>
+		    AND (
+		          board_title LIKE CONCAT('%', #{keyword}, '%')
+		          or board_contents LIKE CONCAT('%', #{keyword}, '%')
+		          or writer LIKE CONCAT('%', #{keyword}, '%')
+		    )
+		</otherwise>
+	</choose>
+</select>
+
+<!-- 검색 보드 리스트 -->
+<select id="searchPhotoBoardList" resultType="boarddto" parameterType="Pagination.SearchDTO">
+	select * 
+	from board 
+	where board_name_inner = #{searchType1} and town_id = #{searchType2}
+	<choose>
+		<!-- 검색 조건 있을때 -->
+		<when test="searchType3 != 'all'">
+			and ${searchType3} LIKE CONCAT('%', #{keyword}, '%')
+		</when>	
+		
+		<!-- 전체 검색일 때 -->
+		<otherwise>
+		    AND (
+		          board_title LIKE CONCAT('%', #{keyword}, '%')
+		          or board_contents LIKE CONCAT('%', #{keyword}, '%')
+		          or writer LIKE CONCAT('%', #{keyword}, '%')
+		    )
+		</otherwise>
+	</choose>
+	order by writing_time desc, board_id desc
+	limit #{pagination.limitStart}, #{recordSize}
+</select>
+
+<!-- 해당 글이 있는지 확인 -->
+<select id="existBoard" resultType="int" parameterType="int">
+	select count(*) from board where board_id = #{board_id}
+</select> 
+
 
 </mapper>
 

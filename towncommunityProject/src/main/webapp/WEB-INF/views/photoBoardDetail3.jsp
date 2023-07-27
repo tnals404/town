@@ -15,6 +15,31 @@
 	width : 100%;
 	margin : 10px;
 }
+#mapInfoBox {
+	background-color : #E8E7E5;
+	width : 300px;
+	height : 300px;
+	/* margin : 0 auto; */
+	margin-top : 30px;
+	padding : 5px;
+	
+}
+#staticMap {
+	width:300px; height:250px;
+	margin-bottom:5px;
+}
+#placeName {
+	width:300px; height:20px;
+	font-weight : bold;
+	margin-bottom:2px;
+}
+#placeAddress {
+	width:300px; height:20px;
+	font-size : 13px;
+	color : gray;
+	margin-bottom:2px;
+}
+
 </style>
 <script>
 $(document).ready(function(){
@@ -604,7 +629,7 @@ $(document).ready(function(){
 		}
 	});//댓글수정폼열기
 	
-	//대댓글에 사진첨부 *******************************************************************************************************************************************
+	//대댓글에 사진첨부
 	$(".comment_update_fileimg").on('click', function() {
 		const fileId = $(this).parents().next(".comment_update_file").attr('id');
 	    const fileInput = document.getElementById(fileId);
@@ -637,6 +662,7 @@ $(document).ready(function(){
 
 	    });
 	});//사진첨부
+	
 	//댓글수정
 	$(".comment_update_submit_btn").on("click", function(e){
 		e.preventDefault();
@@ -706,7 +732,39 @@ $(document).ready(function(){
 		
 	});//글 신고
 	
-});
+	//아무데나 클릭시 show상태인 div 다시 hide로 - 글 수정,삭제,신고버튼
+	$(function(){
+		$(document).mousedown(function( e ){
+			if( $("#board_btns_parentDiv").is(":visible") ) {
+				$("#board_btns_parentDiv").each(function(){
+					var l_position = $(this).offset();
+					l_position.right = parseInt(l_position.left) + ($(this).width());
+					l_position.bottom = parseInt(l_position.top) + parseInt($(this).height());
+
+					if( ( l_position.left <= e.pageX && e.pageX <= l_position.right )
+						&& ( l_position.top <= e.pageY && e.pageY <= l_position.bottom ) ) {
+					} else {
+						$(this).hide();
+					}
+				});
+			}//if(outer)
+				
+		});//mousedown
+		
+/* 		$("button").click(function(){
+			if( !$("#menuLayer").is(":visible") ) {
+				$("#menuLayer").show();
+			}
+		}); */
+	});//이외영역 클릭 function
+	
+	
+	//글 수정하기
+	$("#board_update_btn").on('click', function(){
+		$("#boardUpdateForm").submit();
+	});//글 수정
+	
+});//ready
 </script>
 </head>
 <body>
@@ -723,6 +781,10 @@ $(document).ready(function(){
 			<div id="board_btnbox" > 							
 				<input type="button" id="board_btns_open" value="···" />
 				<div id="board_btns_parentDiv" >
+					<form action="boardUpdateForm" id="boardUpdateForm" method="post">
+					<input type="hidden" id="boardIdToUpdate" name="board_id" value="${detaildto.board_id}">
+					<input type="hidden" id="boardTi" name="town_id" value="${detaildto.town_id}">
+					</form>
 					<input type="button" id="board_update_btn" value="수정" />
 					<hr style="margin:2px 0px;">
 					<input type="button" id="board_delete_btn" value="삭제" />
@@ -774,8 +836,18 @@ $(document).ready(function(){
 		</div>
 		<hr style="margin-bottom : 20px;">
 		<div id="oneboard_contents"> 
-			<%-- <div id="oneboard_photo"><img style="width:50%;" src="${detaildto.board_imgurl }"></div> --%>
 			${detaildto.board_contents}
+			
+			<!-- 지도정보 있으면 출력 -->
+			<c:if test="${detaildto.place_name != null}">
+				<div id="mapInfoBox">
+					<div id="staticMap"></div>
+					<div id="placeName">${detaildto.place_name}</div>
+					<div id="placeAddress">${detaildto.place_road_address}</div>
+				</div>
+				<input type="hidden" id="placeLat" value="${detaildto.place_lat}">
+				<input type="hidden" id="placeLong" value="${detaildto.place_long}">
+			</c:if>
 		</div>
 		
 	<!-- 좋아요/싫어요 start -->
@@ -901,7 +973,7 @@ $(document).ready(function(){
 		  				 </div>
 						<div class="recomment_bottom_right">					
 							<div class="recomment_secret_checkDiv">
-								<input type="checkbox" class="recomment_secret" value="secret">비밀
+								<!-- <input type="checkbox" class="recomment_secret" value="secret">비밀 -->
 							</div>
 							<input type="submit" class="recomment_submit_btn" value="등록">
 						</div>
@@ -931,14 +1003,14 @@ $(document).ready(function(){
 		  				 </div>
 						<div class="comment_update_bottom_right">					
 							<div class="comment_update_secret_checkDiv">
-								<c:choose>
+<%-- 								<c:choose>
 								 	<c:when test="${dto.comment_secret}">
 										<input type="checkbox" class="comment_update_secret" value="secret" checked="checked">비밀
 								 	</c:when>
 								 	<c:otherwise>
 										<input type="checkbox" class="comment_update_secret" value="secret">비밀
 								 	</c:otherwise>
-								</c:choose> 
+								</c:choose>  --%>
 							</div>
 							<input type="submit" class="comment_update_submit_btn" value="수정">
 						</div>
@@ -1040,7 +1112,7 @@ $(document).ready(function(){
 		  				 </div>
 						<div class="recomment_bottom_right">					
 							<div class="recomment_secret_checkDiv">
-								<input type="checkbox" class="recomment_secret" value="secret">비밀
+								<!-- <input type="checkbox" class="recomment_secret" value="secret">비밀 -->
 							</div>
 							<input type="submit" class="recomment_submit_btn" value="등록">
 						</div>
@@ -1070,14 +1142,14 @@ $(document).ready(function(){
 		  				 </div>
 						<div class="comment_update_bottom_right">					
 							<div class="comment_update_secret_checkDiv">
-								<c:choose>
+<%-- 								<c:choose>
 								 	<c:when test="${dto.comment_secret}">
 										<input type="checkbox" class="comment_update_secret" value="secret" checked="checked">비밀
 								 	</c:when>
 								 	<c:otherwise>
 										<input type="checkbox" class="comment_update_secret" value="secret">비밀
 								 	</c:otherwise>
-								</c:choose> 
+								</c:choose>  --%>
 							</div>
 							<input type="submit" class="comment_update_submit_btn" value="수정">
 						</div>
@@ -1156,7 +1228,7 @@ $(document).ready(function(){
 	  				 <input type="file" id="comment_file" />
   				 </div>
 				<div id="bottom_right">					
-					<div id="secret_checkDiv"><input type="checkbox" id="comment_secret" name="comment_secret" value="secret">비밀</div>
+					<div id="secret_checkDiv"><!-- <input type="checkbox" id="comment_secret" name="comment_secret" value="secret">비밀 --></div>
 					<input type="submit" id="comment_submit_btn" value="등록">
 				</div>
 			</div>
@@ -1169,4 +1241,29 @@ $(document).ready(function(){
 </div>
 
 </body>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4f7e1f2c70926d22aa160d0a0685b14c&libraries=services"></script>
+<script>
+//위도, 경도값
+let placeLat = $("#placeLat").val();
+let placeLong = $("#placeLong").val();
+
+// 이미지 지도에서 마커가 표시될 위치입니다 
+var markerPosition  = new kakao.maps.LatLng(placeLat, placeLong); 
+
+// 이미지 지도에 표시할 마커입니다
+// 이미지 지도에 표시할 마커는 Object 형태입니다
+var marker = {
+    position: markerPosition
+};
+
+var staticMapContainer  = document.getElementById('staticMap'), // 이미지 지도를 표시할 div  
+    staticMapOption = { 
+        center: new kakao.maps.LatLng(placeLat, placeLong), // 이미지 지도의 중심좌표
+        level: 3, // 이미지 지도의 확대 레벨
+        marker: marker // 이미지 지도에 표시할 마커 
+    };    
+
+// 이미지 지도를 생성합니다
+var staticMap = new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
+</script>
 </html>

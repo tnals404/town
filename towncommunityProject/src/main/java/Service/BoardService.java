@@ -45,4 +45,15 @@ public interface BoardService { //안휘주 작성
   //댓글 삭제(인듯 업데이트로 내용지우기)
   	public int deleteUpdateComment(CommentDTO dto);
   	
+  	//글 하나 조회
+  	public BoardDTO getDetail(int board_id);
+  	
+  	//글 수정
+  	public int updateBoard(BoardDTO dto);
+  	
+  	//포토보드 검색
+  	public PagingResponse<BoardDTO> searchPhotoBoardList(SearchDTO dto);
+  	
+  	//글 존재여부
+  	public int existBoard(int board_id);
 }

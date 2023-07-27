@@ -681,7 +681,7 @@ $(document).ready(function(){
 		  				 </div>
 						<div class="recomment_bottom_right">					
 							<div class="recomment_secret_checkDiv">
-								<input type="checkbox" class="recomment_secret" value="secret">비밀
+								<!-- <input type="checkbox" class="recomment_secret" value="secret">비밀 -->
 							</div>
 							<input type="submit" class="recomment_submit_btn" value="등록">
 						</div>
@@ -711,14 +711,14 @@ $(document).ready(function(){
 		  				 </div>
 						<div class="comment_update_bottom_right">					
 							<div class="comment_update_secret_checkDiv">
-								<c:choose>
+								<%-- <c:choose>
 								 	<c:when test="${dto.comment_secret}">
 										<input type="checkbox" class="comment_update_secret" value="secret" checked="checked">비밀
 								 	</c:when>
 								 	<c:otherwise>
 										<input type="checkbox" class="comment_update_secret" value="secret">비밀
 								 	</c:otherwise>
-								</c:choose> 
+								</c:choose>  --%>
 							</div>
 							<input type="submit" class="comment_update_submit_btn" value="수정">
 						</div>
@@ -809,7 +809,7 @@ $(document).ready(function(){
 		  				 </div>
 						<div class="recomment_bottom_right">					
 							<div class="recomment_secret_checkDiv">
-								<input type="checkbox" class="recomment_secret" value="secret">비밀
+								<!-- <input type="checkbox" class="recomment_secret" value="secret">비밀 -->
 							</div>
 							<input type="submit" class="recomment_submit_btn" value="등록">
 						</div>
@@ -839,14 +839,14 @@ $(document).ready(function(){
 		  				 </div>
 						<div class="comment_update_bottom_right">					
 							<div class="comment_update_secret_checkDiv">
-								<c:choose>
+								<%-- <c:choose>
 								 	<c:when test="${dto.comment_secret}">
 										<input type="checkbox" class="comment_update_secret" value="secret" checked="checked">비밀
 								 	</c:when>
 								 	<c:otherwise>
 										<input type="checkbox" class="comment_update_secret" value="secret">비밀
 								 	</c:otherwise>
-								</c:choose> 
+								</c:choose>  --%>
 							</div>
 							<input type="submit" class="comment_update_submit_btn" value="수정">
 						</div>
@@ -908,7 +908,7 @@ $(document).ready(function(){
 	  				 <input type="file" id="comment_file" />
   				 </div>
 				<div id="bottom_right">					
-					<div id="secret_checkDiv"><input type="checkbox" id="comment_secret" name="comment_secret" value="secret">비밀</div>
+					<div id="secret_checkDiv"><!-- <input type="checkbox" id="comment_secret" name="comment_secret" value="secret">비밀 --></div>
 					<input type="submit" id="comment_submit_btn" value="등록">
 				</div>
 			</div>

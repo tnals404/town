@@ -74,6 +74,11 @@
 				</c:if>
 				<p>실시간 인기 게시글</p>
 			</div>
+			<c:if test="${popular.isEmpty()}">
+				<div class="contentBox">
+					아직 작성된 글이 없습니다.	
+				</div>			
+			</c:if>
 			<c:forEach items="${popular }" var="popular">
 			<div class="contentBox">
 				<p class="contentTitle">${popular.board_title }</p>
@@ -88,8 +93,11 @@
 		<div class="secondBox">
 			<div class="photoFrame" style="height:482px;">
 				<c:if test="${photo != null}">
-					<img src="${photo.board_imgurl }" width=865/>
+					<img src="${photo.board_imgurl }" height=481/>
 				</c:if>
+				<c:if test="${photo == null}">
+					<img src="img/displayimg.png" height=481/>
+				</c:if>				
 			</div>
 			<div class="photoInformBox">
 				<p class="vitro">"오늘, 우리동네" 사진전 당선작</p>
@@ -99,12 +107,23 @@
 						<p class="id">${photo.writer }</p>
 						<div class="detail">
 						${photo.board_contents }
+						<c:if test="${photo == null}">
+							아직 작성된 글이 없습니다.
+						</c:if>							
 						</div>
 						<c:if test="${photo != null}">
-							<button type="submit" onclick="document.location.href='/photoboarddetail?bi=${photo.board_id}'" class="button">게시물 전체보기</button>
-						</c:if>
+							<button type="submit" onclick="document.location.href='/boarddetail?bi=${photo.board_id}'" class="button">게시물 전체보기</button>
+						</c:if>	
+						<c:if test="${photo == null && town_id == ti}">
+							<button type="submit" onclick="document.location.href='/writingForm?ti=${ti}&ctgy=오늘의%20사진'" class="button">글 작성하기</button>
+						</c:if>											
 					</div>
 					<div class="commentBox">
+						<c:if test="${photo == null || photoComment.isEmpty()}">
+							<div class="comment">
+								등록된 댓글이 없습니다.
+							</div>							
+						</c:if>						
 						<c:forEach items="${photoComment }" var="comment">
 							<div class="comment">
 								<div class="id" >${comment.comment_writer }</div>
@@ -146,6 +165,9 @@
 						<ellipse cx="397.942" cy="71.4431" rx="10.7552" ry="10.5064" fill="#182434"/>
 					</svg>
 					<div class="newsBox">
+						<c:if test="${news.isEmpty()}">
+								아직 작성된 글이 없습니다.			
+						</c:if>					
 						<c:forEach items="${news }" var="news">
 							<div class="news" onclick="document.location.href='/boarddetail?bi=${news.board_id}'">
 								<svg style="margin-left:10px;" width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -165,6 +187,11 @@
 					<div class="nowrap overflow ellipsis title">
 						만남의 광장
 					</div>
+						<c:if test="${placeOfMeeting.isEmpty()}">
+							<div class="nowrap overflow ellipsis content">						
+								아직 작성된 글이 없습니다.		
+							</div>		
+						</c:if>	
 					<c:forEach items="${placeOfMeeting }" var="place">
 						<div class="nowrap overflow ellipsis content" onclick="document.location.href='/boarddetail?bi=${place.board_id}'">
 							${place.board_title }
@@ -205,6 +232,9 @@
 			<div class="knowBox">
 				<p class="title">${youKnow.board_title }</p>
 				<div class="content">
+				<c:if test="${youKnow == null}">
+					아직 작성된 글이 없습니다.			
+				</c:if>					
 				${youKnow.board_contents }
 				</div>
 				<c:if test="${youKnow != null}">

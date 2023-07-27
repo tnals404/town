@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<link href="css/SearchResult.css" rel="stylesheet" type="text/css" />
+<link href="css/Main.css" rel="stylesheet" type="text/css" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,6 +10,7 @@
 </head>
 <body>
 <jsp:include page="Header.jsp" />
+<button class="topbtn" id="topbtn">Top</button>
 	<div class="btn"> 
 		<svg width="22" height="133" viewBox="0 0 22 133" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<rect x="-8" width="30" height="133" rx="10" fill="#F2F2F2"/>
@@ -114,6 +115,33 @@ window.onhashchange = function () {
         $("#menu,.page_cover,html").removeClass("open"); // open 클래스를 지워 원래대로 돌린다.
     }
 };
+$(document).ready(function() {
+	// 전역 변수
+    let board = "/basicBoard"; // 글 or 사진 게시판
+    let ctgy = "?ctgy=${boardName}"; // 게시판 카테고리
+    let ti = "&ti=${town_id}"; // 동네 아이디
+
+	// 게시판 소분류 클릭시
+	$("li.innerMenu").on("click", function(e) {
+        ctgy = "?ctgy=" + $(this).text().trim();
+        if (ctgy === "?ctgy=오늘의 사진"||  
+                ctgy === "?ctgy=역대 당선작"||  
+                ctgy === "?ctgy=분실물센터") {
+            board = "/photoBoard";
+        } else {
+            board = "/basicBoard";
+        }
+        window.location.href = board + ctgy + ti;
+        e.stopPropagation();
+	}); //onclick
+	
+    $("#topbtn").click(function() {
+        $('html, body').animate({
+            scrollTop : 0
+        }, 400);
+        return false;
+    });
+});
 </script>	
 </body>
 </html>

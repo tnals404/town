@@ -48,6 +48,16 @@ public class BoardServiceImpl1 implements BoardService1 { //김종인 작성
 		return dao.getBoardSearchList(searchmap);
 	}
 
+	@Override
+	public String getMemberDongAddress(int member_town_id) {
+		return dao.getMemberDongAddress(member_town_id);
+	}
+
+	@Override
+	public int updateProfileImage(String member_id, String profile_image) {
+		return dao.updateProfileImage(member_id, profile_image);
+	}
+
 	
 	
 	

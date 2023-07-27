@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 public class BoardDTO { //안휘주 작성
 	
 	int board_id;
-	String board_name_inner, board_title, board_contents, writing_time, update_time;
+	String board_name_inner, board_title, board_contents, board_preview, writing_time, update_time;
 	int good_cnt, hate_cnt, view_cnt;
-	String board_imgurl, board_videourl, board_fileurl, place_name, place_lat, place_long, writer;
+	String board_imgurl, board_videourl, board_fileurl, place_name, place_road_address, place_address, place_tel, place_lat, place_long, writer;
 	int town_id;
 	String comment_writer, comment_contents, comment_time;
 	TownDTO town;
@@ -25,6 +25,12 @@ public class BoardDTO { //안휘주 작성
 	}
 	public void setComment_contents(String comment_contents) {
 		this.comment_contents = comment_contents;
+	}
+	public String getBoard_preview() {
+		return board_preview;
+	}
+	public void setBoard_preview(String board_preview) {
+		this.board_preview = board_preview;
 	}
 	public String getComment_time() {
 		return comment_time;
@@ -121,6 +127,24 @@ public class BoardDTO { //안휘주 작성
 	}
 	public void setPlace_name(String place_name) {
 		this.place_name = place_name;
+	}
+	public String getPlace_road_address() {
+		return place_road_address;
+	}
+	public void setPlace_road_address(String place_road_address) {
+		this.place_road_address = place_road_address;
+	}
+	public String getPlace_address() {
+		return place_address;
+	}
+	public void setPlace_address(String place_address) {
+		this.place_address = place_address;
+	}
+	public String getPlace_tel() {
+		return place_tel;
+	}
+	public void setPlace_tel(String place_tel) {
+		this.place_tel = place_tel;
 	}
 	public String getPlace_lat() {
 		return place_lat;

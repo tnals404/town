@@ -43,6 +43,33 @@
 	)
 </insert>
 
+<!-- 관리자가 공지사항 올릴시 -->
+<insert id="insertNoticeBoard" parameterType="java.util.List">
+	insert into board
+	(
+		board_name_inner, 
+		board_title, 
+		board_contents, 
+		board_imgurl, 
+		board_fileurl, 
+		board_preview,
+		writer, 
+		town_id
+	) values 
+	<foreach collection="query" item="dto" separator=",">
+		(
+			#{dto.board_name_inner}, 
+			#{dto.board_title}, 
+			#{dto.board_contents}, 
+			#{dto.board_imgurl}, 
+			#{dto.board_fileurl}, 
+			#{dto.board_preview},
+			#{dto.writer}, 
+			#{dto.town_id}
+		)
+	</foreach>
+</insert>
+
 <!-- 로그인한 회원의 동네 id를 가져옴 -->
 <select id="getMemberTownId" parameterType="String" resultType="int">
 	select town_id from member where member_id = #{member_id};
@@ -84,14 +111,26 @@
 	limit #{limitindex}, #{limitcount}
 </select>
 
+<!-- 회원의 동 이름 가져오기 -->
 <select id="getMemberDongAddress" parameterType="int" resultType="String">
 	select town_name from town where town_id = #{member_town_id}
 </select>
 
+<!-- 프로필 사진 업데이트 -->
 <update id="updateProfileImage" parameterType="hashmap">
 	update member set profile_image = #{profile_image}
 	where member_id = #{member_id}
 </update>
+
+<!-- 회원이 관리자인지 아닌지 판단하기 -->
+<select id="isAdmin" parameterType="String" resultType="int">
+	select member_role from member where member_id = #{member_id}
+</select>
+
+<!-- town 테이블의 모든 동 이름 가져오기 -->
+<select id="getAllTownName" resultType="String">
+	select town_name from town order by town_id asc
+</select>
 
 </mapper>
 

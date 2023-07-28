@@ -8,12 +8,18 @@ import org.springframework.stereotype.Component;
 public class MemberDTO {
 	String member_id,name,phone,email,password;
 	int stop_date,report_count,town_id,point;
-	String address,role,profile_image;
+	String address,role,profile_image,nowpassword;
 	Date signup_date,stopclear_date,delete_date;
 	int invite_sum;
 	TownDTO town;
 	
 	
+	public String getNowpassword() {
+		return nowpassword;
+	}
+	public void setNowpassword(String nowpassword) {
+		this.nowpassword = nowpassword;
+	}
 	public Date getStopclear_date() {
 		return stopclear_date;
 	}

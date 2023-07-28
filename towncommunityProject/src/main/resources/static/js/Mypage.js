@@ -14,7 +14,7 @@ $(document).ready(function(){
 	
 	$("#deleteclick").click(function(){
 		
-		var confirmmember=confirm("자신이 작성중이던 모든글이 다 삭제될예정입니다. 회원탈퇴하시겠습니까?");
+		var confirmmember=confirm("자신이 작성한 모든글이 다 삭제될예정입니다. 회원탈퇴하시겠습니까?");
 		if(confirmmember){
 			alert("회원탈퇴가 완료되었습니다.이용해주셔서 감사합니다.");
 			location.href="/deletemember";

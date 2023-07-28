@@ -22,7 +22,7 @@
   		select * from member where member_id = #{member_id}
   	</select>
   	<update parameterType="memberdto" id="updatemember">
-  		update member set  name= #{name} , address=#{address} , phone=#{phone} , password=#{password} , town_id = (select (town_id) from town where address=#{address}) where member_id =#{member_id}
+  		update member set  name= #{name} , address=#{address} , phone=#{phone}, town_id = (select (town_id) from town where address=#{address}) where member_id =#{member_id}
   	</update>
   	<update parameterType="memberdto" id="Findpwupdate">
   		update member set  password=#{password} where member_id =#{member_id}

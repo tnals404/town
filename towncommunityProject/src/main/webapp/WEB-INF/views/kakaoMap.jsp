@@ -13,7 +13,7 @@
 	.map_wrap, .map_wrap * {margin:0;padding:0;font-family:'Malgun Gothic',dotum,'돋움',sans-serif;font-size:12px;}
 	.map_wrap a, .map_wrap a:hover, .map_wrap a:active{color:#000;text-decoration: none;}
 	.map_wrap {position:relative;width:100%;height:500px;}
-	#menu_wrap {position:absolute;top:0;left:600px;bottom:0;width:250px;height:600px;margin: 0px;padding:5px;overflow-y:auto;background:rgba(255, 255, 255, 0.7);z-index: 1;font-size:12px;border-radius: 10px;}
+	#menu_wrap {position:absolute;top:-5px;right:0px;width:250px;height:600px;margin: 0px;padding:5px;overflow-y:auto;background:rgba(255, 255, 255, 0.7);z-index: 1;font-size:12px;border-radius: 10px;}
 	.bg_white {background:#fff;}
 	#menu_wrap hr {display: block; height: 1px;border: 0; border-top: 2px solid #5F5F5F;margin:3px 0;}
 	#menu_wrap .option{text-align: center;}
@@ -51,7 +51,7 @@
 <body>
 <b>검색 결과 목록에서 더블클릭하면 장소를 추가할 수 있습니다.</b><br/>
 <div class="map_wrap">
-    <div id="map" style="width:600px;height:600px;position:relative;overflow:hidden;"></div>
+    <div id="map" style="width:calc(100% - 260px);height:600px;position:relative;overflow:hidden;"></div>
 
     <div id="menu_wrap" class="bg_white">
         <div class="option">

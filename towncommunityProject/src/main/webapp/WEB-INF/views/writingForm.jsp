@@ -6,14 +6,19 @@
 <head>
 <meta charset="UTF-8">
 <title>글 작성 페이지</title>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4f7e1f2c70926d22aa160d0a0685b14c&libraries=services"></script>
 <!-- quill.js -->
 <link href="//cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script src="//cdn.quilljs.com/1.3.6/quill.js"></script>
 <!-- jquery -->
 <script src="/js/jquery-3.6.4.min.js"></script>
 <!-- css -->
-<link rel="stylesheet" type="text/css" href="/css/writingForm.css"/>
+<link rel="stylesheet" type="text/css" href="/css/writingForm3.css"/>
 <style>
+#mapImg{
+	width : 120px; height : 120px;
+	margin : 5px;
+}
 </style>
 </head>
 <body>
@@ -51,6 +56,7 @@
 							<li class="place_info" style="display: none"></li>
 							<li class="place_info" style="display: none"></li>
 						</ul>
+						<div id="mapImg"></div>
 					</div>
 					<span id="place_delbtn">X</span>
 				</div>
@@ -184,6 +190,32 @@ $(document).ready(function() {
 	*/
 }); //document ready
 
+//지도 이미지 넣기
+function loadMapImg(){ 
+	//위도, 경도값
+	let placeLat = $($(".place_info")[4]).text();
+	let placeLong = $($(".place_info")[5]).text();
+	
+	// 이미지 지도에서 마커가 표시될 위치입니다 
+	var markerPosition  = new kakao.maps.LatLng(placeLat, placeLong); 
+	
+	// 이미지 지도에 표시할 마커입니다
+	// 이미지 지도에 표시할 마커는 Object 형태입니다
+	var marker = {
+	    position: markerPosition
+	};
+	
+	var staticMapContainer  = document.getElementById('mapImg'), // 이미지 지도를 표시할 div  
+	    staticMapOption = { 
+	        center: new kakao.maps.LatLng(placeLat, placeLong), // 이미지 지도의 중심좌표
+	        level: 4, // 이미지 지도의 확대 레벨
+	        marker: marker // 이미지 지도에 표시할 마커 
+	    };    
+	
+	// 이미지 지도를 생성합니다
+	var staticMap = new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
+};
+
 // kakaoMap 창에서 장소추가했을 때 동작
 function addBoardPlace() {
 	let place_html = $("#addplace-result");
@@ -196,6 +228,8 @@ function addBoardPlace() {
 	$($(".place_info")[4]).text(place_data[4]); // 위도
 	$($(".place_info")[5]).text(place_data[5]); // 경도
 	$("#place_center_align").css("display", "flex");
+	$("#mapImg").html("");
+	loadMapImg();
 }
 </script>
 </body>

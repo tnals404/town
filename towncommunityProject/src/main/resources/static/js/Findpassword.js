@@ -1,7 +1,7 @@
 var win; 
 
 function Findpasswordopen() {
-  win =window.open("/Findpassword", "PopupWin", "width=710,height=300");
+  win =window.open("/Findpassword", "PopupWin", "width=760,height=330");
  	win;
 }
 
@@ -33,7 +33,6 @@ function Findpasswordopen() {
 								$('#password').val(data);
 								
 								sendEmail.submit();
-							//win.close();
 					}
 	        });
 					}

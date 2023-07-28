@@ -178,9 +178,8 @@ $(document).ready(function(){
 	//글 누르면 해당 글 상세페이지로 이동
 	$(".one_board").on('click', function(){
 		const boardId = $(this).attr('id');
-		//location.href = "/photoboarddetail?bi="+boardId;
-		location.href = "/existBoard?bi="+boardId;
-		
+		location.href = "/boarddetail?bi="+boardId;
+		//location.href = "/existBoard?bi="+boardId;		
 	});//글 1개 조회
 	
 	

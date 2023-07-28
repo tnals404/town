@@ -24,6 +24,11 @@ public class BoardServiceImpl1 implements BoardService1 { //김종인 작성
 	}
 	
 	@Override
+	public int insertNoticeBoard(List<BoardDTO> query) {
+		return dao.insertNoticeBoard(query);
+	}
+	
+	@Override
 	public int getMemberTownId(String member_id) {
 		return dao.getMemberTownId(member_id);
 	}
@@ -56,6 +61,19 @@ public class BoardServiceImpl1 implements BoardService1 { //김종인 작성
 	@Override
 	public int updateProfileImage(String member_id, String profile_image) {
 		return dao.updateProfileImage(member_id, profile_image);
+	}
+
+	@Override
+	public boolean isAdmin(String member_id) {
+		if (dao.isAdmin(member_id) == 1) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public List<String> getAllTownName() {
+		return dao.getAllTownName();
 	}
 
 	

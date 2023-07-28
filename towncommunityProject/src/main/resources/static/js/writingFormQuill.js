@@ -7,20 +7,18 @@ $(document).on("click", ".ql-editor img", function() {
 	if ($(this).parent().css("resize") !== "both") {
 		$(this).parent().css({
 			"resize": "both",
-			"width": "50%",
+			"width": "550px",
 			"overflow": "hidden",
 			"max-width": "1100px",
 			"margin": "0px",
-		});
+		}); //css
 		$(this).css("width", "100%");
 		$(this).css("height", "100%");
-	} else {
-		$(this).parent().css("resize", "none");
 	}
 }); //onclick
 
 // 에디터 작성 중 엔터 누를 때 동작
-$(".ql-editor").on("keydown", function(e) {
+$(document).on("keydown", ".ql-editor", function(e) {
 	if (e.keyCode === 13) {
 		$(".ql-editor p").each(function(index, item) {
 			if ($(item).find("img").length <= 0) {
@@ -31,7 +29,6 @@ $(".ql-editor").on("keydown", function(e) {
 }); //onfocus
 
 var toolbarOptions = [
-  [{ 'font': [] }],
   [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
   [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
   [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme

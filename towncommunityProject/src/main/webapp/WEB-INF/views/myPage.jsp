@@ -28,6 +28,7 @@
 		  </li>
 	    <li class="outerMenu">내 채팅목록</li>
 	  	<li class="outerMenu"><a href="/myinform">내 정보 수정</a></li>
+	    <li class="outerMenu"><a href="#" onclick="return updatepasswordopen()">비밀번호 변경</a></li>
 		  <div id="deleteclick"><li class="outerMenu"><a>회원 탈퇴</a></li></div>
 		</ul>
 	</div>
@@ -66,6 +67,11 @@
 	$("#my_profile_img a").on("click", function() {
 		window.open("/changeProfileImg", "changeProvileImg", "width=500px, height=350px, top=300px, left=960px, scrollbars=no");
 	}); //onclick
+	//비밀번호 변경 클릭
+	function updatepasswordopen() {
+  	var win =window.open("/Updatepassword", "PopupWin", "width=790,height=380");
+ 	win;
+}
 </script>
 <script src="/js/Mypage.js"></script>
 </html>

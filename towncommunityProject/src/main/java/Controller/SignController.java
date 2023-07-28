@@ -9,6 +9,7 @@ import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
@@ -22,14 +23,23 @@ import org.springframework.web.servlet.ModelAndView;
 import Dto.BoardDTO;
 import Dto.MemberDTO;
 import Service.SignService;
+import ServiceImpl.hashService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class SignController {
 	
 	@Autowired
-	//@Qualifier("SignService")
+	@Qualifier("SignService")
 	SignService Ss;
+	
+	@Autowired
+	private hashService hashService;
+
+	@Value("${hash.bcrypt.number}")
+	private int HashNum;
+	
+	
 	
 	
 	@RequestMapping("/")
@@ -51,7 +61,7 @@ public class SignController {
 		HashMap<String, Object> map = null;
 		MemberDTO my_info = Ss.MyInfo(member_id);
 		if(my_info != null) {
-			if(my_info.getPassword().equals(password)) {
+			if(hashService.matchesBcrypt(password, my_info.getPassword(), HashNum)) {
 				map = new HashMap<>();
 				session.setAttribute("member_id",my_info.getMember_id());
 				session.setAttribute("town_id", my_info.getTown_id());
@@ -63,7 +73,7 @@ public class SignController {
 				return "redirect:/main" ;
 			}
 	}
-		return "Signin";
+		return "redirect:/Signin";
 
 	}
 	//회원가입
@@ -75,8 +85,12 @@ public class SignController {
 	}
 	
 	@PostMapping("/signup")
-	public String signup(MemberDTO memberDTO) {
-		if(Ss.insertMember(memberDTO)>0) {
+	public String signup(MemberDTO MemberDTO) {
+		
+		String password = MemberDTO.getPassword();
+		String hashPassword = hashService.encodeBcrypt(password, HashNum);
+		MemberDTO.setPassword(hashPassword);
+		if(Ss.insertMember(MemberDTO)>0) {
 			return "redirect:/Signin";
 		}
 		else return "Signup";
@@ -106,11 +120,6 @@ public class SignController {
 	@GetMapping("/myinform")
 	public ModelAndView myinform(HttpSession session) {
 		ModelAndView mv = new ModelAndView();
-		if (session.getAttribute("member_id") == null) {
-			mv.setViewName("/Signin");
-			return mv;
-		}
-
 		if (session.getAttribute("member_id") != null) {
 			String my_id = session.getAttribute("member_id").toString();
 			MemberDTO my_info = Ss.MyInfo(my_id);
@@ -121,19 +130,37 @@ public class SignController {
 
 		return mv;
 	}
+	//비밀번호 변경
+	@GetMapping("/Updatepassword")
+	public ModelAndView updatepassword(HttpSession session) {
+		ModelAndView mv = new ModelAndView();
+		if (session.getAttribute("member_id") != null) {
+			
+		}
+		mv.setViewName("Updatepassword");
+		return mv;
+	}
+	
 	
 	@PostMapping("/update")
 	public String updatemember(MemberDTO MemberDTO) {
-		
-			Ss.updatemember(MemberDTO);
-			
+		Ss.updatemember(MemberDTO);	
 		return"redirect:/myinform";
+	}
+	//비밀번호 찾기 
+	@RequestMapping("/Findpassword")
+	public ModelAndView Findpassword() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("Findpassword");	
+		return mv;
 	}
 	
 	//비밀번호찾기시 임시비밀번호 변경
 	@PostMapping("/Findpwupdate")
 	public String Findpwupdate(MemberDTO MemberDTO) {
-		
+		String password = MemberDTO.getPassword();
+		String hashPassword = hashService.encodeBcrypt(password, HashNum);
+		MemberDTO.setPassword(hashPassword);
 		Ss.Findpwupdate(MemberDTO);
 		
 		return"/Findpasswordend";
@@ -158,13 +185,6 @@ public class SignController {
 	
 	
 	
-	//비밀번호 찾기 
-	@RequestMapping("/Findpassword")
-	public ModelAndView Findpassword() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("Findpassword");	
-		return mv;
-	}
 	
 	
 	//마이페이지 구현단 -종인/영우같이 구현

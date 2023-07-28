@@ -107,7 +107,7 @@ $(document).ready(function(){
                 data.uploadPath = data.uploadPath.replace(/\\/g, '/');
                 let imgUrl = "/display?fileName=" + data.uploadPath + "/" + data.uuid + "_" + data.fileName;
      	    	$("#comment_img_preview").attr("src", imgUrl);
-     	      	$("#comment_img_preview").css("display","block");
+     	      	$("#cmt_imgPreview_box").css("display","flex");
             },
             error: function(request,status,error) {
 			      		alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
@@ -185,12 +185,6 @@ $(document).ready(function(){
 		let status2 = $(this).nextAll(".comment_blameBtn_parentDiv").css('display');
 		if("${member_id}" == commentWriter) { //로그인 id와 댓글작성자가 같을때만 버튼 출력
 			if(status1 == 'none')  {
-		 		$("#board_btns_parentDiv").hide();
-		 		$("#board_blameBtn_parentDiv").hide();
-		 		$(".comment_btns_parentDiv").hide();
-		 		$(".comment_blameBtn_parentDiv").hide();
-		 		$(".chatTo_btnBox").hide();
-		 		$(".chatToCom_btnBox").hide();
 				$(this).next(".comment_btns_parentDiv").fadeIn(200);		
 			}
 		 	else {
@@ -199,12 +193,6 @@ $(document).ready(function(){
  		}
  		else {
  			if(status2 == 'none') {
-		 		$("#board_btns_parentDiv").hide();
-		 		$("#board_blameBtn_parentDiv").hide();
-		 		$(".comment_btns_parentDiv").hide();
-		 		$(".comment_blameBtn_parentDiv").hide();
-		 		$(".chatTo_btnBox").hide();
-		 		$(".chatToCom_btnBox").hide();
 				$(this).nextAll(".comment_blameBtn_parentDiv").fadeIn(200);					 		 				
  			}
  			else { 				
@@ -276,12 +264,6 @@ $(document).ready(function(){
 	$(".writeRecommentBtn").on("click", function(){
 		let status = $(this).parents().siblings(".recomment_writing").css('display');
 		if(status == 'none')  {
-			$("#board_btns_parentDiv").hide();
-	 		$("#board_blameBtn_parentDiv").hide();
-	 		$(".comment_btns_parentDiv").hide();
-	 		$(".comment_blameBtn_parentDiv").hide();
-	 		$(".chatTo_btnBox").hide();
-	 		$(".chatToCom_btnBox").hide();
 	 		$(".recomment_writing").hide();
 	 		$(".recomment_writing_area").val("");
 	 		$(".comment_updateWritingDiv").hide();
@@ -361,12 +343,6 @@ $(document).ready(function(){
 		let Bstatus2 = $(this).nextAll("#board_blameBtn_parentDiv").css('display');					 		
 		if("${member_id}" == boardWriter) { //로그인 id와 글작성자가 같을때 수정,삭제버튼 출력
 			if(Bstatus1 == 'none')  {
-		 		$("#board_btns_parentDiv").hide();
-		 		$("#board_blameBtn_parentDiv").hide();
-		 		$(".comment_btns_parentDiv").hide();
-		 		$(".comment_blameBtn_parentDiv").hide();
-		 		$(".chatTo_btnBox").hide();
-		 		$(".chatToCom_btnBox").hide();
 				$(this).next("#board_btns_parentDiv").fadeIn(200);				
 			}
 		 	else {
@@ -375,12 +351,6 @@ $(document).ready(function(){
  		}
  		else { //로그인 id가 글 작성자와 다를때 신고 버튼 출력
  			if(Bstatus2 == 'none') {
-		 		$("#board_btns_parentDiv").hide();
-		 		$("#board_blameBtn_parentDiv").hide();
-		 		$(".comment_btns_parentDiv").hide();
-		 		$(".comment_blameBtn_parentDiv").hide();
-		 		$(".chatTo_btnBox").hide();
-		 		$(".chatToCom_btnBox").hide();
 				$(this).nextAll("#board_blameBtn_parentDiv").fadeIn(200);				 		 				
  			}
  			else { 				
@@ -410,11 +380,6 @@ $(document).ready(function(){
 	    }	 
 	}); //글 삭제
 	
-	//글 신고
-	$("#board_blame_btn").on('click', function(){
-		 alert("${detaildto.board_id}");		 
-	});//글 신고
-	
 	//목록 버튼
 	$("#backToList").on('click', function(){
 		location.href = document.referrer; //이전페이지로 이동 + 새로고침
@@ -423,37 +388,20 @@ $(document).ready(function(){
 	//id 누르면 채팅하기 버튼 (보드 작성자 ver)
 	//글 작성자 ver
  	$("#oneboard_writer").on('click', function(){
- 		let chatToBoxStatus = $(this).next(".chatTo_btnBox").css('display');
+ 		let yourInfoBoxStatus = $(this).next(".yourInfo_btnBox").css('display');
  		let myInfoBoxStatus = $(this).nextAll(".myInfo_btnBox").css('display');
  		let clickedId = $(this).text();
 		//alert(clickedId);
- 		$(".chatTo_btnBox").hide();
- 		$(".chatToCom_btnBox").hide();
- 		
 		if(clickedId != "${member_id}") {	
-			if(chatToBoxStatus == 'none')  {
-		 		$("#board_btns_parentDiv").hide();
-		 		$("#board_blameBtn_parentDiv").hide();
-		 		$(".comment_btns_parentDiv").hide();
-		 		$(".comment_blameBtn_parentDiv").hide();
-		 		$(".chatTo_btnBox").hide();
-		 		$(".chatToCom_btnBox").hide();
-		 		$(".myInfo_btnBox").hide();
-				$(this).next(".chatTo_btnBox").fadeIn(200);				
+			if(yourInfoBoxStatus == 'none')  {
+				$(this).next(".yourInfo_btnBox").fadeIn(200);				
 			}
 			else {
-				$(this).next(".chatTo_btnBox").fadeOut(200);							
+				$(this).next(".yourInfo_btnBox").fadeOut(200);							
 			}
 		}	
 	 	else {
 			if(myInfoBoxStatus == 'none')  {
-		 		$("#board_btns_parentDiv").hide();
-		 		$("#board_blameBtn_parentDiv").hide();
-		 		$(".comment_btns_parentDiv").hide();
-		 		$(".comment_blameBtn_parentDiv").hide();
-		 		$(".chatTo_btnBox").hide();
-		 		$(".chatToCom_btnBox").hide();
-		 		$(".myInfo_btnBox").hide();
 				$(this).nextAll(".myInfo_btnBox").fadeIn(200);				
 			}
 			else {
@@ -463,41 +411,50 @@ $(document).ready(function(){
 	});	
 	//댓글작성자 ver
 	$(".comment_writer").on('click', function(){
- 		let chatToBoxStatus = $(this).next(".chatToCom_btnBox").css('display');
+ 		let yourInfoBoxStatus = $(this).next(".yourInfo_btnBox").css('display');
+ 		let myInfoBoxStatus = $(this).nextAll(".myInfo_btnBox").css('display');
  		let clickedId = $(this).text();
 		//alert(clickedId);
- 		$(".chatTo_btnBox").hide();
- 		$(".chatToCom_btnBox").hide();
-		if(chatToBoxStatus == 'none')  {
-	 		$("#board_btns_parentDiv").hide();
-	 		$("#board_blameBtn_parentDiv").hide();
-	 		$(".comment_btns_parentDiv").hide();
-	 		$(".comment_blameBtn_parentDiv").hide();
-	 		$(".chatTo_btnBox").hide();
-	 		$(".chatToCom_btnBox").hide();
-			$(this).next(".chatToCom_btnBox").fadeIn(200);			
-		}
+		if(clickedId != "${member_id}") {	
+			if(yourInfoBoxStatus == 'none')  {
+				$(this).next(".yourInfo_btnBox").fadeIn(200);				
+			}
+			else {
+				$(this).next(".yourInfo_btnBox").fadeOut(200);							
+			}
+		}	
 	 	else {
-	 		$(this).next(".chatToCom_btnBox").fadeOut(200);			
+			if(myInfoBoxStatus == 'none')  {
+				$(this).nextAll(".myInfo_btnBox").fadeIn(200);				
+			}
+			else {
+				$(this).nextAll(".myInfo_btnBox").fadeOut(200);				
+			}
 	 	}
+
 	});
+	
 	//대댓글작성자 ver
 	$(".recomment_writer").on('click', function(){
- 		let chatToBoxStatus = $(this).next(".chatToCom_btnBox").css('display');
+ 		let yourInfoBoxStatus = $(this).next(".yourInfo_btnBox").css('display');
+ 		let myInfoBoxStatus = $(this).nextAll(".myInfo_btnBox").css('display');
  		let clickedId = $(this).text();
 		//alert(clickedId);
- 		$(".chatTo_btnBox").hide();
- 		$(".chatToCom_btnBox").hide();
-		if(chatToBoxStatus == 'none')  {
-	 		$("#board_btns_parentDiv").hide();
-	 		$(".comment_btns_parentDiv").hide();
-	 		$(".comment_blameBtn_parentDiv").hide();
-	 		$(".chatTo_btnBox").hide();
-	 		$(".chatToCom_btnBox").hide();
-			$(this).next(".chatToCom_btnBox").fadeIn(200);			
-		}
+		if(clickedId != "${member_id}") {	
+			if(yourInfoBoxStatus == 'none')  {
+				$(this).next(".yourInfo_btnBox").fadeIn(200);				
+			}
+			else {
+				$(this).next(".yourInfo_btnBox").fadeOut(200);							
+			}
+		}	
 	 	else {
-	 		$(this).next(".chatToCom_btnBox").fadeOut(200);			
+			if(myInfoBoxStatus == 'none')  {
+				$(this).nextAll(".myInfo_btnBox").fadeIn(200);				
+			}
+			else {
+				$(this).nextAll(".myInfo_btnBox").fadeOut(200);				
+			}
 	 	}
 	});
 	
@@ -506,8 +463,10 @@ $(document).ready(function(){
 		const fileId = $(this).parents().next(".recomment_file").attr('id');
 		//alert(fileId);
 	    const fileInput = document.getElementById(fileId);
-		const preview = $(this).parents().parents().parents().siblings('.recomment_img_preview');
-
+		const preview = $(this).parents().parents().parents().siblings().children('.recomment_img_preview');
+		const previewBox = $(this).parents().parents().parents().siblings('.recmt_imgPreview_box');
+		//alert(preview);
+		
  	    fileInput.addEventListener("change", function () {  // change 이벤트로 input 값이 바뀌면 실행
 	        const formData = new FormData();
 	        const file = fileInput.files[0];
@@ -525,7 +484,7 @@ $(document).ready(function(){
 	                data.uploadPath = data.uploadPath.replace(/\\/g, '/');
 	                let imgUrl = "/display?fileName=" + data.uploadPath + "/" + data.uuid + "_" + data.fileName;
 	                preview.attr('src', imgUrl);
-	                preview.show();
+	                previewBox.css('display', 'flex');
 	            },
 	            error: function(request,status,error) {
 				      		alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
@@ -545,13 +504,13 @@ $(document).ready(function(){
 		const recmt_boardId = $(this).parents().siblings(".recomment_board_id").val();
 		const recmt_parentId = $(this).parents().siblings(".recomment_parent_id").val();
 		const recmt_secretVal = $(this).prev().children(".recomment_secret").is(":checked");
-		const recmt_imgUrl = $(this).parents().siblings(".recomment_img_preview").attr("src");
+		const recmt_imgUrl = $(this).parents().siblings().children(".recomment_img_preview").attr("src");
 		//alert(recmt_imgUrl);
 		
 		//enter => <br>
 		recmt_contents = recmt_contents.replace(/(?:\r\n|\r|\n)/g, '<br>');
 		
- 		if(recmt_contents.trim() !== "" && recmt_writer != "" ){
+  		if(recmt_contents.trim() !== "" && recmt_writer != "" ){
  			if(recmt_imgUrl != "") {
 	  			$.ajax({
 	 				url : 'recommentwrite',
@@ -606,12 +565,6 @@ $(document).ready(function(){
 	$(".comment_update_btn").on("click", function(){
 		let status = $(this).parents().siblings(".comment_updateWritingDiv").css('display');
 		if(status == 'none')  {
-			$("#board_btns_parentDiv").hide();
-	 		$("#board_blameBtn_parentDiv").hide();
-	 		$(".comment_btns_parentDiv").hide();
-	 		$(".comment_blameBtn_parentDiv").hide();
-	 		$(".chatTo_btnBox").hide();
-	 		$(".chatToCom_btnBox").hide();
 	 		$(".recomment_writing").hide();
 	 		$(".recomment_writing_area").val("");
 	 		$(".comment_updateWritingDiv").hide();
@@ -629,12 +582,15 @@ $(document).ready(function(){
 		}
 	});//댓글수정폼열기
 	
-	//대댓글에 사진첨부
+	//댓글 수정폼에 사진첨부
 	$(".comment_update_fileimg").on('click', function() {
 		const fileId = $(this).parents().next(".comment_update_file").attr('id');
+		//alert(fileId);
 	    const fileInput = document.getElementById(fileId);
-		const preview = $(this).parents().parents().parents().siblings('.comment_update_img_preview');
-
+		const preview = $(this).parents().parents().parents().siblings().children('.comment_update_img_preview');
+		const previewBox = $(this).parents().parents().parents().siblings('.cmt_update_imgPreview_box');
+		//alert(preview);
+		
  	    fileInput.addEventListener("change", function () {  // change 이벤트로 input 값이 바뀌면 실행
 	        const formData = new FormData();
 	        const file = fileInput.files[0];
@@ -652,7 +608,7 @@ $(document).ready(function(){
 	                data.uploadPath = data.uploadPath.replace(/\\/g, '/');
 	                let imgUrl = "/display?fileName=" + data.uploadPath + "/" + data.uuid + "_" + data.fileName;
 	                preview.attr('src', imgUrl);
-	                preview.show();
+	                previewBox.css('display', 'flex');
 	            },
 	            error: function(request,status,error) {
 				      		alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
@@ -670,7 +626,7 @@ $(document).ready(function(){
 		const cmt_update_commentId = $(this).parents().siblings(".comment_update_comment_id").val();
 		const cmt_update_writer = $(this).parents().siblings(".comment_update_writer").val();
 		const cmt_update_secretVal = $(this).prev().children(".comment_update_secret").is(":checked");
-		const cmt_update_imgUrl = $(this).parents().siblings(".comment_update_img_preview").attr("src");
+		const cmt_update_imgUrl = $(this).parents().siblings().children(".comment_update_img_preview").attr("src");
 		
 		//enter => <br>
 		cmt_update_contents = cmt_update_contents.replace(/(?:\r\n|\r|\n)/g, '<br>');
@@ -725,13 +681,6 @@ $(document).ready(function(){
 		
 	});//댓글수정
 	
-	
-	//신고하기(글)
-	$("#board_blame_btn").on('click', function(){
-		
-		
-	});//글 신고
-	
 	//아무데나 클릭시 show상태인 div 다시 hide로 - 글 수정,삭제,신고버튼
 	$(function(){
 		$(document).mousedown(function( e ){
@@ -747,22 +696,117 @@ $(document).ready(function(){
 						$(this).hide();
 					}
 				});
-			}//if(outer)
-				
+			}//if(outer)				
 		});//mousedown
-		
-/* 		$("button").click(function(){
-			if( !$("#menuLayer").is(":visible") ) {
-				$("#menuLayer").show();
-			}
-		}); */
 	});//이외영역 클릭 function
 	
+	//아무데나 클릭시 show상태인 div 다시 hide로 - 글 수정,삭제,신고버튼
+	$(function(){
+		$(document).mousedown(function( e ){
+			if( $("#board_blameBtn_parentDiv").is(":visible") ) {
+				$("#board_blameBtn_parentDiv").each(function(){
+					var l_position = $(this).offset();
+					l_position.right = parseInt(l_position.left) + ($(this).width());
+					l_position.bottom = parseInt(l_position.top) + parseInt($(this).height());
+
+					if( ( l_position.left <= e.pageX && e.pageX <= l_position.right )
+						&& ( l_position.top <= e.pageY && e.pageY <= l_position.bottom ) ) {
+					} else {
+						$(this).hide();
+					}
+				});
+			}//if(outer)				
+		});//mousedown
+	});//이외영역 클릭 function
+	
+	//아무데나 클릭시 show상태인 div 다시 hide로 - 글 수정,삭제,신고버튼
+	$(function(){
+		$(document).mousedown(function( e ){
+			if( $(".comment_btns_parentDiv").is(":visible") ) {
+				$(".comment_btns_parentDiv").each(function(){
+					var l_position = $(this).offset();
+					l_position.right = parseInt(l_position.left) + ($(this).width());
+					l_position.bottom = parseInt(l_position.top) + parseInt($(this).height());
+
+					if( ( l_position.left <= e.pageX && e.pageX <= l_position.right )
+						&& ( l_position.top <= e.pageY && e.pageY <= l_position.bottom ) ) {
+					} else {
+						$(this).hide();
+					}
+				});
+			}//if(outer)				
+		});//mousedown
+	});//이외영역 클릭 function
+	
+	//아무데나 클릭시 show상태인 div 다시 hide로 - 글 수정,삭제,신고버튼
+	$(function(){
+		$(document).mousedown(function( e ){
+			if( $(".comment_blameBtn_parentDiv").is(":visible") ) {
+				$(".comment_blameBtn_parentDiv").each(function(){
+					var l_position = $(this).offset();
+					l_position.right = parseInt(l_position.left) + ($(this).width());
+					l_position.bottom = parseInt(l_position.top) + parseInt($(this).height());
+
+					if( ( l_position.left <= e.pageX && e.pageX <= l_position.right )
+						&& ( l_position.top <= e.pageY && e.pageY <= l_position.bottom ) ) {
+					} else {
+						$(this).hide();
+					}
+				});
+			}//if(outer)				
+		});//mousedown
+	});//이외영역 클릭 function
+	
+	//아무데나 클릭시 show상태인 div 다시 hide로 - 글 수정,삭제,신고버튼
+	$(function(){
+		$(document).mousedown(function( e ){
+			if( $(".yourInfo_btnBox").is(":visible") ) {
+				$(".yourInfo_btnBox").each(function(){
+					var l_position = $(this).offset();
+					l_position.right = parseInt(l_position.left) + ($(this).width());
+					l_position.bottom = parseInt(l_position.top) + parseInt($(this).height());
+
+					if( ( l_position.left <= e.pageX && e.pageX <= l_position.right )
+						&& ( l_position.top <= e.pageY && e.pageY <= l_position.bottom ) ) {
+					} else {
+						$(this).hide();
+					}
+				});
+			}//if(outer)				
+		});//mousedown
+	});//이외영역 클릭 function
+	
+	//아무데나 클릭시 show상태인 div 다시 hide로 - 글 수정,삭제,신고버튼
+	$(function(){
+		$(document).mousedown(function( e ){
+			if( $(".myInfo_btnBox").is(":visible") ) {
+				$(".myInfo_btnBox").each(function(){
+					var l_position = $(this).offset();
+					l_position.right = parseInt(l_position.left) + ($(this).width());
+					l_position.bottom = parseInt(l_position.top) + parseInt($(this).height());
+
+					if( ( l_position.left <= e.pageX && e.pageX <= l_position.right )
+						&& ( l_position.top <= e.pageY && e.pageY <= l_position.bottom ) ) {
+					} else {
+						$(this).hide();
+					}
+				});
+			}//if(outer)				
+		});//mousedown
+	});//이외영역 클릭 function
+
 	
 	//글 수정하기
 	$("#board_update_btn").on('click', function(){
 		$("#boardUpdateForm").submit();
 	});//글 수정
+	
+	
+	//신고하기(글)
+	$("#board_blame_btn").on('click', function(){
+		open("/reportForm", "신고하기", "width=540px, height=530px, top=350px, left=800px, scrollbars=no");
+	});//글 신고
+	
 	
 });//ready
 </script>
@@ -799,9 +843,11 @@ $(document).ready(function(){
 		<div id="oneboard_info">
 			<div id="oneboard_writerinfo">
 				<div id="oneboard_profileImg"><img src="${writerDto.profile_image}"></div>
-				<div id="oneboard_writer" onclick="chatToBoxOpen()">${detaildto.writer}</div>
-				<div class="chatTo_btnBox">						
+				<div id="oneboard_writer">${detaildto.writer}</div>
+				<div class="yourInfo_btnBox">						
 					<input type="hidden" class="memId" value="${detaildto.writer}" />
+					<input type="button" class="yourInfo_btn" value="회원정보" />
+					<hr style="margin:2px 0px;">
 					<input type="button" class="chatTo_btn" value="채팅하기" />
 				</div>
 				<div class="myInfo_btnBox">						
@@ -907,9 +953,14 @@ $(document).ready(function(){
 								</div>
 								<div class="comment_info">
 									<div class="comment_writer">${dto.comment_writer}</div>
-									<div class="chatToCom_btnBox">				
+									<div class="yourInfo_btnBox" style="margin-left : 0px;">						
 										<input type="hidden" class="memId" value="${dto.comment_writer}" />
+										<input type="button" class="yourInfo_btn" value="회원정보" />
+										<hr style="margin:2px 0px;">
 										<input type="button" class="chatTo_btn" value="채팅하기" />
+									</div>
+									<div class="myInfo_btnBox" style="margin-left : 0px;">						
+										<input type="button" class="myInfo_btn" value="내정보" />
 									</div>
 									<div class="comment_writingtime">	
 										<!-- 오늘 날짜랑 같으면 시간만 출력, 날짜 다르면 년월일 출력 / 댓글 수정했으면 수정시간 표시 -->
@@ -963,7 +1014,12 @@ $(document).ready(function(){
 					<input type="hidden" class="recomment_board_id" value="${detaildto.board_id}">
 					<input type="hidden" class="recomment_parent_id" value="${refer_cmtId}">
 					<textarea class="recomment_writing_area" ></textarea><br>
-					<img class="recomment_img_preview" id="${dto.comment_id}preview" src="" />
+					
+					<div class="recmt_imgPreview_box">
+						<img class="recomment_img_preview" id="${dto.comment_id}preview" src="" />
+						<div class="recmt_delete_photo" onclick='cancleImg(this)'>x</div>		
+					</div>	
+			
 					<div class="recomment_bottom_btns">
 						<div class="recomment_img_upload">
 							 <label for ="${dto.comment_id}file" class="recomment_label"> 
@@ -986,14 +1042,22 @@ $(document).ready(function(){
 					<input type="hidden" class="comment_update_writer" value="${dto.comment_writer}">
 					<input type="hidden" class="comment_update_board_id" value="${dto.board_id}">
 					<textarea class="comment_update_writing_area" >${dto.comment_contents}</textarea><br>
+					
 					<c:choose>
 					 	<c:when test="${dto.comment_imgurl != null}">
-							<img class="comment_update_img_preview" src="${dto.comment_imgurl }" style="display : block;" />
+							<div class="cmt_update_imgPreview_box" style="display : flex;">
+								<img class="comment_update_img_preview" src="${dto.comment_imgurl }"  />
+								<div class="cmt_update_delete_photo" onclick='cancleImg(this)'>x</div>		
+							</div>				
 					 	</c:when>
 					 	<c:otherwise>
-							<img class="comment_update_img_preview" src="" />
+							<div class="cmt_update_imgPreview_box">
+								<img class="comment_update_img_preview" src="" />
+								<div class="cmt_update_delete_photo" onclick='cancleImg(this)'>x</div>		
+							</div>				
 					 	</c:otherwise>
 					</c:choose> 
+					
 					<div class="comment_update_bottom_btns">
 						<div class="comment_update_img_upload">
 							 <label for ="${dto.comment_id}file_updateCmt" class="recomment_label"> 
@@ -1002,16 +1066,7 @@ $(document).ready(function(){
 			  				 <input type="file" class="comment_update_file" id="${dto.comment_id}file_updateCmt"/>
 		  				 </div>
 						<div class="comment_update_bottom_right">					
-							<div class="comment_update_secret_checkDiv">
-<%-- 								<c:choose>
-								 	<c:when test="${dto.comment_secret}">
-										<input type="checkbox" class="comment_update_secret" value="secret" checked="checked">비밀
-								 	</c:when>
-								 	<c:otherwise>
-										<input type="checkbox" class="comment_update_secret" value="secret">비밀
-								 	</c:otherwise>
-								</c:choose>  --%>
-							</div>
+							<div class="comment_update_secret_checkDiv"></div>
 							<input type="submit" class="comment_update_submit_btn" value="수정">
 						</div>
 					</div>
@@ -1045,9 +1100,14 @@ $(document).ready(function(){
 								</div>
 								<div class="recomment_info">
 									<div class="recomment_writer">${dto.comment_writer}</div>
-									<div class="chatToCom_btnBox">				
+									<div class="yourInfo_btnBox" style="margin-left : 0px;">						
 										<input type="hidden" class="memId" value="${dto.comment_writer}" />
+										<input type="button" class="yourInfo_btn" value="회원정보" />
+										<hr style="margin:2px 0px;">
 										<input type="button" class="chatTo_btn" value="채팅하기" />
+									</div>
+									<div class="myInfo_btnBox" style="margin-left : 0px;">						
+										<input type="button" class="myInfo_btn" value="내정보" />
 									</div>
 									<div class="recomment_writingtime">							
 										<!-- 오늘 날짜랑 같으면 시간만 출력, 날짜 다르면 년월일 출력 / 댓글 수정했으면 수정시간 표시 -->
@@ -1102,7 +1162,10 @@ $(document).ready(function(){
 					<input type="hidden" class="recomment_board_id" value="${detaildto.board_id}">
 					<input type="hidden" class="recomment_parent_id" value="${refer_cmtId}">
 					<textarea class="recomment_writing_area" ></textarea><br>
-					<img class="recomment_img_preview" id="${dto.comment_id}preview" src="" />
+					<div class="recmt_imgPreview_box">
+						<img class="recomment_img_preview" id="${dto.comment_id}preview" src="" />
+						<div class="recmt_delete_photo" onclick='cancleImg(this)'>x</div>		
+					</div>	
 					<div class="recomment_bottom_btns">
 						<div class="recomment_img_upload">
 							 <label for ="${dto.comment_id}file" class="recomment_label"> 
@@ -1127,10 +1190,16 @@ $(document).ready(function(){
 					<textarea class="comment_update_writing_area" >${dto.comment_contents}</textarea><br>
 					<c:choose>
 					 	<c:when test="${dto.comment_imgurl != null}">
-							<img class="comment_update_img_preview" src="${dto.comment_imgurl }" style="display : block;" />
+							<div class="cmt_update_imgPreview_box" style="display : flex;">
+								<img class="comment_update_img_preview" src="${dto.comment_imgurl }"  />
+								<div class="cmt_update_delete_photo" onclick='cancleImg(this)'>x</div>		
+							</div>				
 					 	</c:when>
 					 	<c:otherwise>
-							<img class="comment_update_img_preview" src="" />
+							<div class="cmt_update_imgPreview_box">
+								<img class="comment_update_img_preview" src="" />
+								<div class="cmt_update_delete_photo" onclick='cancleImg(this)'>x</div>		
+							</div>				
 					 	</c:otherwise>
 					</c:choose> 
 					<div class="comment_update_bottom_btns">
@@ -1141,16 +1210,7 @@ $(document).ready(function(){
 			  				 <input type="file" class="comment_update_file" id="${dto.comment_id}file_updateCmt"/>
 		  				 </div>
 						<div class="comment_update_bottom_right">					
-							<div class="comment_update_secret_checkDiv">
-<%-- 								<c:choose>
-								 	<c:when test="${dto.comment_secret}">
-										<input type="checkbox" class="comment_update_secret" value="secret" checked="checked">비밀
-								 	</c:when>
-								 	<c:otherwise>
-										<input type="checkbox" class="comment_update_secret" value="secret">비밀
-								 	</c:otherwise>
-								</c:choose>  --%>
-							</div>
+							<div class="comment_update_secret_checkDiv"></div>
 							<input type="submit" class="comment_update_submit_btn" value="수정">
 						</div>
 					</div>
@@ -1215,11 +1275,11 @@ $(document).ready(function(){
 			<input type="hidden" id="board_id" name="board_id" value="${detaildto.board_id}">
 			<textarea id="writing_area" name="comment_contents"></textarea><br>
 			
+			<div id="cmt_imgPreview_box">
 				<img id="comment_img_preview" src="" />
-			<!-- <div id="cmt_imgPreview_box">
-				<div id="delete_photo">X</div>		
-			</div> -->
-			
+				<div id="delete_photo" onclick='cancleImg(this)'>x</div>		
+			</div>
+
 			<div id="bottom_btns">
 				<div id="comment_img_upload">
 					 <label for="comment_file"> 
@@ -1265,5 +1325,13 @@ var staticMapContainer  = document.getElementById('staticMap'), // 이미지 지
 
 // 이미지 지도를 생성합니다
 var staticMap = new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
+
+//댓글,대댓글에 사진 첨부한거 취소하기
+function cancleImg(e){
+	$(e).prev().attr('src',"");
+	$(e).parent().hide();
+};  
+
+
 </script>
 </html>

@@ -12,7 +12,7 @@
 	font-size: 1rem;
 	margin-right: 15px;
 	padding: 10px;
-	height: 40px;
+	height: 38px;
 }
 #write-form { 
 	display: flex;
@@ -81,8 +81,8 @@ div.ql-toolbar {
 
 .ql-editor img {
 	margin: 0px;
-	width: 50%;
-	height: 50%;
+	width: 550px;
+	height: auto;
 }
 
 #place_center_align {

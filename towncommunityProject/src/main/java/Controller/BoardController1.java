@@ -98,7 +98,7 @@ public class BoardController1 { //김종인 작성
 				sortList.add(sort);
 			} else {
 				sortList.add("board_title");
-				sortList.add("board_contents");
+				sortList.add("board_preview");
 				sortList.add("writer");
 			}
 			searchmap.put("board_name_inner", ctgy); // 게시판 카테고리
@@ -302,6 +302,7 @@ public class BoardController1 { //김종인 작성
 		return "changeProfileImg";
 	}
 	
+	// 프로필 변경 적용
 	@PostMapping("/updateProfileImg")
 	@ResponseBody
 	public HashMap<String, Object> updateProfileImg(HttpSession session, String imgSrc) {
@@ -315,6 +316,61 @@ public class BoardController1 { //김종인 작성
 		resultMap.put("result", service.updateProfileImage(member_id, imgSrc));
 		
 		return resultMap;
+	}
+	
+	@RequestMapping("/noticeWritingForm")
+	public ModelAndView noticeWritingForm(HttpSession session) {
+		ModelAndView mv = new ModelAndView();
+		String member_id = String.valueOf(session.getAttribute("member_id"));
+		if (member_id == null) {
+			mv.setViewName("Signin");
+			return mv;
+		} else if (!service.isAdmin(member_id)) { // 관리자가 아니면 Main으로 이동
+			mv.setViewName("Main");
+			return mv;
+		}
+		List<String> townNameList = service.getAllTownName();
+		mv.addObject("townNameList", townNameList);
+		mv.setViewName("noticeWritingForm");
+		return mv;
+	}
+	
+	@PostMapping("/noticeWritingForm")
+	@ResponseBody
+	public HashMap<String, Object> noticeWriteEnd(
+			BoardDTO dto, 
+			@RequestParam(value="town_ids[]", required=false, defaultValue="") ArrayList<String> town_ids
+	) {
+		HashMap<String, Object> result = new HashMap<>();
+		int insertResult = 0;
+		if (dto.getBoard_title().equals("")) { // 제목을 입력하지 않았을 경우
+			insertResult = -1;
+			result.put("insertResult", insertResult);
+			return result;
+		} 
+		if (town_ids.isEmpty()) { // 공지사항을 올릴 동네를 선택하지 않은 경우
+			insertResult = -2;
+			result.put("insertResult", insertResult);
+			return result;
+		}
+		
+		// 동네 아이디에 따라 공지사항 BoardDTO 생성
+		List<BoardDTO> query = new ArrayList<>();
+		for (String town_id : town_ids) {
+			BoardDTO tempdto = new BoardDTO();
+			tempdto.setBoard_name_inner("공지사항");
+			tempdto.setBoard_title(dto.getBoard_title());
+			tempdto.setBoard_contents(dto.getBoard_contents());
+			tempdto.setBoard_imgurl(dto.getBoard_imgurl());
+			tempdto.setBoard_fileurl(dto.getBoard_fileurl());
+			tempdto.setBoard_preview(dto.getBoard_preview());
+			tempdto.setWriter(dto.getWriter());
+			tempdto.setTown_id(Integer.parseInt(town_id));
+			query.add(tempdto);
+		}
+		insertResult = service.insertNoticeBoard(query);
+		result.put("insertResult", insertResult);
+		return result;
 	}
 	
 }

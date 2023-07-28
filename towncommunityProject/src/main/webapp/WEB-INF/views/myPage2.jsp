@@ -54,7 +54,8 @@ $(document).ready(function() {
 		    </ul>
 		  </li>
 		    <li class="outerMenu">내 채팅목록</li>
-		  <a href="/myinform"><li class="outerMenu">내 정보 수정</li></a>
+		  	<li class="outerMenu"><a href="/myinform">내 정보 수정</a></li>
+	   	 	<li class="outerMenu"><a href="#" onclick="return updatepasswordopen()">비밀번호 변경</a></li>
 		  <li id="deleteclick"class="outerMenu">회원 탈퇴</li>
 		</ul>
 	</div>
@@ -147,5 +148,12 @@ $(document).ready(function() {
 	
 </div>
 </body>
+<script>
+	//비밀번호 변경 클릭
+	function updatepasswordopen() {
+  	var win =window.open("/Updatepassword", "PopupWin", "width=790,height=380");
+ 	win;
+	}
+</script>
 <script src="/js/Mypage.js"></script>
 </html>

@@ -132,6 +132,7 @@
 		    var html = '${dto.board_contents}';
 		    var delta = quill.clipboard.convert(html);
 	        quill.setContents(delta, 'silent');
+	        document.getElementById("quill_html").value = quill.root.innerHTML;
 	        //----------------------------------------------------
 	        
 		    quill.on('text-change', function() {
@@ -202,8 +203,6 @@
 				place_lat = $($(".place_info")[4]).text();
 				place_long = $($(".place_info")[5]).text();
 			}
-			console.log(place_lat);
-			console.log(place_long);
 			
 			// 만약 이미지가 하나 이상이면 첫번째 이미지 src 속성 board_imgurl에 저장 
 			if ($(".ql-editor img").length > 0) {
@@ -242,9 +241,9 @@
 						if (board_name_inner === "오늘의 사진" || 
 								board_name_inner === "역대 당선작" || 
 								board_name_inner === "분실물센터") {
-							location.href = "/existBoard?bi=" + boardId;
+							location.href = "/boarddetail?bi=" + boardId;
 						} else {
-							location.href = "/existBoard?bi=" + boardId;
+							location.href = "/boarddetail?bi=" + boardId;
 						}
 						
 					} else {
@@ -304,26 +303,8 @@
 		});
 		
 }); //document ready
-	
-	// kakaoMap 창에서 장소추가했을 때 동작
-	function addBoardPlace() {
-		let place_html = $("#addplace-result");
-		let place_data = $("#addplace-result").text().split("/n");
-		
-		$($(".place_info")[0]).text(place_data[0]); // 이름
-		$($(".place_info")[1]).text(place_data[1]); // 도로명 주소
-		$($(".place_info")[2]).text(place_data[2]); // 지번 주소
-		$($(".place_info")[3]).text(place_data[3]); // 전화번호
-		$($(".place_info")[4]).text(place_data[4]); // 위도
-		$($(".place_info")[5]).text(place_data[5]); // 경도
-		$("#mapImg").html("");
-		loadMapImg();
-		$("#place_center_align").css("display", "flex");
-	}
 
-</script>
-
-<script>
+//지도이미지 넣기
 function loadMapImg(){ 
 	//위도, 경도값
 	let placeLat = $($(".place_info")[4]).text();
@@ -348,5 +329,23 @@ function loadMapImg(){
 	// 이미지 지도를 생성합니다
 	var staticMap = new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
 };
+
+	// kakaoMap 창에서 장소추가했을 때 동작
+	function addBoardPlace() {
+		let place_html = $("#addplace-result");
+		let place_data = $("#addplace-result").text().split("/n");
+		
+		$($(".place_info")[0]).text(place_data[0]); // 이름
+		$($(".place_info")[1]).text(place_data[1]); // 도로명 주소
+		$($(".place_info")[2]).text(place_data[2]); // 지번 주소
+		$($(".place_info")[3]).text(place_data[3]); // 전화번호
+		$($(".place_info")[4]).text(place_data[4]); // 위도
+		$($(".place_info")[5]).text(place_data[5]); // 경도
+		$("#place_center_align").css("display", "flex");
+		$("#mapImg").html("");
+		loadMapImg();
+	}
+
 </script>
+
 </html>

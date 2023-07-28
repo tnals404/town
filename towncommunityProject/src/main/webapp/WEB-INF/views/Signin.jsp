@@ -48,8 +48,8 @@
         <div class="sign_up_pw"><a href="/Signup" >회원가입 </a><a>I</a> 
         <a id="find" href="javascript: Findpasswordopen()">비밀번호찾기</a></div>
       </form>
-<!-- 	"javascript: Findpasswordopen()" -->
 </body>
+<script src="/js/signincheck.js"></script>
 <script src="/js/loginevent.js"></script>
 <script src="/js/Findpassword.js"></script>
 </html>

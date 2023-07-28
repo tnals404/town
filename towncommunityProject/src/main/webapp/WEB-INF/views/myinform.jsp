@@ -117,48 +117,6 @@
         />
         </section>
         </section>
-         <section>	
-      <a class="a-word" id="a-pw">비밀번호</a>
-          <input
-            type="password"
-            class="secret-number"
-            id="pw"
-            name="password"
-            alt="비밀번호 입력"
-            value="${my_info.password}"
-            placeholder="비밀번호"
-            required
-          />
-          </section>
-          <label class="secret-mark">
-            <input
-              type="checkbox"
-              id="mark"
-              name="secret-mark"
-              value="mark"
-            /><label class="pw-check">비밀번호표시</label></label
-          >
-           <section>	
-      <a class="a-word" id="a-pw2">비밀번호확인</a>
-          <input
-            type="password"
-            class="secret-number"
-            id="pw2"
-            value="${my_info.password}"
-            alt="비밀번호 확인"
-            placeholder="비밀번호 확인"
-            required
-          />
-          </section>
-          <label class="secret-mark">
-            <input
-              type="checkbox"
-              id="mark1"
-              name="secret-mark1"
-              value="mark1"
-            />
-            <label class="pw-check">비밀번호확인표시</label></label>
-            
           <input
             type="submit"
             class="update"
@@ -168,7 +126,7 @@
       </form>
     </div>
 </body>
-<script src="/js/checkbox.js"></script>
+<script src="/js/Myinformcheck.js"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src="/js/address.js"></script>
 </html>

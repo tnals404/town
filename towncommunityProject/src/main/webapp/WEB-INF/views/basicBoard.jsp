@@ -28,8 +28,9 @@
 			<table id="board-table">
 				<thead>
 					<tr>
-						<th>글번호</th>
+						<th>번호</th>
 						<th>제목</th>
+						<th>내용</th>
 						<th>작성자</th>
 						<th>작성일</th>
 						<th>조회수</th>
@@ -44,6 +45,7 @@
 								: totalPostCnt - (param.page - 1) * postCntPerPage - vs.index}
 							</td>
 							<td><a href="/boarddetail?bi=${boardlist.board_id}" class="writing-title">${boardlist.board_title}</a></td>
+							<td>${boardlist.board_preview}</td>
 							<td>${boardlist.writer}</td>
 							<td>${fn:split(boardlist.writing_time, " ")[0]}</td>
 							<td>${boardlist.view_cnt}</td>
@@ -79,7 +81,7 @@
 		<div id="board_search_box">
 			<div id="board_search_inputs">
 			  <select id="selectBox" name="board_search_from">
-					<option value="board_all"> 전체 </option>
+					<option value="board_all" selected> 전체 </option>
 					<option value="board_title"> 제목 </option>
 					<option value="board_contents"> 내용 </option>
 					<option value="writer"> 작성자 </option>
@@ -93,6 +95,11 @@
 		
 		<script>
 		$(document).ready(function() {
+			// 만약 url에 sort 속성값이 있으면 검색 기준 sort 값으로 변경
+			if ("${param.sort}" !== "") {
+				$("#selectBox").val("${param.sort}").prop("selected", true);
+			}
+			
 			// page 이동 버튼 클릭시 동작
 			$("#pagination input:button").on("click", function(e) {
 				let url = document.location.href;
@@ -119,10 +126,18 @@
 			// 게시글 검색 버튼 클릭
 			$("#board_search_btn").on("click", function() {
 				let ctgy = "${param.ctgy}";
-				let sort = $("select[name=board_search_form]").val();
+				let sort = $("#selectBox option:selected").val();
 				let keyword = $("#board_searchword").val();
 				location.href = "/basicBoard?ctgy=" + ctgy + "&ti=${param.ti}" + "&sort=" + sort + "&keyword=" + keyword;
 			}); //onclick
+			
+			// 게시글 검색 input태그에 focus인 상태에서 엔터 누르면 검색하기
+			$("#board_searchword").on("keydown", function(e) {
+				if (e.keyCode === 13) {
+					$("#board_search_btn")[0].click();
+				}
+			}); 
+			
 		}); //ready
 		
 		</script>

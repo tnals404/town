@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="/css/Findpasswordend.css" />
+<link rel="stylesheet" href="/css/Updatepassword.css" />
     <title>동네일보</title>
     <script src="/js/jquery-3.6.4.min.js"></script>
     
@@ -25,20 +25,46 @@
 	</div>
 	
 	<div class="container">
-      <form method="post" name="sendEmail" action="/Findpwupdate">
-      <h1 class="h1">임시비밀번호를 이메일로 발송하였습니다.</h1>
+      <form method="post" name="sendEmail" action="/Updatepassword2">
+      <h2 class="h1">비밀번호 변경</h3>
+      <section>	
+      <a class="a-word" id="a-id">현재비밀번호</a>
+        <input
+            type="text"
+            id="nowpassord" 
+            name="nowpassword"     
+          />
+          </section>
+          <section>
+      <a class="a-word" id="a-password">새 비밀번호</a>
+        <input
+            type="text"
+            id="password"
+            name="password"
+          />
+          <input
+            type="text"
+            id="id2"
+            name="member_id"
+            value="${my_info.member_id}"
+            readonly
+          />
+          </section>
+          <section>
+       <a class="a-word" id="a-password2">새 비밀번호확인</a>
+        <input
+            type="text"
+            id="password2"
+          />
+          </section>
           <input
             type="button"
-            name="OK"
-            value="확인"
-            onclick ="return windowout()"
+            id="Updatepassword"
+            name="Updatepassword"
+            value="비밀번호 변경"
+            onclick ="return checkFindEmail()"
           />
       </form>
     </div>
 </body>
-<script>
-function windowout(){
-	window.close();
-}
-</script>
 </html>

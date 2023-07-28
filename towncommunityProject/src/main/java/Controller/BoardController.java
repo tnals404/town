@@ -172,15 +172,26 @@ public class BoardController { //안휘주 작성
 	//photoBoard 선택된 게시물 조회&조회수증가&댓글,대댓글 조회
 	//@RequestMapping("/photoboarddetail")
 	@RequestMapping("/boarddetail")
-	public ModelAndView photoboarddetail(int bi, @RequestParam(value="page", required=false, defaultValue="0" ) int page, HttpSession session) {
+	public ModelAndView photoboarddetail(int bi, @RequestParam(value="page", required=false, defaultValue="0" ) int page, HttpSession session) {		
+		int board_id = bi;
 		
 		ModelAndView signin = new ModelAndView();
 		if (session.getAttribute("member_id") == null) {
 			signin.setViewName("/Signin");
 			return signin;
 		}
-		
-		int board_id = bi;
+		//보드 존재여부 판단
+		int boardCnt = service.existBoard(board_id);
+		//보드 없으면
+		if (boardCnt == 0) {
+			ModelAndView exist = new ModelAndView();
+			exist.addObject("bi", board_id);
+			exist.addObject("boardCnt", boardCnt);
+			exist.setViewName("boardExistResult");
+			return exist;
+		}
+		//보드 있으면
+		else {
 		BoardDTO dto = service.updateViewcntAndGetDetail(board_id);
 		//글쓴사람 정보
 		MemberDTO writerDto = service.boardWriterProfile(dto.getWriter());
@@ -258,7 +269,7 @@ public class BoardController { //안휘주 작성
 		mv.addObject("gohresult", gohresult );
 		mv.setViewName("photoBoardDetail3");
 		return mv;	
-		
+		}//else
 	}
 		
 	//좋아요 추가 삭제
@@ -419,16 +430,13 @@ public class BoardController { //안휘주 작성
 			return mv;			
 		}
 		
-		//존재하는 글인지 아닌지 판단
-		@RequestMapping("/existBoard")
-		public ModelAndView existBoard(int bi) {
-			int result = service.existBoard(bi);
+	  	//신고 폼 
+		@RequestMapping("/reportForm")
+		public ModelAndView reportForm () {
 			ModelAndView mv = new ModelAndView();
-			mv.addObject("bi", bi);
-			mv.addObject("boardCnt", result);
-			mv.setViewName("boardExistResult");
-			return mv;		
-		};
-		
+			mv.setViewName("reportForm");
+			return mv;			
+		}
+				
 		
 }//class

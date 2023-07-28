@@ -17,33 +17,43 @@ public class SignServiceimple implements SignService{
 	@Autowired
 	SignDAO dao;
 	
+	@Override
 	public int insertMember(MemberDTO memberDTO) {
 		return dao.insertMember(memberDTO);
 	}
+	@Override
 	public int dupliIDcheck(String member_id) {
 		return dao.dupliIDcheck(member_id);
 	}
+	@Override
 	public int dupliEmailcheck(String email) {
 		return dao.dupliEmailcheck(email);
 	}
+	@Override
 	public int dupliFindEmailcheck(String member_id,String email) {
 		return dao.dupliFindEmailcheck(member_id,email);
 	}
+	@Override
 	public int LoginMember(HashMap<String, ?> map) {
 		return dao.LoginMember(map);
 	}
+	@Override
 	public MemberDTO MyInfo(String member_id) {
 		return dao.MyInfo(member_id);
 	}
+	@Override
 	public int updatemember(MemberDTO MemberDTO) {
 		return dao.updatemember(MemberDTO);
 	}
+	@Override
 	public int Findpwupdate(MemberDTO MemberDTO) {
 		return dao.Findpwupdate(MemberDTO);
 	}
+	@Override
 	public int deletememberinsert(HashMap<String, ?> map) {
 		return dao.deletememberinsert(map);
 	}
+	@Override
 	public int deletemember(String member_id) {
 		return dao.deletemember(member_id);
 	}

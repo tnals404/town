@@ -338,12 +338,12 @@
 	resize: none;
 	border : none;
 }
-#comment_img_preview {
+/* #comment_img_preview {
 	margin-left : 10px;
 	margin-bottom : 10px;
 	width : 80px; height : 80px;
 	display : none;
-}
+} */
 #comment_img_upload { /*댓글 이미지첨부쪽 css*/
 	margin-left : 10px;
 }
@@ -372,13 +372,13 @@
 	resize: none;
 	border : none;
 }
-.recomment_img_preview, .comment_update_img_preview {
+/* .recomment_img_preview, .comment_update_img_preview {
 	margin-left : 10px;
 	margin-bottom : 10px;
 	width : 70px; height : 70px;
-	/* border : 1px solid black; */
+	border : 1px solid black;
 	display : none;
-}
+} */
 .recomment_img_upload { /*댓글 이미지첨부쪽 css*/
 	margin-left : 10px;
 }
@@ -434,8 +434,8 @@
 	display : none;
 }
 
-/*멤버 id 누르면 나오는 채팅하기 버튼 관련*/ 
-.chatTo_btn, .myInfo_btn {
+/*멤버 id 누르면 나오는 버튼들 관련*/ 
+.chatTo_btn, .myInfo_btn, .yourInfo_btn {
 	width:70px; height : 20px;
 	font-size : 13px;
 	border : none;
@@ -443,7 +443,7 @@
 	cursor: pointer;
 	margin : 1px;
 }
-.chatTo_btnBox, .myInfo_btnBox {
+.myInfo_btnBox {
 	display : none;
 	background-color : white;
 	border : 1px solid black;
@@ -454,37 +454,41 @@
 	position: absolute;
 	margin-top : 55px;
 	margin-left : 35px;
+	font-size : 13px;
 }
-.chatToCom_btnBox {
+.yourInfo_btnBox {
 	display : none;
 	background-color : white;
 	border : 1px solid black;
 	text-align: center;
-	padding : 5px;
+	padding : 3px;
 	width : 70px;
-	height : 20px;
+	/* height : 45px; */
 	position: absolute;
-	margin-top : 50px;
-	margin-left : 15px;
+	margin-top : 80px;
+	margin-left : 55px;
+	font-size : 13px;
+	justify-content: center;
+	align-items: center;
 }
+
 #oneboard_writer, .comment_writer, .recomment_writer {
 	cursor: pointer;	
 }
 
-/* #cmt_imgPreview_box {
+#cmt_imgPreview_box, .recmt_imgPreview_box, .cmt_update_imgPreview_box {
 	display : flex;
 	height : 80px;
-	margin-left : 10px;
 	margin-bottom : 10px;
 	display : none;
-	border : 1px solid black;
 }
-#delete_photo{
+#delete_photo, .recmt_delete_photo, .cmt_update_delete_photo {
 	width : 10px; height : 10px;
+	margin-left : 5px;
 	cursor: pointer;
 }
-#comment_img_preview {
+#comment_img_preview, .recomment_img_preview, .comment_update_img_preview {
+	margin-left : 10px;
 	width : 80px; height : 80px;
-	border : 1px solid black;
-	display : none;
-} */
+	/* display : none; */
+}

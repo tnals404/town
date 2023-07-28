@@ -96,13 +96,10 @@ margin-top:-7px;
 #address-2{
 	width:100px;
 }
-#pw2{
-	margin-top:-5px;
-}
 #update{
 	background-color :#182434;
 	color: white;
-	margin-top:10px;
+	margin-top:20px;
 	border : 1px solid #182434;
 	margin-bottom:20px;
 }
@@ -128,10 +125,4 @@ margin-top:-7px;
 }
 #a-address{
 	margin:38px 0 0 -50px;
-}
-#a-pw{
-	margin:38px 0 0 -90px;
-}
-#a-pw2{
-	margin:8px 0 0 -135px;
 }

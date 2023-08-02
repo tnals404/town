@@ -9,7 +9,14 @@ public class MessageDTO {
 	String member_id;
 	int chat_id;
 	String touser_id;
+	int isread;
 	
+	public int getIsread() {
+		return isread;
+	}
+	public void setIsread(int isread) {
+		this.isread = isread;
+	}
 	public String getTouser_id() {
 		return touser_id;
 	}

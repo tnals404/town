@@ -24,6 +24,8 @@ import Dto.BoardDTO;
 import Dto.MemberDTO;
 import Service.SignService;
 import ServiceImpl.hashService;
+import ch.qos.logback.core.model.Model;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -39,13 +41,15 @@ public class SignController {
 	@Value("${hash.bcrypt.number}")
 	private int HashNum;
 	
-	
+	@Value("${admin.role}")
+	int admin_role;
 	
 	
 	@RequestMapping("/")
-	public ModelAndView in() {
+	public ModelAndView in(HttpSession session) {
 		ModelAndView mv = new ModelAndView();
-		mv.setViewName("Signin");	
+		mv.setViewName("Signin");
+		session.invalidate();
 		return mv;
 	}
 	
@@ -55,16 +59,39 @@ public class SignController {
 		mv.setViewName("Signin");	
 		return mv;
 	}
+	@RequestMapping("/alert")
+	public ModelAndView alert() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("alert");	
+		return mv;
+	}
 	//로그인구현
 	@PostMapping("/Login")
 	public String loginprocess(String member_id, String password,HttpSession session) {
 		HashMap<String, Object> map = null;
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일 HH시mm분ss초");
 		MemberDTO my_info = Ss.MyInfo(member_id);
+		Date today = new Date();
+		Date date = my_info.getStopclear_date(); 
+		String stopdate = simpleDateFormat.format(date);
+		int compare = date.compareTo(today); 
 		if(my_info != null) {
+			if(compare>0) {
+				session.setAttribute("date", stopdate);
+				session.setAttribute("url", "/");
+				return "redirect:/alert";
+			}
 			if(hashService.matchesBcrypt(password, my_info.getPassword(), HashNum)) {
+				if (my_info.getMember_role()==admin_role) {
+					session.setAttribute("member_id",my_info.getMember_id());
+					session.setAttribute("town_id", my_info.getTown_id());
+					session.setAttribute("member_role", my_info.getMember_role());
+					return "redirect:/admin";
+				}
 				map = new HashMap<>();
 				session.setAttribute("member_id",my_info.getMember_id());
 				session.setAttribute("town_id", my_info.getTown_id());
+				session.setAttribute("member_role", my_info.getMember_role());
 				int plus_invite = my_info.getInvite_sum();
 				plus_invite += 1;
 				map.put("member_id", my_info.getMember_id());
@@ -137,15 +164,37 @@ public class SignController {
 		if (session.getAttribute("member_id") != null) {
 			
 		}
+		session.setAttribute("error_message", "");
 		mv.setViewName("Updatepassword");
 		return mv;
 	}
 	
+	@PostMapping("/Updatepassword2")
+	public String updatepassword2(MemberDTO MemberDTO,HttpSession session) {
+		
+		String my_id = session.getAttribute("member_id").toString();
+		MemberDTO my_info = Ss.MyInfo(my_id);
+		if(hashService.matchesBcrypt(MemberDTO.getNowpassword(), my_info.getPassword(), HashNum)) {
+			if(MemberDTO.getNowpassword().equals(MemberDTO.getPassword())) {
+				session.setAttribute("error_message", "현재비밀번호와 새 비밀번호가 같습니다.");
+			}
+			String password = MemberDTO.getPassword();
+			String hashPassword = hashService.encodeBcrypt(password, HashNum);
+			MemberDTO.setPassword(hashPassword);
+			MemberDTO.setMember_id(my_id);
+			Ss.Findpwupdate(MemberDTO);
+			return "/Updatepasswordend";
+		}
+		else {
+			session.setAttribute("error_message", "비밀번호를 확인해주세요");
+		}
+		return "/Updatepassword";
+	}	
 	
 	@PostMapping("/update")
 	public String updatemember(MemberDTO MemberDTO) {
 		Ss.updatemember(MemberDTO);	
-		return"redirect:/myinform";
+		return"redirect:/myPage";
 	}
 	//비밀번호 찾기 
 	@RequestMapping("/Findpassword")

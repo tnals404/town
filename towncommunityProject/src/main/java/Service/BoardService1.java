@@ -9,15 +9,23 @@ public interface BoardService1 { //김종인 작성
 	// 게시글 작성
 	int insertBoard(BoardDTO dto);
 	// 공지사항 작성
-	int insertNoticeBoard(List<BoardDTO> query);
+	List<Integer> getCurrentNoticeBoardId(HashMap<String, Object> noticemap);
+	int insertNoticeBoard(HashMap<String, Object> noticemap);
 	// 회원 동네 아이디 가져오기
 	int getMemberTownId(String member_id);
 	// 게시판 카테고리 선택시
-	int getTotalArticleCount(HashMap<String, ?> map);
-	List<BoardDTO> getPagingBoardlist(HashMap<String, ?> map);
+	int getTotalArticleCount(HashMap<String, Object> map);
+	List<BoardDTO> getPagingBoardlist(HashMap<String, Object> map);
 	// 게시판에서 검색시
-	int getBoardSearchCount(HashMap<String, ?> searchmap);
-	List<BoardDTO> getBoardSearchList(HashMap<String, ?> searchmap);
+	int getBoardSearchCount(HashMap<String, Object> searchmap);
+	List<BoardDTO> getBoardSearchList(HashMap<String, Object> searchmap);
+	// 관리자 페이지 공지사항 목록
+	int getNoticeCnt();
+	List<BoardDTO> getNoticeList(HashMap<String, Object> map);
+	String getNoticeTownIds(int board_id);
+	// 관리자 페이지 공지사항 검색시
+	int getNoticeSearchCnt(HashMap<String, Object> searchmap);
+	List<BoardDTO> getNoticeSearchList(HashMap<String, Object> searchmap);
 	// 회원 동네 아이디에 해당하는 동 이름 가져오기
 	String getMemberDongAddress(int member_town_id);
 	// 회원 프로필 사진 변경
@@ -26,4 +34,6 @@ public interface BoardService1 { //김종인 작성
 	boolean isAdmin(String member_id);
 	// 동네 이름 모두 가져오기(동네 아이디 오름차순으로)
 	List<String> getAllTownName();
+	// 글 작성시 포인트 관련 sql
+	boolean addMemberPointOrNot(HashMap<String, Object> pointmap);
 }

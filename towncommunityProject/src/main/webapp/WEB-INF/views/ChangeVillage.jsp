@@ -118,7 +118,7 @@ $(document).ready(function() {
 	// 전역 변수
     let board = "/basicBoard"; // 글 or 사진 게시판
     let ctgy = "?ctgy=${boardName}"; // 게시판 카테고리
-    let ti = "&ti=${town_id}"; // 동네 아이디
+    let ti = "&ti=${ti}"; // 동네 아이디
 
 	// 게시판 소분류 클릭시
 	$("li.innerMenu").on("click", function(e) {

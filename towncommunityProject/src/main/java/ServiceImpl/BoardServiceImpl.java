@@ -12,6 +12,7 @@ import Dto.BoardDTO;
 import Dto.CommentDTO;
 import Dto.GoodHateDTO;
 import Dto.MemberDTO;
+import Dto.ReportDTO;
 import Pagination.Pagination;
 import Pagination.PagingResponse;
 import Pagination.SearchDTO;
@@ -185,5 +186,7 @@ public class BoardServiceImpl implements BoardService { //안휘주 작성
   	public int existBoard(int board_id) {
   		return dao.existBoard(board_id);
   	}
+  	
+
   	
 }//class

@@ -122,6 +122,7 @@
             class="update"
             id="update"
             value="내정보 수정"
+            onclick ="return check()"
           />
       </form>
     </div>

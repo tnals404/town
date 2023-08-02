@@ -81,8 +81,8 @@ div.ql-toolbar {
 
 .ql-editor img {
 	margin: 0px;
-	width: 50%;
-	height: 50%;
+	width: 500px;
+	height: auto;
 }
 
 #place_center_align {

@@ -30,4 +30,5 @@ public interface SignDAO {
 	List<BoardDTO> getMycommentPagingBoardlist(HashMap<String, ?> map);
 	int getMygoodArticleCount(HashMap<String, ?> map);
 	List<BoardDTO> getMygoodPagingBoardlist(HashMap<String, ?> map);
+	public int admincnt();
 }

@@ -7,6 +7,7 @@ import Dto.BoardDTO;
 import Dto.CommentDTO;
 import Dto.GoodHateDTO;
 import Dto.MemberDTO;
+import Dto.ReportDTO;
 import Pagination.PagingResponse;
 import Pagination.SearchDTO;
 
@@ -56,4 +57,6 @@ public interface BoardService { //안휘주 작성
   	
   	//글 존재여부
   	public int existBoard(int board_id);
+
+  	
 }

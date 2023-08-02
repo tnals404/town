@@ -44,6 +44,7 @@ public class MainController {
 		String profile = service.profile((String)session.getAttribute("member_id")).getProfile_image();
 		session.setAttribute("profile", profile);
 		TownDTO town = service.townView(ti); 
+		session.setAttribute("town_name", town.getTown_name());
 		List<BoardDTO> popular = service.popularArticles(ti);
 		List<BoardDTO> news = service.villageNews(ti);
 		List<BoardDTO> placeOfMeeting = service.placeOfMeeting(ti);
@@ -70,7 +71,7 @@ public class MainController {
 		if(youKnow != null) {
 			Document doc3 = Jsoup.parse(youKnow.getBoard_contents());
 			youKnow.setBoard_contents(doc3.text());	
-		}	
+		}
         try {
             String url = "https://search.naver.com/search.naver?query="+town.getTown_name()+"날씨";
             Document doc = Jsoup.connect(url).get();
@@ -140,6 +141,12 @@ public class MainController {
 		int town_id = (int)session.getAttribute("town_id");
 		long resultCount =  service.getContentCountByKeyword(map);
 		List<BoardDTO> result =  service.getContentByKeyword(map);
+			for(BoardDTO data : result) {
+				if(data.getBoard_contents() != null) {
+					Document doc3 = Jsoup.parse(data.getBoard_contents());
+					data.setBoard_contents(doc3.text());	
+				}
+			}			
 		mv.addObject("keyword",keyword);
 		mv.addObject("resultCount",resultCount);
 		mv.addObject("result",result);

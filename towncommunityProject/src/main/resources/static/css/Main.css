@@ -105,6 +105,7 @@ html.open {
   -webkit-transition: All 0.2s ease;
   -moz-transition: All 0.2s ease;
   -o-transition: All 0.2s ease;
+  min-height:636px;
    
 }
 
@@ -144,11 +145,20 @@ html.open {
 	font-weight : normal;
 }
 
+@media (max-height: 900px) {
+.outerMenu {
+	font-size : 1.3rem;
+}
+.innerMenu {
+	font-size : 1.1rem;
+}
+}
+
 .wrapper{
 	display: flex; margin-top: 10px;
 }
 .firstBox{
-	border-right:1px solid #182434; width:20%; height:1300px;
+	border-right:1px solid #182434; width:20%; height:1400px;
 }
 .firstBox .title{
 	width:90%;padding:10px 0; margin: 0 auto; text-align: center; border-top:2px solid #182434; border-bottom:2px solid #182434;

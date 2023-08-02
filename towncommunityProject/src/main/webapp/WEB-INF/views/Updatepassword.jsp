@@ -30,15 +30,16 @@
       <section>	
       <a class="a-word" id="a-id">현재비밀번호</a>
         <input
-            type="text"
+            type="password"
             id="nowpassord" 
             name="nowpassword"     
           />
           </section>
+          <div><%=session.getAttribute("error_message")%></div>
           <section>
       <a class="a-word" id="a-password">새 비밀번호</a>
         <input
-            type="text"
+            type="password"
             id="password"
             name="password"
           />
@@ -47,24 +48,24 @@
             id="id2"
             name="member_id"
             value="${my_info.member_id}"
-            readonly
           />
           </section>
           <section>
        <a class="a-word" id="a-password2">새 비밀번호확인</a>
         <input
-            type="text"
+            type="password"
             id="password2"
           />
           </section>
           <input
-            type="button"
+            type="submit"
             id="Updatepassword"
             name="Updatepassword"
             value="비밀번호 변경"
-            onclick ="return checkFindEmail()"
+            onclick="return check()"
           />
       </form>
     </div>
 </body>
+<script src="/js/Updatepasswordcheck.js"></script>
 </html>

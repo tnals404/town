@@ -9,11 +9,18 @@ public class BoardDTO { //안휘주 작성
 	String board_name_inner, board_title, board_contents, board_preview, writing_time, update_time;
 	int good_cnt, hate_cnt, view_cnt;
 	String board_imgurl, board_videourl, board_fileurl, place_name, place_road_address, place_address, place_tel, place_lat, place_long, writer;
-	int town_id;
+	int town_id, sum;
 	String comment_writer, comment_contents, comment_time;
 	TownDTO town;
 	CommentDTO comment;
 	
+	
+	public int getSum() {
+		return sum;
+	}
+	public void setSum(int sum) {
+		this.sum = sum;
+	}
 	public String getComment_writer() {
 		return comment_writer;
 	}

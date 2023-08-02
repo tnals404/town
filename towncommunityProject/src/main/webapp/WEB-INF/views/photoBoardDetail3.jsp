@@ -39,7 +39,17 @@
 	color : gray;
 	margin-bottom:2px;
 }
-
+.groupChatBtn, #board_btns_open {
+	height : 30px;
+	font-size : 13px;
+	border : none;
+	background-color : transparent;	
+	cursor: pointer;
+}
+.groupChatBtn:hover, #board_btns_open:hover {
+	background-color : #6D829B;
+	color : white;			
+} 
 </style>
 <script>
 $(document).ready(function(){
@@ -220,7 +230,7 @@ $(document).ready(function(){
 				 					'comment_contents' : "삭제된 댓글입니다.",
 				 				},
 				 				success : function(response){
-				 					alert("댓글이 삭제(수정)되었습니다.");
+				 					alert("댓글이 삭제되었습니다.");
 				 					location.reload();
 				 				}, 
 				 				error : function(request, status, e) {
@@ -253,12 +263,6 @@ $(document).ready(function(){
 	        return ;
 	    }
 	}); //댓글 삭제
-	
-	//댓글 신고
-	$(".comment_blame_btn").on('click', function(){
-		 const commentId = $(this).parent().siblings(".comment_btns_open").attr('id');
-		 alert(commentId);		 
-	});//댓글 신고
 	
 	//답글 누르면 댓글form 열리게
 	$(".writeRecommentBtn").on("click", function(){
@@ -340,10 +344,10 @@ $(document).ready(function(){
  	$("#board_btns_open").on('click', function(){
  		const boardWriter = "${detaildto.writer}";	
  		let Bstatus1 = $(this).next("#board_btns_parentDiv").css('display');
-		let Bstatus2 = $(this).nextAll("#board_blameBtn_parentDiv").css('display');					 		
+		let Bstatus2 = $(this).nextAll("#board_blameBtn_parentDiv").css('display');	
 		if("${member_id}" == boardWriter) { //로그인 id와 글작성자가 같을때 수정,삭제버튼 출력
 			if(Bstatus1 == 'none')  {
-				$(this).next("#board_btns_parentDiv").fadeIn(200);				
+				$(this).next("#board_btns_parentDiv").fadeIn(200);							
 			}
 		 	else {
 				$(this).next("#board_btns_parentDiv").fadeOut(200);
@@ -802,10 +806,23 @@ $(document).ready(function(){
 	});//글 수정
 	
 	
-	//신고하기(글)
+	//글 신고
 	$("#board_blame_btn").on('click', function(){
-		open("/reportForm", "신고하기", "width=540px, height=530px, top=350px, left=800px, scrollbars=no");
+		let bi = "${detaildto.board_id}"
+		open("/boardReportForm?bi="+bi , "신고하기", "width=540px, height=530px, top=200px, left=800px, scrollbars=no");
 	});//글 신고
+	
+	//댓글 신고
+	$(".comment_blame_btn").on('click', function(){
+		 const commentId = $(this).parent().siblings(".comment_btns_open").attr('id');
+		open("/commentReportForm?ci="+commentId , "신고하기", "width=540px, height=530px, top=200px, left=800px, scrollbars=no");
+	});//댓글 신고
+	
+	//채팅생성(일단 bi값 넘기는것만 확인)
+	$("#open_groupChat_btn").on('click', function(){
+		let bi = "${detaildto.board_id}";
+		alert("board_id = " + bi);		
+	});
 	
 	
 });//ready
@@ -822,7 +839,19 @@ $(document).ready(function(){
 	<div id="board_onepage">
 		<div id="top_btns">
 			<input type=button id="backToList" value="목록">
-			<div id="board_btnbox" > 							
+			<div id="board_btnbox" >
+			<!-- 소모임 게시판만 채팅버튼 나오도록 -->
+			<c:if test="${boardName == '같이해요 소모임'}">
+				<c:choose>
+					<c:when test="${detaildto.writer == member_id }">										
+						<input type="button" id="open_groupChat_btn" class="groupChatBtn" value="채팅 생성" />
+					</c:when>
+					<c:otherwise>
+						<input type="button" id="join_groupChat_btn" class="groupChatBtn" value="채팅 참여" />
+					</c:otherwise>
+				</c:choose>
+			</c:if>
+			
 				<input type="button" id="board_btns_open" value="···" />
 				<div id="board_btns_parentDiv" >
 					<form action="boardUpdateForm" id="boardUpdateForm" method="post">

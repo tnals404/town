@@ -12,6 +12,7 @@
 		<typeAlias type="Dto.MemberDTO" alias="memberdto"/> 
 		<typeAlias type="Dto.TownDTO" alias="towndto"/> 
 		<typeAlias type="Dto.GoodHateDTO" alias="goodhatedto"/> 
+		<typeAlias type="Dto.ReportDTO" alias="reportdto"/> 
 	</typeAliases>
 	
 </configuration>

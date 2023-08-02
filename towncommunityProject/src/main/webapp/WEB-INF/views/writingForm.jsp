@@ -32,7 +32,7 @@
 				<option>사건, 사고 소식</option>
 				<option>오늘의 사진</option>
 				<option>같이 줄서요</option>
-				<option>같이 해요 소모임</option>
+				<option>같이해요 소모임</option>
 				<option>분실물센터</option>
 				<option>심부름센터</option>
 				<option>행사 소식</option>
@@ -52,7 +52,7 @@
 							<li class="place_info"></li>
 							<li class="place_info"></li>
 							<li class="place_info"></li>
-							<li class="place_info"></li>
+							<li class="place_info" style="display: none"></li>
 							<li class="place_info" style="display: none"></li>
 							<li class="place_info" style="display: none"></li>
 						</ul>
@@ -72,7 +72,7 @@
 <script>
 $(document).ready(function() {
 	// 에디터 placeholder 추가
-	$(".ql-editor").attr("data-placeholder", "게시글 내용을 입력해주세요! 파일 용량 제한은 5MB입니다.");
+	$(".ql-editor").attr("data-placeholder", "게시글 내용을 입력해주세요!\n파일 용량 제한은 5MB이고 한 게시글당 최대 10개까지 업로드할 수 있습니다.\n장소 추가는 하나만 가능합니다.");
 	
 	// 게시판에서 글 작성 페이지로 이동시 자동으로 게시판 소분류 선택
 	$("#board-name option").each(function(index, item) {
@@ -83,7 +83,8 @@ $(document).ready(function() {
 	
 	// 작성완료 버튼 클릭 이벤트
 	$("#write-btn").on("click", function() {
-		$(".ql-editor").append("<p></p>")
+
+		$(".ql-editor").append("<p></p>");
 		let board_name_inner = $("#board-name option:selected").val(); // 게시글 소분류
 		let board_title = $("#write-title").val(); // 게시글 제목
 		let board_contents = $("#quill_html").val(); // 게시글 내용
@@ -104,27 +105,27 @@ $(document).ready(function() {
 			place_long = $($(".place_info")[5]).text();
 		}
 		
+		// 이미지 폭 500px로 고정
+		let imgSize = ' style="width: 500px; height: auto;"';
+		let imgStr = '<img src="/display?fileName='
+		let imgIdx = board_contents.indexOf(imgStr);
+		while (true) {
+			if(imgIdx === -1) break;
+			board_contents = board_contents.slice(0, imgIdx + 4) + imgSize + board_contents.slice(imgIdx + 4);
+			imgIdx = board_contents.indexOf(imgStr, imgIdx + 1);
+		}
+		
 		// 만약 이미지가 하나 이상이면 첫번째 이미지 src 속성 board_imgurl에 저장 
 		if ($(".ql-editor img").length > 0) {
 			board_imgurl = $($(".ql-editor img")[0]).attr("src");
 		}	
 		
-		// board_contents에서 resize 속성 삭제
-		let removeStr = "resize: both; ";
-		let removeIdx = board_contents.indexOf(removeStr);
-		while(removeIdx > -1) {
-			board_contents = board_contents.replace(removeStr, "");
-			removeIdx = board_contents.indexOf(removeStr);
+		// 이미지를 10장 이상 추가하면 alert 띄우기
+		let imgTagIdx = $(".ql-editor img").length; // img 태그의 개수
+		if (imgTagIdx > 10) {
+			alert("사진은 최대 10개까지 업로드 가능합니다. 사진 개수를 조정해주세요.");
+			return;
 		}
-		
-		// .ql-editor img 태그 부모 p 태그에 style 속성이 없으면 #quill_html img에 style="width: 50%; height: auto; display: block;" 추가
-		let imgStrIdx = 0;
-		while(true) {
-			imgStrIdx = board_contents.indexOf("<p><img ", imgStrIdx);
-			if (imgStrIdx === -1) break;
-			board_contents = board_contents.slice(0, imgStrIdx + 2) + ' style="width: 50%; height: auto; display: block;"' + board_contents.slice(imgStrIdx + 2);
-			imgStrIdx++;
-		} //for
 		
 		$.ajax({
 			url: "/writingForm",
@@ -149,7 +150,11 @@ $(document).ready(function() {
 				if (response.insertResult === -1) {
 					alert("글 제목을 입력해주세요.");
 				} else if (response.insertResult === 1) {
-					alert("글 작성이 완료되었습니다.");
+					let alertResult = "글 작성이 완료되었습니다."; 
+					if (response.pointResult) {
+						alertResult += " 포인트 5점이 지급되었습니다.";
+					}
+					alert(alertResult);
 					if (board_name_inner === "오늘의 사진" || 
 							board_name_inner === "역대 당선작" || 
 							board_name_inner === "분실물센터") {
@@ -173,7 +178,7 @@ $(document).ready(function() {
 	$("#place-btn").on("click", function() {
 		if ("${param.ti}" === "${sessionScope.town_id}") {
 			window.name = "writingForm";
-			window.open('/kakaoMap?ti=${param.ti}', 'kakaoMap', 'width=855px, height=602px, top=0px, left=0px');
+			window.open('/kakaoMap?ti=${param.ti}', 'kakaoMap', 'width=900px, height=630px, top=400px, left=900px, scrollbars=no');
 		}
 	}); //onclick
 	
@@ -182,12 +187,6 @@ $(document).ready(function() {
 		$("#place_center_align").css("display", "none");
 	}); //onclick
 	
-	/*
-	// 추가된 장소를 클릭하면 네이버에 해당 장소 검색한 결과 페이지 새탭에 열기
-	$("#place_con").on("click", function() {
-		window.open("https://search.naver.com/search.naver?where=nexearch&sm=tab_jum&query=" + $($(".place_info")[0]).text());
-	});
-	*/
 }); //document ready
 
 //지도 이미지 넣기

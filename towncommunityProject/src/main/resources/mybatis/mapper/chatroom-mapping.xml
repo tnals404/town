@@ -16,6 +16,32 @@
 	</insert>
 	
 	<insert id="insertMessage" parameterType="messagedto">
-	INSERT INTO chat_message() VALUES (default, #{message_content}, default, #{member_id}, #{chat_id}, #{touser_id});
+	INSERT INTO chat_message() VALUES (default, #{message_content}, default, #{member_id}, #{chat_id}, #{touser_id}, default);
 	</insert>
+	
+	<insert id="createChatlist" parameterType="chatlistdto">
+	INSERT INTO chat_list(member_id, chat_id, to_id) VALUES (#{member_id}, #{chat_id}, #{to_id}); 
+	</insert>
+	
+	<select id="selectChatlist" parameterType="chatlistdto" resultType="chatlistdto">
+	SELECT * FROM chat_list where (member_id = #{member_id}) or (to_id = #{member_id});
+	</select>
+
+	<select id="countIsread" parameterType="messagedto">
+	SELECT COUNT(*) FROM chat_message where (chat_id = #{chat_id}) and (isread = 0);
+	</select>
+	
+	<select id="latestContent" parameterType="messagedto">
+	SELECT message_content FROM chat_message where (chat_id = #{chat_id})
+	order by message_sendAt DESC 
+	limit 1 offset 0;
+	</select>
+	
+	<update id="readMessage" parameterType="messagedto">
+	UPDATE chat_message SET isread = 1 where touser_id = #{member_id};
+	</update>
+	
+	<select id="selectChatid" parameterType="messagedto">
+	SELECT chat_id FROM chat_message where ((member_id = #{member_id}) and (touser_id = #{touser_id})) or ((member_id = #{touser_id}) and (touser_id = #{member_id}));
+	</select>	
   </mapper>

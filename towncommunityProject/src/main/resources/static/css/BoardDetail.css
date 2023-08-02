@@ -10,7 +10,7 @@
 #board_onepage > div {
 	/* border : 1px solid black; */
 	margin-bottom : 10px;
-		margin-left : 10px;
+	margin-left : 10px;
 	/* margin-right : 10px; */
 }
 #top_btns, #bottom_btns, #bottom_right, .recomment_bottom_btns, .recomment_bottom_right {
@@ -18,11 +18,12 @@
 	justify-content : space-between; 
 }
 #top_btns > input {
-		width:42px; height : 25px;
-		font-size : 15px;
-		border : none;
-		background-color : transparent;	
-		cursor: pointer;
+	width:50px; height : 30px;
+	line-height : 30px;
+	font-size : 14px;
+	border : none;
+	background-color : transparent;	
+	cursor: pointer;
 }
 	
 #top_btns > input:hover {
@@ -81,6 +82,10 @@
 	color : white;			
 }
 
+#board_btnbox{
+	position: relative;
+}
+
 #board_btns_open{
 		font-size : 15px;
 		border : none;
@@ -108,6 +113,7 @@
 	font-size : 13px;
 	justify-content: center;
 	align-items: center;
+	right: -30px;
 }
 
 #board_blameBtn_parentDiv {
@@ -121,6 +127,7 @@
 	font-size : 13px;
 	justify-content: center;
 	align-items: center;
+	right: -30px;
 }
 #oneboard_title {
 	font-size : 23px;
@@ -338,12 +345,6 @@
 	resize: none;
 	border : none;
 }
-/* #comment_img_preview {
-	margin-left : 10px;
-	margin-bottom : 10px;
-	width : 80px; height : 80px;
-	display : none;
-} */
 #comment_img_upload { /*댓글 이미지첨부쪽 css*/
 	margin-left : 10px;
 }
@@ -372,13 +373,6 @@
 	resize: none;
 	border : none;
 }
-/* .recomment_img_preview, .comment_update_img_preview {
-	margin-left : 10px;
-	margin-bottom : 10px;
-	width : 70px; height : 70px;
-	border : 1px solid black;
-	display : none;
-} */
 .recomment_img_upload { /*댓글 이미지첨부쪽 css*/
 	margin-left : 10px;
 }

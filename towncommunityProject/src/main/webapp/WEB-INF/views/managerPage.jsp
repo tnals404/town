@@ -72,9 +72,10 @@ $(document).ready(function() {
 				<thead>
 					<tr>
 						<th style="width: 7%;">아이디</th>
-						<th style="width: 13%;">이메일</th>
-						<th style="width: 35%;">주소</th>
+						<th style="width: 18%;">이메일</th>
+						<th style="width: 17%;">가입일</th>
 						<th style="width: 13%;">정지일</th>
+						<th style="width: 5%";">정지해제</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -108,5 +109,78 @@ $(document).ready(function() {
 		</div>	
 	</div>
 </div>
+
+<script>
+var currentPage = 1;
+var rowsPerPage = 20;
+
+$(document).ready(function() {
+    $("#myPage_name").click(function() {
+        loadMembers();
+        $("#board_page").show();  
+    });
+});
+$(document).on("click", ".pageNumBtn", function() {
+    var pageNum = $(this).val();
+    loadMembers(pageNum);
+});
+
+function loadMembers(pageNum) {
+    currentPage = pageNum || currentPage;
+
+    $.ajax({
+        url: "/admin/members?page=" + currentPage + "&size=" + rowsPerPage,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            $('#board-table > tbody').empty();
+
+            
+            if (Array.isArray(response)) {
+                response.forEach(function(member) {
+                    var row = $('<tr>');
+                    row.append($('<td>').text(member.member_id));    // 아이디
+                    row.append($('<td>').text(member.email));       // 이메일
+                    row.append($('<td>').text(member.signup_date));   // 가입일
+                    row.append($('<td>').text(member.stop_date));   // 정지일
+
+                    var unbanButton = $('<button>').text('정지해제').click(function() {
+                        unbanMember(member.member_id);
+                    });
+                    row.append($('<td>').append(unbanButton)); 
+
+                    $('#board-table').append(row);
+                });
+
+                $('#pagination').empty();
+                for (var i = 1; i <= response.totalPages; i++) {
+                    var button = $('<button>').text(i).val(i).addClass("pageNumBtn");
+                    if (i == currentPage) {
+                        button.css({"font-weight":"900"});
+                    }
+                    $('#pagination').append(button);
+                }
+            } else {
+                console.error('', response);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error(textStatus, errorThrown);
+        }
+    });
+}
+function unbanMember(memberId) {
+    $.ajax({
+        url: "/admin/unban/" + memberId,
+        type: 'POST',
+        success: function(response) {
+            loadMembers();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error(textStatus, errorThrown);
+        }
+    });
+}
+</script>
 </body>
 </html>

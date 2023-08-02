@@ -10,6 +10,7 @@ import Dto.BoardDTO;
 import Dto.CommentDTO;
 import Dto.GoodHateDTO;
 import Dto.MemberDTO;
+import Dto.ReportDTO;
 import Pagination.SearchDTO;
 
 @Mapper
@@ -97,5 +98,5 @@ public interface BoardDAO { //안휘주 작성
   	//글 존재여부
   	public int existBoard(int board_id);
   	
-  	
+
 }

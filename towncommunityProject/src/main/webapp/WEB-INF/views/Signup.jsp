@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="/css/signup.css" />
+<link rel="stylesheet" href="/css/Signup.css" />
     <title>동네일보</title>
     <script src="/js/jquery-3.6.4.min.js"></script>
     <link rel="short icon" href="#">

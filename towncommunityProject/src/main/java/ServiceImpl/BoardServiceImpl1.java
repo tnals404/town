@@ -1,5 +1,6 @@
 package ServiceImpl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,8 +25,13 @@ public class BoardServiceImpl1 implements BoardService1 { //김종인 작성
 	}
 	
 	@Override
-	public int insertNoticeBoard(List<BoardDTO> query) {
-		return dao.insertNoticeBoard(query);
+	public List<Integer> getCurrentNoticeBoardId(HashMap<String, Object> noticemap) {
+		return dao.getCurrentNoticeBoardId(noticemap);
+	}
+
+	@Override
+	public int insertNoticeBoard(HashMap<String, Object> noticemap) {
+		return dao.insertNoticeBoard(noticemap);
 	}
 	
 	@Override
@@ -34,23 +40,76 @@ public class BoardServiceImpl1 implements BoardService1 { //김종인 작성
 	}
 
 	@Override
-	public int getTotalArticleCount(HashMap<String, ?> map) {
+	public int getTotalArticleCount(HashMap<String, Object> map) {
 		return dao.getArticleCount(map);
 	}
 
 	@Override
-	public List<BoardDTO> getPagingBoardlist(HashMap<String, ?> map) {
+	public List<BoardDTO> getPagingBoardlist(HashMap<String, Object> map) {
 		return dao.getPagingBoardlist(map);
 	}
 
 	@Override
-	public int getBoardSearchCount(HashMap<String, ?> searchmap) {
+	public int getBoardSearchCount(HashMap<String, Object> searchmap) {
 		return dao.getBoardSearchCount(searchmap);
 	}
 
 	@Override
-	public List<BoardDTO> getBoardSearchList(HashMap<String, ?> searchmap) {
+	public List<BoardDTO> getBoardSearchList(HashMap<String, Object> searchmap) {
 		return dao.getBoardSearchList(searchmap);
+	}
+	
+	@Override
+	public int getNoticeCnt() {
+		return dao.getNoticeCnt();
+	}
+
+	@Override
+	public List<BoardDTO> getNoticeList(HashMap<String, Object> map) {
+		return dao.getNoticeList(map);
+	}
+
+	@Override
+	public String getNoticeTownIds(int board_id) {
+		return dao.getNoticeTownIds(board_id);
+	}
+
+	@Override
+	public int getNoticeSearchCnt(HashMap<String, Object> searchmap) {
+		String sort = String.valueOf(searchmap.get("sort"));
+		List<String> sortList = new ArrayList<>();
+		int result = 0;
+		if (sort.equals("board_title") || sort.equals("board_preview") || sort.equals("writer")) {
+			sortList.add(sort);
+			searchmap.put("sortList", sortList);
+			result = dao.getNoticeSearchCnt1(searchmap);
+		} else if (sort.equals("town_id")) {
+			result = dao.getNoticeSearchCnt2(searchmap);
+		} else if (sort.equals("town_name")) {
+			result = dao.getNoticeSearchCnt3(searchmap);
+		} else if (sort.equals("board_all")){
+			result = dao.getNoticeSearchCnt4(searchmap);
+		}
+		return result;
+	}
+
+	@Override
+	public List<BoardDTO> getNoticeSearchList(HashMap<String, Object> searchmap) {
+		String sort = String.valueOf(searchmap.get("searchsort"));
+		List<String> sortList = new ArrayList<>();
+		List<BoardDTO> result = null;
+		if (sort.equals("board_title") || sort.equals("board_preview") || sort.equals("writer")) {
+			sortList.add(sort);
+			searchmap.put("sortList", sortList);
+			result = dao.getNoticeSearchList1(searchmap);
+		} else if (sort.equals("town_id")) {
+			result = dao.getNoticeSearchList2(searchmap);
+		} else if (sort.equals("town_name")) {
+			result = dao.getNoticeSearchList3(searchmap);
+		} else if (sort.equals("board_all")){
+			result = dao.getNoticeSearchList4(searchmap);
+		}
+		return result;
 	}
 
 	@Override
@@ -74,6 +133,17 @@ public class BoardServiceImpl1 implements BoardService1 { //김종인 작성
 	@Override
 	public List<String> getAllTownName() {
 		return dao.getAllTownName();
+	}
+
+	@Override
+	public boolean addMemberPointOrNot(HashMap<String, Object> pointmap) {
+		int writeBoardCnt = dao.getWriteBoardCnt(pointmap);
+		if (writeBoardCnt < 10) {
+			dao.insertWriteBoardPoint(pointmap);
+			dao.updateMemberPoint(pointmap);
+			return true;
+		} 
+		return false;
 	}
 
 	

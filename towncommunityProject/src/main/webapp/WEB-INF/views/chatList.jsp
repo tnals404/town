@@ -1,10 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
    <meta charset="UTF-8">
   <title>채팅방 목록창</title>
+  <script src="/js/jquery-3.6.4.min.js"></script>
   <style>
     /* 전체 목록창 스타일 */
     
@@ -27,7 +29,7 @@
     
     .chat-container {
       width: 600px;
-      height: 500px;
+      height: 700px;
       border: 1px solid #ccc;
       overflow: hidden;
     }
@@ -38,11 +40,13 @@
       color : white;
       padding: 10px;
       font-weight: bold;
+      display: flex;
+      justify-content: space-between;
     }
     
     /* 전체 목록창 내부 스타일 */
     .chat-list {
-      height: 100%;
+      height: 300px;
       overflow-y: scroll;
       padding: 10px;
       scrollbar-width: none; /* Firefox 용 */
@@ -62,6 +66,7 @@
       margin-bottom: 10px;
       border-radius: 5px;
       background-color: #dcd9d8;
+      cursor: pointer;
     }
     
     /* 채팅방 아이템 썸네일 이미지 스타일 */
@@ -91,45 +96,67 @@
       line-height: 1.4;
       color: #666;
     }
+    
+    .chat-item .totalisread {
+		display : flex;
+		width: 25px;
+		height: 25px;
+		border-radius: 50%;
+		background-color : red;
+		color : white;
+		justify-content : center;
+  		align-items : center;
+		margin-right : 10px;
+    }
   </style>
-  <script>
-    window.addEventListener('DOMContentLoaded', function() {
-      var chatList = document.querySelector('.chat-list');
-      chatList.addEventListener('mouseover', function() {
-        chatList.style.overflowY = 'hidden';
-      });
-      chatList.addEventListener('mouseout', function() {
-        chatList.style.overflowY = 'scroll';
-      });
+<script>
+  $(document).ready(function() {
+    var chatList = $('.chat-list');
+    
+    chatList.mouseover(function() {
+      chatList.css('overflow-y', 'hidden');
     });
-  </script>
+
+    chatList.mouseout(function() {
+      chatList.css('overflow-y', 'scroll');
+    });
+    
+    $(".chat-item").on("click", function() {
+    	var toId = $(this).data("to-id");
+    	var memberId = $(this).data("member-id");
+    	var loginId = '<%= (String)session.getAttribute("member_id") %>';
+    	if (toId == loginId) {
+    		window.location.href = '/chatstart?touser_id=' + encodeURIComponent(memberId);
+    	}
+    	else {
+        	window.location.href = '/chatstart?touser_id=' + encodeURIComponent(toId);
+    	}
+    });
+  });
+</script>
 </head>
 <body>
   <div class="chat-container">
-    <div class="header">채팅방 목록</div>
-    <div class="chat-list">
-      <div class="chat-item">
-        <img class="thumbnail" src="avatar1.jpg" alt="Avatar">
-        <div class="info">
-          <div class="title">채팅방 1</div>
-          <div class="message">안녕하세요!</div>
-        </div>
-      </div>
-      <div class="chat-item">
-        <img class="thumbnail" src="avatar2.jpg" alt="Avatar">
-        <div class="info">
-          <div class="title">채팅방 2</div>
-          <div class="message">방문해 주셔서 감사합니다.</div>
-        </div>
-      </div>
-      <div class="chat-item">
-        <img class="thumbnail" src="avatar3.jpg" alt="Avatar">
-        <div class="info">
-          <div class="title">채팅방 3</div>
-          <div class="message">잘 지내시나요?</div>
-        </div>
-      </div>
+    <div class="header">
+    	<div>1:1 채팅</div>
+    	<button type="button" onclick="location.href='/main'">메인으로 돌아가기</button>
     </div>
+    <div class="chat-list">
+	  <c:forEach items="${list}" var="list">
+	  	<div class="chat-item" data-to-id="${list.to_id}" data-member-id="${list.member_id}">
+	  		<img class="thumbnail" src="img/기본프로필사진.png">
+	  		<div class="info">
+	  			<div class="title">${list.to_id}</div>
+	  			<div class="message">${list.latest_content}</div>
+	  		</div>
+	  		<c:if test="${list.totalisread != 0}">
+	  			<div class="totalisread">${list.totalisread}</div>
+	  		</c:if>
+	  	</div>
+	  </c:forEach>
+    </div>
+    <div class="header">그룹 채팅</div>
+    <div class="chat-list"></div>
   </div>
 </body>
 </html>

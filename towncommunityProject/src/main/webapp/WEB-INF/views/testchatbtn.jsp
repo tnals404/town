@@ -32,9 +32,6 @@ $(document).ready(function() {
 </head>
 <body>
 <c:forEach items="${list}" var="list">
-<h1>${list.member_id}</h1>
-</c:forEach>
-<c:forEach items="${list}" var="list">
 <h2>${list.message_content }</h2>
 </c:forEach>
 <button onclick="document.location.href='/chatstart?touser_id=abc'">채팅하기</button>

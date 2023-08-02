@@ -82,7 +82,9 @@
 			<c:forEach items="${popular }" var="popular">
 			<div class="contentBox">
 				<p class="contentTitle">${popular.board_title }</p>
-				<img src="${popular.board_imgurl }" width=274 />
+				<div style="position: relative; width:274px; height:274px; overflow: hidden; background: white;">
+					<img style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%);" src="${popular.board_imgurl }" width=274 />
+				</div>
 				<div class="content">
 				${popular.board_contents }
 				</div>
@@ -91,9 +93,9 @@
 			</c:forEach>
 		</div>
 		<div class="secondBox">
-			<div class="photoFrame" style="height:482px;">
+			<div class="photoFrame" style="height:482px; position: relative; width:864px; overflow: hidden; background: white;">
 				<c:if test="${photo != null}">
-					<img src="${photo.board_imgurl }" height=481/>
+					<img src="${photo.board_imgurl }" style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%);" height=481/>
 				</c:if>
 				<c:if test="${photo == null}">
 					<img src="img/displayimg.png" height=481/>
@@ -242,7 +244,9 @@
 				</c:if>
 				<c:if test="${youKnow.board_imgurl != null}">
 					<p class="subtitle">카페 전경</p>
-					<img src="${youKnow.board_imgurl}" width=290 />
+					<div style="position: relative; width:274px; height:274px; overflow: hidden; background: white">
+						<img style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); background: white;" src="${youKnow.board_imgurl }" width=274 />
+					</div>
 				</c:if>
 				<c:if test="${youKnow.place_lat != null && youKnow.place_long != null}">
 					<p class="subtitle">카페 위치</p>
@@ -266,7 +270,7 @@ $(document).ready(function() {
 	// 전역 변수
     let board = "/basicBoard"; // 글 or 사진 게시판
     let ctgy = "?ctgy=${boardName}"; // 게시판 카테고리
-    let ti = "&ti=${town_id}"; // 동네 아이디
+    let ti = "&ti=${ti}"; // 동네 아이디
 
 	// 게시판 소분류 클릭시
 	$("li.innerMenu").on("click", function(e) {

@@ -6,6 +6,29 @@ a {
 	text-decoration: none;
 }
 
+td {
+	position: relative;
+}
+
+.include {
+	position: absolute;
+	top: 10px;
+	width: 19px;
+	height: 19px;
+	opacity: 0.4;
+}
+
+.include:first-of-type {
+	right: 10px;
+}
+
+.include:nth-of-type(2) {
+	width: 17px;
+	height: 17px;
+	top: 11px;
+	right: 35px;
+}
+
 /* 게시글 목록 */
 #board_name {
 	display: flex;
@@ -37,29 +60,10 @@ a {
 }
 
 #board-table th:nth-of-type(1) {
-	width: 6%;
 	border-left: none;
 }
 
-#board-table th:nth-of-type(2) {
-	width: 25%;
-}
-
-#board-table th:nth-of-type(3) {
-	width: 39%;
-}
-
-#board-table th:nth-of-type(4) {
-	width: 12%;
-}
-
 #board-table th:nth-of-type(5) {
-	width: 12%;
-}
-
-
-#board-table th:nth-of-type(6) {
-	width: 6%;
 	border-right: none;
 }
 
@@ -80,9 +84,9 @@ a {
   padding-left: 8px;
   padding-right: 8px;
 }
-
-#board-table tr>td:nth-of-type(5) {
-	font-size: 17px;
+#board-table tr>td:nth-of-type(2) {
+	padding-left: 30px;
+	padding-right: 65px;
 }
 
 #board table td a {
@@ -128,10 +132,12 @@ a {
 #top_btnBox{
 	width : 97%;
 	display : flex;
-	justify-content:flex-end;
+	justify-content:space-between;
 	margin-bottom : 5px;
+	padding-left: 50px;
+	padding-right: 30px;
 }
-#writeBtn {
+#writeBtn, #order_btnBox button {
 	width:70px; height : 35px;
 	font-size : 13px;
 	border : 1px solid #8D98AA;
@@ -139,9 +145,14 @@ a {
 	background-color : transparent;	
 	cursor: pointer;
 }
-#writeBtn:hover {
+#writeBtn:hover, #order_btnBox button:hover {
 	background-color : #6D829B;
 	color : white;			
+}
+
+#order_btnBox button.activated {
+	background-color : #6D829B;
+	color : white;	
 }
 
 /* 게시판 검색창 부분 */

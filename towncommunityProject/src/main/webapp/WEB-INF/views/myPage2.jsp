@@ -151,7 +151,7 @@ $(document).ready(function() {
 <script>
 	//비밀번호 변경 클릭
 	function updatepasswordopen() {
-  	var win =window.open("/Updatepassword", "PopupWin", "width=790,height=380");
+  	var win =window.open("/Updatepassword", "PopupWin", "width=980,height=500");
  	win;
 	}
 </script>

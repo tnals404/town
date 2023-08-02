@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,7 +9,8 @@
 <script src="/js/jquery-3.6.4.min.js"></script>
 <script>
 $(document).ready(function() {
-    var websocket;
+    
+	var websocket;
     websocket = new WebSocket("ws://localhost:8091/chatws");
     websocket.onopen = function() {
         console.log("웹소캣 연결 성공");
@@ -20,24 +22,38 @@ $(document).ready(function() {
 
     websocket.onmessage = function(event) {
         console.log("웹소캣 수신 성공");
-        var serverData = event.data;
+        var data = JSON.parse(event.data);
         
-        var messageReceived = $('<div>').addClass("message received");
-        messageReceived.html('<div class="bubble">' + serverData + '</div>');
+        var message = data.message;
+        var sender = data.sender;
+        var user = '<%= (String)session.getAttribute("member_id") %>';
         
-        var chatArea = $("#chatArea");
-        chatArea.append(messageReceived);
+        if (sender == user) {
+        	 var messageSent = $('<div>').addClass("message sent");
+             messageSent.html('<div class="bubble">' + message + '</div>');
+
+             var chatArea = $("#chatArea");
+             chatArea.append(messageSent);	
+        }
         
-        // Scroll to the bottom
-        chatArea.scrollTop(chatArea.prop("scrollHeight"));
+        else {
+	        var messageReceived = $('<div>').addClass("message received");
+	        messageReceived.html('<div class="bubble">' + message + '</div>');
+	        
+	        var chatArea = $("#chatArea");
+	        chatArea.append(messageReceived);
+        }
+        
     };
 
     $("#exitButton").on('click', function() {
         websocket.close();
+        window.location.href = "/chatlist";
     });
 
     $("#exitButton_dropdown").on('click', function() {
         websocket.close();
+        window.location.href = "/chatlist";
     });
     
     $("#sendButton").on('click', function() {
@@ -51,30 +67,45 @@ $(document).ready(function() {
     });
 
     function sendMessage() {
-        var messageInput = $("#messageInput");
-        var messageContent = messageInput.val();
+            var message = $("#messageInput").val();
+            var sender = '<%= (String)session.getAttribute("member_id") %>';
+            var pathname = $(location).attr('search');
+            var touser_id = pathname.substring("?touser_id=".length);
+            var data = {
+                    message: message,
+                    sender: sender
+                };
+                
+            websocket.send(JSON.stringify(data));
+          
+            $.ajax({
+                type: "POST",
+                url: "/sendChat",
+                data: { message: message,
+                		touser_id: touser_id
+                	},
+                dataType: "text",
+                success: function(response) {
+                    console.log("Message sent successfully!");
+                    location.reload();
+                    $("#messageArea").val("");
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error sending message:", error);
+                }            
+            });
 
-        if (messageContent.trim() !== "") {
-            var messageSent = $('<div>').addClass("message sent");
-            messageSent.html('<div class="bubble">' + messageContent + '</div>');
-
-            var chatArea = $("#chatArea");
-            chatArea.append(messageSent);
-            
             // Scroll to the bottom
             chatArea.scrollTop(chatArea.prop("scrollHeight"));
             
-            websocket.send(messageContent);
+
         }
-        
-        // Clear the input field
-        messageInput.val("");
-    }
     
     $("#setting_btn").click(function() {
         $("#setting_dropdown_list").toggle();
   });
 });
+
 </script>
 
 <style>
@@ -234,16 +265,21 @@ body {
 	        	<li id="exitButton_dropdown">채팅창 나가기</li>
 	        </ul>
 		<div class="chat-area" id="chatArea">
-			<div class="message received">
-				<div class="bubble">안녕하세요!</div>
-			</div>
-			<div class="message sent">
-				<div class="bubble">안녕하세요! 반갑습니다.</div>
-			</div>
-			<div class="message received">
-				<div class="bubble">어떤 일로 도움이 필요하신가요?</div>
-			</div>
 			<!-- 채팅 메시지 추가 -->
+			<c:forEach items="${list}" var="list">
+				<c:choose>
+					<c:when test="${list.member_id eq sessionScope.member_id}">
+						<div class = "message sent">
+							<div class="bubble">${list.message_content }</div>
+						</div>
+					</c:when>
+					<c:otherwise>
+						<div class = "message received">
+							<div class="bubble">${list.message_content }</div>
+						</div>
+					</c:otherwise>
+				</c:choose>
+			</c:forEach>
 		</div>
 		<div class="input-area">
 			<button style=" margin-left:0; margin-right:10px;"><img style="height: 22px; margin-top : 3px;" src="img/이미지버튼.png"></button>

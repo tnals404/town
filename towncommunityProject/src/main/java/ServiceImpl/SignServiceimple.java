@@ -81,5 +81,9 @@ public class SignServiceimple implements SignService{
 	public List<BoardDTO> getMygoodPagingBoardlist(HashMap<String, ?> map) {
 		return dao.getMygoodPagingBoardlist(map);
 	}
+	@Override
+	public int admincnt() {
+		return dao.admincnt();
+	}
 
 }

@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="/css/signin.css" />
+<link rel="stylesheet" href="/css/Signin.css" />
     <title>동네일보</title>
     <script src="/js/jquery-3.6.4.min.js"></script>
     

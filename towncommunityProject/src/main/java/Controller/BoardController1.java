@@ -32,6 +32,9 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class BoardController1 { //김종인 작성
 	
+	static final int postCntPerPage = 20; // 한 페이지에 표시할 게시글 수
+	static final int pageCntPerPage = 10; // 한번에 표시할 페이지 개수
+	
 	@Autowired
 	@Qualifier("boardServiceImpl1")
 	BoardService1 service;
@@ -40,26 +43,36 @@ public class BoardController1 { //김종인 작성
 	@GetMapping("/basicBoard")
 	public ModelAndView basicBoard(
 			HttpSession session, 
-			@RequestParam(value="ti", required=false, defaultValue="")String ti, 
+			@RequestParam(value="ti", required=false, defaultValue="") String ti, 
 			@RequestParam(value="ctgy", required=false, defaultValue="공지사항") String ctgy, 
-			@RequestParam(value="sort", required=false, defaultValue="")String sort,
+			@RequestParam(value="sort", required=false, defaultValue="") String sort,
 			@RequestParam(value="keyword", required=false, defaultValue="") String keyword,
+			@RequestParam(value="ordercol", required=false, defaultValue="최신순") String ordercol,
 			@RequestParam(value="page", required=false, defaultValue="1") int page
 	) {
 		ModelAndView mv = new ModelAndView();
 		
-		// session으로 전달된 회원 아이디, 회원 동네 아이디
-		String member_id = String.valueOf(session.getAttribute("member_id"));
+		// session으로 전달된 회원 동네 아이디
 		String session_town_id = String.valueOf(session.getAttribute("town_id"));
-		
 		// ti 파라미터가 입력되지 않으면 회원 동네 아이디로 초기화
-		if (ti.equals("")) { 
-			ti = session_town_id;
+		if (ti.equals("")) ti = session_town_id;
+		// page 파라미터가 1보다 작은 경우 1로 초기화
+		if (page < 1) page = 1;
+		
+		// 정렬 기준
+		if (ordercol.equals("최신순")) {
+			ordercol = "writing_time";
+		} else if (ordercol.equals("좋아요")) {
+			ordercol = "good_cnt";
+		} else if (ordercol.equals("조회수")) {
+			ordercol = "view_cnt";
+		} else {
+			ordercol = "writing_time";
 		}
 		
 		// session으로 전달된 회원 아이디가 null이면 로그인 화면으로 이동
 		if (session.getAttribute("member_id") == null) {
-			mv.setViewName("/Signin");
+			mv.setViewName("redirect:/");
 			return mv;
 		}
 		mv.setViewName("basicBoard");
@@ -77,86 +90,105 @@ public class BoardController1 { //김종인 작성
 		}
 		
 		// 페이징 처리
-		int postCntPerPage = 20; // 한 페이지에 표시할 게시글 수
-		int pageCntPerPage = 10; // 한번에 표시할 페이지 개수
 		int totalPostCnt = 0; // 전체 게시글 개수
-		int totalPageCnt = 0; // 전체 페이지 개수
-		int endPageNum = 0; // 현재 페이지에서 가장 끝 페이지 수
-		int startPageNum = 0; // 현재 페이지에서 가장 첫 페이지 수
-		boolean prev = true; // ◁, ◁◁ 버튼 표시 여부
-		boolean next = true; // ▷, ▷▷ 버튼 표시 여부
-		boolean isSearch = false; // 검색을 했는지 여부
-		HashMap<String, Object> map = null; // 검색 안 했을 때 sql에 사용할 변수
-		HashMap<String, Object> searchmap = null; // 검색 sql에 사용할 파라미터 저장할 변수
+		HashMap<String, Object> map = new HashMap<>(); // sql에 사용할 파라미터 저장할 map 변수
+		map.put("limitindex", (page - 1) * postCntPerPage); // sql limit절에 들어갈 인덱스
+		map.put("limitcount", postCntPerPage); // sql limit절에 들어갈 개수
+		map.put("ordercol",  ordercol); // 정렬할 기준 컬럼
+		List<BoardDTO> boardlist = null; // 페이징 처리된 게시글 리스트
+		HashMap<String, Object> pagingResult = null; // paging 함수 실행 결과
 		
-		// 만약 게시판에서 검색을 한 경우
+		// 만약 게시판에서 검색 버튼을 누른 경우
 		if (!sort.equals("")) {
-			isSearch = true;
-			searchmap = new HashMap<>();
 			List<String> sortList = new ArrayList<>();
-			if (sort.equals("board_title") || sort.equals("board_contents") || sort.equals("writer")) {
+			if (sort.equals("board_title") || sort.equals("writer") || sort.equals("board_preview")) {
 				sortList.add(sort);
 			} else {
 				sortList.add("board_title");
 				sortList.add("board_preview");
 				sortList.add("writer");
 			}
-			searchmap.put("board_name_inner", ctgy); // 게시판 카테고리
-			searchmap.put("town_id", ti); // 회원 동네 아이디
-			searchmap.put("keyword", "%" + keyword + "%"); // 검색할 키워드
-			searchmap.put("sortList", sortList); // 검색할 분류(전체, 제목, 내용, 작성자)
+			map.put("board_name_inner", ctgy); // 게시판 카테고리
+			map.put("town_id", ti); // 회원 동네 아이디
+			map.put("keyword", "%" + keyword + "%"); // 검색할 키워드
+			map.put("sortList", sortList); // 검색할 분류(전체, 제목, 내용, 작성자)
 			
-			totalPostCnt = service.getBoardSearchCount(searchmap);
+			totalPostCnt = service.getBoardSearchCount(map);
+			pagingResult = paging(page, totalPostCnt);
+			
+			boardlist = service.getBoardSearchList(map);
+			
+			// 내용이나 전체로 검색했을 때
+			ArrayList<String> searchPreview = null;
+			int front = 10;
+			if (sort.equals("board_preview") || sort.equals("board_all")) {
+				searchPreview = new ArrayList<>();
+				for (BoardDTO dto : boardlist) {
+					int keywordIdx = dto.getBoard_preview().indexOf(keyword);
+					String boardPreview = dto.getBoard_preview();
+					if (keywordIdx - front > 0) {
+						boardPreview = "···" + boardPreview.substring(keywordIdx - front);
+					}
+					searchPreview.add(boardPreview);
+				}
+				mv.addObject("searchPreview", searchPreview);
+			}
 		} else { // 게시판 검색을 하지 않은 경우 총 게시글 수
-			map = new HashMap<>();
 			map.put("board_name_inner", ctgy);
 			map.put("town_id", ti);
+			
 			totalPostCnt = service.getTotalArticleCount(map); 
-		}
-		
-		totalPageCnt = (int) Math.ceil((double) totalPostCnt / (double) postCntPerPage); // 총 게시판 페이지 개수
-		if (page < 1 || page > totalPageCnt) {
-			page = 1;
-		}
-		endPageNum = (int) (Math.ceil((double) page / (double) pageCntPerPage) * pageCntPerPage); // 표시되는 페이지 번호 중 마지막 번호
-		startPageNum = endPageNum - (pageCntPerPage - 1);
-		// 마지막 페이지 다시 계산
-		int endPageNumTemp = (int) (Math.ceil((double) totalPostCnt / (double) postCntPerPage));
-		if (endPageNum > endPageNumTemp) {
-			endPageNum = endPageNumTemp;
-		}
-		prev = startPageNum == 1 ? false : true;
-		next = endPageNum * postCntPerPage >= totalPostCnt ? false : true;
-		
-		// sql limit절에 들어갈 숫자 List
-		int limitindex = (page - 1) * postCntPerPage;
-		int limitcount = postCntPerPage;
-		
-		
-		// 페이징 처리된 게시글 리스트
-		List<BoardDTO> boardlist = null;
-		if (isSearch) {
-			searchmap.put("limitindex", limitindex);
-			searchmap.put("limitcount", limitcount);
-			boardlist = service.getBoardSearchList(searchmap);
-		} else {
-			map.put("limitindex", limitindex);
-			map.put("limitcount", limitcount);
+			pagingResult = paging(page, totalPostCnt);
+			
 			boardlist = service.getPagingBoardlist(map);
 		}
 		
+		// 만약 게시판 카테고리가 공지사항이라면
+		ArrayList<Boolean> showNotice = null;
+		if (ctgy.equals("공지사항")) {
+			showNotice = new ArrayList<>();
+			for (BoardDTO dto : boardlist) {
+				int tempBi = dto.getBoard_id();
+				String tempTownIds = service.getNoticeTownIds(tempBi);
+				if (tempTownIds.contains(ti)) {
+					showNotice.add(true);
+				} else {
+					showNotice.add(false);
+				}
+			}
+		}
+		
+		// 만약 게시글에 이미지나 장소가 포함되어 있는 경우
+		ArrayList<Boolean> includeImg = new ArrayList<>();
+		ArrayList<Boolean> includePlace = new ArrayList<>();
+		for (BoardDTO dto : boardlist) {
+			if (dto.getBoard_contents() != null) {
+				if (dto.getBoard_contents().contains("src=\"/display?fileName=")) {
+					includeImg.add(true);
+				} else {
+					includeImg.add(false);
+				}
+				if (dto.getPlace_lat() != null) {
+					includePlace.add(true);
+				} else {
+					includePlace.add(false);
+				}
+			}
+		}
+		
+		mv.addObject("showNotice", showNotice);
+		mv.addObject("includeImg", includeImg);
+		mv.addObject("includePlace", includePlace);
 		mv.addObject("selectedPageNum", page);
 		mv.addObject("postCntPerPage", postCntPerPage);
 		mv.addObject("totalPostCnt", totalPostCnt);
-		mv.addObject("totalPageCnt", totalPageCnt);
-		mv.addObject("pageCntPerPage", pageCntPerPage);
-		mv.addObject("endPageNum", endPageNum);
-		mv.addObject("startPageNum", startPageNum);
-		mv.addObject("prev", prev);
-		mv.addObject("next", next);
+		mv.addObject("totalPageCnt", pagingResult.get("totalPageCnt"));
+		mv.addObject("endPageNum", pagingResult.get("endPageNum"));
+		mv.addObject("startPageNum", pagingResult.get("startPageNum"));
+		mv.addObject("prev", pagingResult.get("prev"));
+		mv.addObject("next", pagingResult.get("next"));
 		mv.addObject("boardlist", boardlist);
-		mv.addObject("member_id", member_id);
-		mv.addObject("town_id", ti);
+		mv.addObject("ti", ti);
 		return mv;
 	}
 	
@@ -172,7 +204,7 @@ public class BoardController1 { //김종인 작성
 		}
 		// 로그인 하지 않은 상태면 로그인 화면으로 이동
 		if (session.getAttribute("member_id") == null) {
-			mv.setViewName("Signin");
+			mv.setViewName("redirect:/");
 			return mv;
 		}
 		// 회원 동네 아이디와 게시판 동네 아이디가 다를 경우 basicBoard로 이동
@@ -189,11 +221,15 @@ public class BoardController1 { //김종인 작성
 	
 	// 장소 추가 버튼 누르면 카카오맵 api 새창으로 띄우기
 	@GetMapping("/kakaoMap")
-	public ModelAndView kakaoMap(HttpSession session, int ti) {
+	public ModelAndView kakaoMap(HttpSession session, 
+			@RequestParam(value="ti", required = false, defaultValue = "0") int ti) {
 		ModelAndView mv = new ModelAndView();
 		if (session.getAttribute("member_id") == null) {
-			mv.setViewName("Signin");
+			mv.setViewName("redirect:/");
 			return mv;
+		}
+		if (ti == 0) {
+			ti = (int) session.getAttribute("town_id");
 		}
 		// 회원 동네 아이디에 해당하는 동 이름 가져오기
 		int member_town_id = (int) session.getAttribute("town_id");
@@ -207,18 +243,31 @@ public class BoardController1 { //김종인 작성
 	@PostMapping("/writingForm")
 	@ResponseBody
 	public HashMap<String, Object> writingFormResult(HttpSession session, BoardDTO dto) {
+		// 포인트 부여 기능
+		HashMap<String, Object> pointmap = new HashMap<>(); // 포인트 부여 sql에 사용할 파라미터
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();
+		String formatDate = sdf.format(date); // 2023-07-17
+		pointmap.put("member_id", dto.getWriter());
+		pointmap.put("point_method", "글작성");
+		pointmap.put("point_time", formatDate);
+		pointmap.put("point_get", 5);
+		boolean pointResult = service.addMemberPointOrNot(pointmap);
+		
+		// board 테이블에 게시글 insert 하기
 		HashMap<String, Object> result = new HashMap<>();
 		int insertResult = 0;
-		if (dto.getBoard_title().equals("")) {
+		if (dto.getBoard_title().equals("")) { // 글 제목을 작성하지 않았을 경우
 			insertResult = -1;
 			result.put("insertResult", insertResult);
 			return result;
 		} 
-		if (dto.getTown_id() == 0) {
+		if (dto.getTown_id() == 0) { // 동네 아이디가 입력되지 않으면 회원 동네로 초기화
 			dto.setTown_id((int)session.getAttribute("town_id"));
 		}
 		insertResult = service.insertBoard(dto);
 		result.put("insertResult", insertResult);
+		result.put("pointResult", pointResult);
 		return result;
 	}
 	
@@ -321,12 +370,11 @@ public class BoardController1 { //김종인 작성
 	@RequestMapping("/noticeWritingForm")
 	public ModelAndView noticeWritingForm(HttpSession session) {
 		ModelAndView mv = new ModelAndView();
-		String member_id = String.valueOf(session.getAttribute("member_id"));
-		if (member_id == null) {
-			mv.setViewName("Signin");
+		if (session.getAttribute("member_id") == null) {
+			mv.setViewName("redirect:/");
 			return mv;
-		} else if (!service.isAdmin(member_id)) { // 관리자가 아니면 Main으로 이동
-			mv.setViewName("Main");
+		} else if (!service.isAdmin(String.valueOf(session.getAttribute("member_id")))) { // 관리자가 아니면 Main으로 이동
+			mv.setViewName("redirect:/main");
 			return mv;
 		}
 		List<String> townNameList = service.getAllTownName();
@@ -354,23 +402,123 @@ public class BoardController1 { //김종인 작성
 			return result;
 		}
 		
-		// 동네 아이디에 따라 공지사항 BoardDTO 생성
-		List<BoardDTO> query = new ArrayList<>();
+		// 공지사항 내용을 board 테이블에 insert
+		insertResult = service.insertBoard(dto);
+		
+		// 공지사항 올리 동네 아이디들을 notice_board 테이블에 insert
+		HashMap<String, Object> noticemap = new HashMap<>();
+		noticemap.put("board_title", dto.getBoard_title());
+		noticemap.put("board_contents", dto.getBoard_contents());
+		noticemap.put("writer", dto.getWriter());
+		// 최근에 작성한 공지사항 board_id들
+		List<Integer> board_id = service.getCurrentNoticeBoardId(noticemap);
+		noticemap.put("board_id", board_id.get(0));
+		String town_ids_str = "";
 		for (String town_id : town_ids) {
-			BoardDTO tempdto = new BoardDTO();
-			tempdto.setBoard_name_inner("공지사항");
-			tempdto.setBoard_title(dto.getBoard_title());
-			tempdto.setBoard_contents(dto.getBoard_contents());
-			tempdto.setBoard_imgurl(dto.getBoard_imgurl());
-			tempdto.setBoard_fileurl(dto.getBoard_fileurl());
-			tempdto.setBoard_preview(dto.getBoard_preview());
-			tempdto.setWriter(dto.getWriter());
-			tempdto.setTown_id(Integer.parseInt(town_id));
-			query.add(tempdto);
+			town_ids_str += town_id + ",";
 		}
-		insertResult = service.insertNoticeBoard(query);
+		noticemap.put("town_ids", town_ids_str);
+		insertResult += service.insertNoticeBoard(noticemap);
+		
+		// ajax 통신 결과 전송
 		result.put("insertResult", insertResult);
 		return result;
+	}
+	
+	@GetMapping("/noticeBoardList")
+	public ModelAndView managerPageNotice(
+			HttpSession session,
+			@RequestParam(value="sort", required=false, defaultValue="")String sort,
+			@RequestParam(value="keyword", required=false, defaultValue="") String keyword,
+			@RequestParam(value = "page", required = false, defaultValue = "1") int page
+	) {
+		ModelAndView mv = new ModelAndView();
+		if (session.getAttribute("member_id") == null) {
+			mv.setViewName("redirect:/");
+			return mv;
+		} else if (!service.isAdmin(String.valueOf(session.getAttribute("member_id")))) { // 관리자가 아니면 Main으로 이동
+			mv.setViewName("redirect:/main");
+			return mv;
+		}
+		mv.setViewName("noticeBoardList");
+		
+		// page 파라미터가 1 미만인 경우 1로 초기화
+		if (page < 1) page = 1;
+		
+		List<String> townName = service.getAllTownName(); // 모든 동네 이름 가져오기
+		
+		HashMap<String, Object> map = new HashMap<>(); // sql에 필요한 파라미터
+		map.put("limitindex", (page - 1) * postCntPerPage); // sql limit절에 들어갈 인덱스
+		map.put("limitcount", postCntPerPage); // sql limit절에 들어갈 개수
+		
+		int totalPostCnt = 0; // 공지사항 총 개수
+		HashMap<String, Object> pagingResult = null; // 페이징 처리하기 위해 필요한 변수들 저장할 map
+		List<BoardDTO> boardlist = null; // 페이징 처리된 공지사항 리스트 저장할 list
+		
+		if (!sort.equals("")) { // 만약 게시판에서 검색을 한 경우
+			map.put("keyword", keyword); // 검색할 키워드
+			map.put("sort", sort); // 검색할 분류(전체, 제목, 내용, 작성자, 동네 아이디, 동네 이름)
+			
+			boardlist = service.getNoticeSearchList(map);
+			totalPostCnt = service.getNoticeSearchCnt(map);
+			pagingResult = paging(page, totalPostCnt);
+		} else { // 게시판 검색을 하지 않은 경우 총 게시글 수
+			boardlist = service.getNoticeList(map);
+			totalPostCnt = service.getNoticeCnt();
+			pagingResult = paging(page, totalPostCnt);
+		}
+		
+		ArrayList<String> town_ids = new ArrayList<>();
+		for (BoardDTO dto : boardlist) {
+			int tempBi = dto.getBoard_id();
+			String tempTownIds = service.getNoticeTownIds(tempBi);
+			town_ids.add(tempTownIds);
+		}
+
+		mv.addObject("town_ids", town_ids);
+		mv.addObject("selectedPageNum", page);
+		mv.addObject("postCntPerPage", postCntPerPage);
+		mv.addObject("totalPostCnt", totalPostCnt);
+		mv.addObject("totalPageCnt", pagingResult.get("totalPageCnt"));
+		mv.addObject("endPageNum", pagingResult.get("endPageNum"));
+		mv.addObject("startPageNum", pagingResult.get("startPageNum"));
+		mv.addObject("prev", pagingResult.get("prev"));
+		mv.addObject("next", pagingResult.get("next"));
+		mv.addObject("boardlist", boardlist);
+		mv.addObject("townName", townName);
+		return mv;
+	}
+	
+	// 게시글 페이징 처리하는 메소드
+	public HashMap<String, Object> paging(int page, int totalPostCnt) {
+		HashMap<String, Object> pagingResult = new HashMap<>();
+		int totalPageCnt = 0; // 전체 페이지 개수
+		int endPageNum = 0; // 현재 페이지에서 가장 끝 페이지 수
+		int startPageNum = 0; // 현재 페이지에서 가장 첫 페이지 수
+		boolean prev = true; // ◁, ◁◁ 버튼 표시 여부
+		boolean next = true; // ▷, ▷▷ 버튼 표시 여부
+		
+		totalPageCnt = (int) Math.ceil((double) totalPostCnt / (double) postCntPerPage); // 총 게시판 페이지 개수
+		if (page < 1 || page > totalPageCnt) {
+			page = 1;
+		}
+		endPageNum = (int) (Math.ceil((double) page / (double) pageCntPerPage) * pageCntPerPage); // 표시되는 페이지 번호 중 마지막 번호
+		startPageNum = endPageNum - (pageCntPerPage - 1);
+		// 마지막 페이지 다시 계산
+		int endPageNumTemp = (int) (Math.ceil((double) totalPostCnt / (double) postCntPerPage));
+		if (endPageNum > endPageNumTemp) {
+			endPageNum = endPageNumTemp;
+		}
+		prev = startPageNum == 1 ? false : true;
+		next = endPageNum * postCntPerPage >= totalPostCnt ? false : true;
+		
+		pagingResult.put("totalPageCnt", totalPageCnt);
+		pagingResult.put("endPageNum", endPageNum);
+		pagingResult.put("startPageNum", startPageNum);
+		pagingResult.put("prev", prev);
+		pagingResult.put("next", next);
+		
+		return pagingResult;
 	}
 	
 }

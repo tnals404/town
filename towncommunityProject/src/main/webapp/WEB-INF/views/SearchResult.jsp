@@ -63,7 +63,11 @@
 	<div style="display: flex; margin:20px 0; flex-direction: column; width:100%;">
 		<div style="display: flex; justify-content: space-between; align-items: center;">
 			검색어 : ${keyword } / 
-			검색 결과 : ${resultCount }개
+			검색 결과 : 
+			<c:if test="${keyword != ''}">
+			${resultCount }
+			</c:if>
+			개
 			<c:if test="${town_id == ti}">
 				<button class="button" style="padding:5px 10px;" onclick="document.location.href='/main'">
 			   		<img style="height: 15px;" color="black"src="img/홈버튼.png">
@@ -77,32 +81,34 @@
 			   	</button>
 			 </c:if>
 		</div>
-		<c:forEach items="${result }" var="result">
-			<div style="cursor:pointer; border:1px solid #182434; border-radius: 5px; width:97.5%; padding:20px; margin-top: 15px; position: relative;" onclick="document.location.href='/boarddetail?bi=${result.board_id}'">
-				<c:if test="${result.board_name_inner == '나의 일상' || result.board_name_inner == '사건, 사고 소식'}">
-					<p style="font-size: 13px; color: #797979; margin-bottom: 10px;">지금 우리 동네 > ${result.board_name_inner }</p>
-				</c:if>		
-				<c:if test="${result.board_name_inner == '오늘의 사진' || result.board_name_inner == '역대 당선작'}">
-					<p style="font-size: 13px; color: #797979; margin-bottom: 10px;">동네 사진전 > ${result.board_name_inner }</p>
-				</c:if>	
-				<c:if test="${result.board_name_inner == '같이 줄서요' || result.board_name_inner == '같이해요 소모임'}">
-					<p style="font-size: 13px; color: #797979; margin-bottom: 10px;">만남의 광장 > ${result.board_name_inner }</p>
-				</c:if>	
-				<c:if test="${result.board_name_inner == '분실물센터' || result.board_name_inner == '심부름센터'}">
-					<p style="font-size: 13px; color: #797979; margin-bottom: 10px;">도움이 필요해요 > ${result.board_name_inner }</p>
-				</c:if>	
-				<c:if test="${result.board_name_inner == '행사 소식' || result.board_name_inner == '새로 오픈했어요'}">
-					<p style="font-size: 13px; color: #797979; margin-bottom: 10px;">알고 계신가요? > ${result.board_name_inner }</p>
-				</c:if>		
-<%-- 				<c:if test="${result.board_name_inner == 'HOT 게시판'"> --%>
-<%-- 					<p style="font-size: 13px; color: #797979; margin-bottom: 10px;">${result.board_name_inner }</p> --%> 
-<%-- 				</c:if> --%>
-				<p style="font-size: 17px; margin-bottom: 5px;">${result.board_title }</p>
-				<div style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;"> 
-				${result.board_contents }
+		<c:if test="${keyword != ''}">
+			<c:forEach items="${result }" var="result">
+				<div style="cursor:pointer; border:1px solid #182434; border-radius: 5px; width:97.5%; padding:20px; margin-top: 15px; position: relative;" onclick="document.location.href='/boarddetail?bi=${result.board_id}'">
+					<c:if test="${result.board_name_inner == '나의 일상' || result.board_name_inner == '사건, 사고 소식'}">
+						<p style="font-size: 13px; color: #797979; margin-bottom: 10px;">지금 우리 동네 > ${result.board_name_inner }</p>
+					</c:if>		
+					<c:if test="${result.board_name_inner == '오늘의 사진' || result.board_name_inner == '역대 당선작'}">
+						<p style="font-size: 13px; color: #797979; margin-bottom: 10px;">동네 사진전 > ${result.board_name_inner }</p>
+					</c:if>	
+					<c:if test="${result.board_name_inner == '같이 줄서요' || result.board_name_inner == '같이해요 소모임'}">
+						<p style="font-size: 13px; color: #797979; margin-bottom: 10px;">만남의 광장 > ${result.board_name_inner }</p>
+					</c:if>	
+					<c:if test="${result.board_name_inner == '분실물센터' || result.board_name_inner == '심부름센터'}">
+						<p style="font-size: 13px; color: #797979; margin-bottom: 10px;">도움이 필요해요 > ${result.board_name_inner }</p>
+					</c:if>	
+					<c:if test="${result.board_name_inner == '행사 소식' || result.board_name_inner == '새로 오픈했어요'}">
+						<p style="font-size: 13px; color: #797979; margin-bottom: 10px;">알고 계신가요? > ${result.board_name_inner }</p>
+					</c:if>		
+	<%-- 				<c:if test="${result.board_name_inner == 'HOT 게시판'"> --%>
+	<%-- 					<p style="font-size: 13px; color: #797979; margin-bottom: 10px;">${result.board_name_inner }</p> --%> 
+	<%-- 				</c:if> --%>
+					<p style="font-size: 17px; margin-bottom: 5px;">${result.board_title }</p>
+					<div style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;"> 
+					${result.board_contents }
+					</div>
 				</div>
-			</div>
-		</c:forEach>
+			</c:forEach>
+		</c:if>
 	</div>
 <script>
 $(".btn").click(function () {
@@ -119,7 +125,7 @@ $(document).ready(function() {
 	// 전역 변수
     let board = "/basicBoard"; // 글 or 사진 게시판
     let ctgy = "?ctgy=${boardName}"; // 게시판 카테고리
-    let ti = "&ti=${town_id}"; // 동네 아이디
+    let ti = "&ti=${ti}"; // 동네 아이디
 
 	// 게시판 소분류 클릭시
 	$("li.innerMenu").on("click", function(e) {

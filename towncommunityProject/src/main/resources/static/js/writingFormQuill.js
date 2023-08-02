@@ -2,32 +2,6 @@
  * 글 작성 페이지 에디터 코드
  */
 
-// 에디터 내 이미지 클릭시 크기 조절 가능하게
-$(document).on("click", ".ql-editor img", function() {
-	if ($(this).parent().css("resize") !== "both") {
-		$(this).parent().css({
-			"resize": "both",
-			"width": "550px",
-			"overflow": "hidden",
-			"max-width": "1100px",
-			"margin": "0px",
-		}); //css
-		$(this).css("width", "100%");
-		$(this).css("height", "100%");
-	}
-}); //onclick
-
-// 에디터 작성 중 엔터 누를 때 동작
-$(document).on("keydown", ".ql-editor", function(e) {
-	if (e.keyCode === 13) {
-		$(".ql-editor p").each(function(index, item) {
-			if ($(item).find("img").length <= 0) {
-				$(item).removeAttr("style");
-			} //if
-		}); //each
-	}
-}); //onfocus
-
 var toolbarOptions = [
   [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
   [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
@@ -83,13 +57,6 @@ function selectLocalImage() {
                 const range = quill.getSelection(); // 사용자가 선택한 에디터 범위
                 data.uploadPath = data.uploadPath.replace(/\\/g, '/');
                 quill.insertEmbed(range.index, 'image', "/display?fileName=" + data.uploadPath + "/" + data.uuid + "_" + data.fileName);
-                /*
-                $(".ql-editor").append("<p></p>");
-                setTimeout(function(){
-                	$(".ql-editor p").last().attr("tabindex", "0");
-                	$(".ql-editor p").last().focus();
-                },100);
-                */
             },
             error: function(request,status,error) {
 			      		alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);

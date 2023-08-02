@@ -8,12 +8,18 @@ import org.springframework.stereotype.Component;
 public class MemberDTO {
 	String member_id,name,phone,email,password;
 	int stop_date,report_count,town_id,point;
-	String address,role,profile_image,nowpassword;
+	String address,profile_image,nowpassword;
 	Date signup_date,stopclear_date,delete_date;
-	int invite_sum;
+	int invite_sum,member_role;
 	TownDTO town;
 	
 	
+	public int getMember_role() {
+		return member_role;
+	}
+	public void setMember_role(int member_role) {
+		this.member_role = member_role;
+	}
 	public String getNowpassword() {
 		return nowpassword;
 	}
@@ -109,12 +115,6 @@ public class MemberDTO {
 	}
 	public void setAddress(String address) {
 		this.address = address;
-	}
-	public String getRole() {
-		return role;
-	}
-	public void setRole(String role) {
-		this.role = role;
 	}
 	public String getProfile_image() {
 		return profile_image;

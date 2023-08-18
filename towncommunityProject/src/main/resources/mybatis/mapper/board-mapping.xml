@@ -5,17 +5,17 @@
 
  <!-- 선택된 게시물 조회수 1 증가 -->
 <update id="updateViewcnt" parameterType="int">
-	update board set view_cnt = view_cnt +1 where board_id=#{board_id}
+	update board set view_cnt = view_cnt +1 where board_id=#{board_id} and printout is true
 </update>
 
  <!-- 선택된 게시물 조회 -->
 <select id="getDetail" resultType="boarddto" parameterType="int">
-	select * from board where board_id=#{board_id}
+	select * from board where board_id=#{board_id} and printout is true
 </select>
 
 <!-- 해당글의 댓글, 대댓글 전체 개수 가져오기  -->
 <select id="getTotalCommentcnt" resultType="int" parameterType="int">
-	select count(*) from comment where board_id=#{board_id}
+	select count(*) from comment where board_id=#{board_id} and printout is true
 </select>
 
 <!-- 해당글의 댓글, 대댓글 전체조회 + 페이징처리 
@@ -31,19 +31,22 @@
 
 <!-- 해당글의 댓글, 대댓글 전체 가져오기 -->
 <select id="oneBoardComments" resultType="commentdto" parameterType="int">
-	select * from comment where board_id=#{board_id}
+	select * from comment where board_id=#{board_id} and printout is true
 </select> 
 
 <!-- 댓글쓰기 (사진O) -->
  <insert id="insertComment" parameterType="commentdto">
-	insert into comment (comment_writer, comment_contents, comment_imgurl, board_id, comment_secret) 
-			values (#{comment_writer}, #{comment_contents}, #{comment_imgurl}, #{board_id}, #{comment_secret})
+	insert into comment (comment_writer, comment_contents, comment_imgurl, board_id) 
+			values (#{comment_writer}, #{comment_contents}, #{comment_imgurl}, #{board_id})
 </insert>
 
 <!-- 댓글 삭제 -->
-<delete id="deleteComment" parameterType="int">
+<!-- <delete id="deleteComment" parameterType="int">
 	delete from comment where comment_id=#{comment_id}
-</delete>
+</delete> -->
+<update id="deleteComment" parameterType="int">
+	update comment set printout=false where comment_id=#{comment_id}
+</update>
 
 <!-- 글 좋아요 여부 -->
 <select id="isGoodOrHate" resultType="goodhatedto" parameterType="goodhatedto">
@@ -91,33 +94,36 @@
 <select id="getBoardCnt" resultType="int" parameterType="Pagination.SearchDTO">
 	select count(*) 
 	from board 
-	where board_name_inner = #{searchType1} and town_id = #{searchType2}
+	where board_name_inner = #{searchType1} and town_id = #{searchType2} and printout is true
 </select> 
 
 <!-- 사진게시판 글 목록 가져오기 -->
 <select id="getBoardList" resultType="boarddto" parameterType="Pagination.SearchDTO">
 	select * 
 	from board 
-	where board_name_inner = #{searchType1} and town_id = #{searchType2}
+	where board_name_inner = #{searchType1} and town_id = #{searchType2} and printout is true
 	order by writing_time desc, board_id desc
 	limit #{pagination.limitStart}, #{recordSize}
 </select>
 
 
-<!-- 글 삭제 -->
-<delete id="deleteBoard" parameterType="int">
+<!-- 글 삭제(실은 숨김처리) -->
+<!-- <delete id="deleteBoard" parameterType="int">
 	delete from board where board_id=#{board_id}
-</delete>
+</delete> -->
+<update id="deleteBoard" parameterType="int">
+	update board set printout=false where board_id=#{board_id}
+</update>
 
 <!-- 대댓글 작성(사진O) -->
  <insert id="insertRecomment" parameterType="commentdto">
-	insert into comment (comment_writer, comment_contents, comment_imgurl, parent_id, board_id, comment_secret) 
-			values (#{comment_writer}, #{comment_contents}, #{comment_imgurl}, #{parent_id}, #{board_id}, #{comment_secret})
+	insert into comment (comment_writer, comment_contents, comment_imgurl, parent_id, board_id) 
+			values (#{comment_writer}, #{comment_contents}, #{comment_imgurl}, #{parent_id}, #{board_id})
 </insert>
 
 <!-- 댓글 수정(사진X)-->
 <update id="updateComment" parameterType="commentdto">
-	update comment set comment_contents=#{comment_contents}, comment_imgurl=#{comment_imgurl}, comment_updateTime=now(), comment_secret=#{comment_secret} where comment_id=#{comment_id}
+	update comment set comment_contents=#{comment_contents}, comment_imgurl=#{comment_imgurl}, comment_updateTime=now() where comment_id=#{comment_id}
 </update>
 
 
@@ -140,11 +146,15 @@
 
 <!-- 해당 댓글의 대댓글이 있는지 확인 -->
 <select id="getRecommentCnt" resultType="int" parameterType="int">
-	select count(*) from comment where parent_id = #{comment_id}
+	select count(*) from comment where parent_id = #{comment_id} and printout is true
 </select> 
 <!-- 댓글 삭제(지만 실은 수정) -->
+<!-- <update id="deleteUpdateComment" parameterType="commentdto">
+	update comment set comment_writer=null, comment_contents=#{comment_contents}, comment_imgurl=null where comment_id=#{comment_id}
+</update> -->
+<!-- 댓글 삭제(지만 실은 수정) -->
 <update id="deleteUpdateComment" parameterType="commentdto">
-	update comment set comment_writer=null, comment_contents=#{comment_contents}, comment_imgurl=null, comment_secret=false where comment_id=#{comment_id}
+	update comment set printout=false where comment_id=#{comment_id}
 </update>
 
 <!-- 글 수정하기 -->
@@ -172,7 +182,7 @@
 <select id="searchPhotoBoardCnt" resultType="int" parameterType="Pagination.SearchDTO">
 	select count(*) 
 	from board 
-	where board_name_inner = #{searchType1} and town_id = #{searchType2}
+	where board_name_inner = #{searchType1} and town_id = #{searchType2} and printout is true
 	<choose>
 		<!-- 검색 조건 있을때 -->
 		<when test="searchType3 != 'all'">
@@ -194,7 +204,7 @@
 <select id="searchPhotoBoardList" resultType="boarddto" parameterType="Pagination.SearchDTO">
 	select * 
 	from board 
-	where board_name_inner = #{searchType1} and town_id = #{searchType2}
+	where board_name_inner = #{searchType1} and town_id = #{searchType2} and printout is true
 	<choose>
 		<!-- 검색 조건 있을때 -->
 		<when test="searchType3 != 'all'">
@@ -216,10 +226,39 @@
 
 <!-- 해당 글이 있는지 확인 -->
 <select id="existBoard" resultType="int" parameterType="int">
-	select count(*) from board where board_id = #{board_id}
+	select count(*) from board where board_id = #{board_id} and printout is true
 </select> 
 
+<!-- 회원 탈퇴시 작성한 글, 댓글 모두 출력값 false로 -->
+<update id="deleteAllBoard" parameterType="String">
+	update board set printout=false where writer=#{member_id}
+</update>
+<update id="deleteAllComment" parameterType="String">
+	update comment set printout=false where comment_writer=#{member_id}
+</update>
 
+<!-- 댓글 작성시 포인트테이블에 넣기 -->
+<insert id="insertPointComment" parameterType="pointdto">
+	insert point (member_id, point_method, point_get) 
+		values (#{member_id}, #{point_method}, #{point_get})
+</insert>
+ 
+<!-- 댓글 작성시 해당회원에게 3점 부여 -->
+<update id="updateMemberPointComment" parameterType="pointdto">
+	update member set point = point + #{point_get} where member_id = #{member_id}
+</update>
+
+<!-- 회원 등급 이미지 가져오기 -->
+<select id="getMemberGrdaeImg" parameterType="String" resultType="String">
+	select grade_image from grade g join member m
+	on g.grade_name = m.grade_name 
+	where member_id = #{member_id}
+</select>
+
+<!-- 소모임 채팅 생성 여부 확인 -->
+<select id="Check" parameterType="int" resultType="int">
+select count(board_id) from gchat_room where board_id = #{board_id}
+</select>
 
 </mapper>
 

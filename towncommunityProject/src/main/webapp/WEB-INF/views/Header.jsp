@@ -27,10 +27,10 @@ LocalDate now = LocalDate.now();
 <%-- 	</c:if>	 --%>
 	</div>
 	<div class="logoBox cursor" onclick="document.location.href='/main?ti=${ti}'">
-		<c:if test="${ti == town_id }">
+		<c:if test="${ti == town_id  || ti == null}">
 			<p class="logo">동네일보</p>
 		</c:if>	
-		<c:if test="${ti != town_id}">
+		<c:if test="${ti != town_id && ti != null }">
 			<p class="logo">${town_name } 동네일보</p>
 		</c:if>		
 		<svg width="55" height="55" viewBox="0 0 43 43" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

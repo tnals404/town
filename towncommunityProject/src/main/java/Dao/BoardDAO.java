@@ -10,6 +10,7 @@ import Dto.BoardDTO;
 import Dto.CommentDTO;
 import Dto.GoodHateDTO;
 import Dto.MemberDTO;
+import Dto.PointDTO;
 import Dto.ReportDTO;
 import Pagination.SearchDTO;
 
@@ -98,5 +99,17 @@ public interface BoardDAO { //안휘주 작성
   	//글 존재여부
   	public int existBoard(int board_id);
   	
-
+  	//회원이 작성한 글, 댓글 모두 출력안되도록
+  	public int deleteAllBoard(String member_id);
+  	public int deleteAllComment(String member_id);
+  	
+  	//댓글 쓰면 포인트부여
+  	public int insertPointComment(PointDTO dto);
+  	public int updateMemberPointComment(PointDTO dto);
+  	
+  	//멤버 등급 이미지 가져오기
+  	public String getMemberGrdaeImg(String member_id);
+  	
+  	//소모임 채팅 생성 여부 확인
+  	public int Check(int board_id);
 }

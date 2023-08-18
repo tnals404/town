@@ -157,7 +157,14 @@
 	width : 100%; height : 100%;
 	object-fit: cover;
 }
-#oneboard_writer {
+#oneboard_memberGrade, .writer_memberGrade{
+	width:20px; height:20px;
+	margin-right : 3px;
+}
+#oneboard_memberGrade > img, .writer_memberGrade > img {
+	width:20px; height:20px;
+}
+#oneboard_writer, #oneboard_writer_admin {
 	font-size : 15px;
 	line-height : 15px;
 	margin-right : 15px;		

@@ -12,6 +12,7 @@ import Dto.BoardDTO;
 import Dto.CommentDTO;
 import Dto.GoodHateDTO;
 import Dto.MemberDTO;
+import Dto.PointDTO;
 import Dto.ReportDTO;
 import Pagination.Pagination;
 import Pagination.PagingResponse;
@@ -24,10 +25,9 @@ public class BoardServiceImpl implements BoardService { //안휘주 작성
 	@Autowired
 	BoardDAO dao;
 	
-	//선택된 게시물 조회수 증가&조회
-	public BoardDTO updateViewcntAndGetDetail(int board_id) {
-		int updaterow = dao.updateViewcnt(board_id);
-		return dao.getDetail(board_id);
+	//선택된 게시물 조회수 증가
+	public int updateViewcnt(int board_id) {
+		return dao.updateViewcnt(board_id);
 	}
 	
 	//해당글의 댓글, 대댓글 전체 개수 가져오기
@@ -187,6 +187,29 @@ public class BoardServiceImpl implements BoardService { //안휘주 작성
   		return dao.existBoard(board_id);
   	}
   	
-
+  	//회원이 작성한 글, 댓글 모두 출력안되도록
+  	public int deleteAllBoard(String member_id) {
+  		return dao.deleteAllBoard(member_id);
+  	};
+  	public int deleteAllComment(String member_id) {
+  		return dao.deleteAllComment(member_id);
+  	};
   	
+  	//댓글 쓰면 포인트부여
+  	public int insertPointComment(PointDTO dto) {
+  		return dao.insertPointComment(dto);
+  	};
+  	public int updateMemberPointComment(PointDTO dto) {
+  		return dao.updateMemberPointComment(dto);
+  	};
+  	
+  	//멤버 등급 이미지 가져오기
+  	public String getMemberGrdaeImg(String member_id) {
+  		return dao.getMemberGrdaeImg(member_id);
+  	};
+  	
+  	//소모임 채팅 생성 여부 확인
+  	public int Check(int board_id) {
+  		return dao.Check(board_id);
+  	};
 }//class

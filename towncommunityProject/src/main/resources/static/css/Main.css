@@ -130,13 +130,6 @@ html.open {
 	margin-top:30px;
 	margin-left:40px;
 }
-.outerMenu {
-	line-height: 2.5;
-	margin: 0 auto;
-	list-style-type: none;
-	font-size : 25px;
-	font-weight : bold;
-}
 .innerMenu {
 	line-height: 1.5;
 	list-style-position: inside;
@@ -144,13 +137,19 @@ html.open {
 	font-size : 20px;
 	font-weight : normal;
 }
-
-@media (max-height: 900px) {
-.outerMenu {
-	font-size : 1.3rem;
+.outerMenu,.notice {
+	line-height: 2.5;
+	margin: 0 auto;
+	list-style-type: none;
+	font-size : 25px;
+	font-weight : bold;
 }
+@media (max-height: 900px) {
 .innerMenu {
 	font-size : 1.1rem;
+}
+.outerMenu,.notice {
+	font-size : 1.3rem;
 }
 }
 

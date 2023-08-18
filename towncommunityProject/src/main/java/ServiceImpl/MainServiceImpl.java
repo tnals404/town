@@ -90,4 +90,18 @@ public class MainServiceImpl implements MainService {
 		return dao.profile(member_id); 
 	}
 
+	@Override
+	public int photoExhibition(BoardDTO dto) {
+		// TODO Auto-generated method stub
+		return dao.photoExhibition(dto);
+	}
+
+	@Override
+	public int photoExhibitionCheck(String board_contents) {
+		// TODO Auto-generated method stub
+		return dao.photoExhibitionCheck(board_contents);
+	}
+
+
+
 }

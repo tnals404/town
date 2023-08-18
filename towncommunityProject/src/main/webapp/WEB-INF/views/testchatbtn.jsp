@@ -34,9 +34,12 @@ $(document).ready(function() {
 <c:forEach items="${list}" var="list">
 <h2>${list.message_content }</h2>
 </c:forEach>
-<button onclick="document.location.href='/chatstart?touser_id=abc'">채팅하기</button>
+<button onclick="document.location.href='/chatstart?touser_id=abc123'">채팅하기</button>
 <textarea id="messageArea" placeholder="메세지를 입력하세요"></textarea>
 <button id="msgInput">메시지 보내기</button>
+
+<button onclick="document.location.href='/gchatstart?board_id=1'">그룹채팅하기</button>
+<button onclick="document.location.href='/entergchat?board_id=1'">그룹채팅입장</button>
 
 </body>
 </html>

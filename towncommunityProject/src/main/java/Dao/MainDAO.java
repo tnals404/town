@@ -26,4 +26,6 @@ public interface MainDAO {
 	public MemberDTO memberInfo(String member_id);
 	public ArrayList<TownDTO> changeVillage(String town_name);
 	public MemberDTO profile(String member_id);
+	public int photoExhibitionCheck(String board_contents);
+	public int photoExhibition(BoardDTO dto);
 }

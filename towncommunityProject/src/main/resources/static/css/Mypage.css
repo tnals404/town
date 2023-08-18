@@ -102,3 +102,18 @@
 	background-size: 25px 25px;
 	cursor: pointer;
 }
+
+#my_grade_box {
+	margin-left: 77px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+#my_grade_box progress {
+	width: 500px;
+	height: 50px;
+}
+#my_grade_box span {
+	font-size: 15px;
+	margin-left: 20px;
+}

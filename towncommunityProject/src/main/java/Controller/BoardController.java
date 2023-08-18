@@ -15,9 +15,11 @@ import Dto.BoardDTO;
 import Dto.CommentDTO;
 import Dto.GoodHateDTO;
 import Dto.MemberDTO;
+import Dto.PointDTO;
 import Pagination.PagingResponse;
 import Pagination.SearchDTO;
 import Service.BoardService;
+import Service.BoardService1;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -27,10 +29,27 @@ public class BoardController { //안휘주 작성
 	@Qualifier("boardServiceImpl")
 	BoardService service;
 	
+	@Autowired
+	@Qualifier("boardServiceImpl1")
+	BoardService1 service2;
+	
 	//댓글쓰기
 	@RequestMapping(value="/commentwrite", produces = {"application/json;charset=utf-8"})
-	public @ResponseBody int commentwrite (CommentDTO dto) {
-		return service.insertComment(dto); 
+	public @ResponseBody HashMap<String, Object> commentwrite (CommentDTO dto) {
+		PointDTO pointdto = new PointDTO();
+		pointdto.setMember_id(dto.getComment_writer());
+		pointdto.setPoint_method("댓글작성");
+		pointdto.setPoint_get(3);
+		service.insertPointComment(pointdto);
+		service.updateMemberPointComment(pointdto);
+		
+		boolean gradeUpResult = service2.memberGradeUp(dto.getComment_writer());
+		
+		HashMap<String, Object> result = new HashMap<>();
+		int insertResult = service.insertComment(dto); 
+		result.put("insertResult", insertResult);
+		result.put("gradeUpResult", gradeUpResult);
+		return result;
 	}
 	
 	//댓글삭제
@@ -52,8 +71,7 @@ public class BoardController { //안휘주 작성
 		searchdto.setSearchType1(ctgy);
 		searchdto.setSearchType2(ti);
 	    searchdto.setRecordSize(25);
-	    searchdto.setPage(page);
-	    
+	    searchdto.setPage(page);    
 		PagingResponse<BoardDTO> list = service.getBoardList(searchdto);
 		
 		//각 글마다 댓글 수
@@ -62,14 +80,20 @@ public class BoardController { //안휘주 작성
 			int cmtCnt = service.getTotalCommentcnt(b.getBoard_id());
 			boardCommentCnt.put(b.getBoard_id(), cmtCnt);
 		}
-		  
+		 
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("boardName", ctgy);
 		mv.addObject("ti", ti);
 		mv.addObject("searchdto", searchdto);
 		mv.addObject("boardCommentCnt", boardCommentCnt);
 		mv.addObject("response", list);
-		mv.setViewName("photoBoard3");
+		
+		if(ctgy.equals("역대 당선작")) {
+			mv.setViewName("photoExhibitionBoard");			
+		}
+		else {
+			mv.setViewName("photoBoard3");			
+		}
 		return mv;
 	}	
 	
@@ -95,10 +119,12 @@ public class BoardController { //안휘주 작성
 		}
 		//보드 있으면
 		else {
-		BoardDTO dto = service.updateViewcntAndGetDetail(board_id);
+		BoardDTO dto = service.getDetail(board_id);
 		//글쓴사람 정보
 		MemberDTO writerDto = service.boardWriterProfile(dto.getWriter());
+		String boardWriterGradeImg = service.getMemberGrdaeImg(dto.getWriter());
 		
+		//댓글쓴사람들 정보
 		int commentCnt = service.getTotalCommentcnt(board_id);
 		List<CommentDTO> commentList = service.oneBoardComments(board_id);
 		HashMap<String, String> commentWriterProfileMap = new HashMap<String, String>();
@@ -110,6 +136,17 @@ public class BoardController { //안휘주 작성
 			MemberDTO commentWriterDto = service.boardWriterProfile(cmt.getComment_writer());
 			commentWriterProfileMap.put(cmt.getComment_writer(),commentWriterDto.getProfile_image() );				
 		}
+		//멤버등급이미지
+		HashMap<String, String> commentWriterGradeImgMap = new HashMap<String, String>();
+		for(CommentDTO cmt : commentList) {
+			//후에 댓글 삭제하면 작성자 정보 없음 -> 작성자 정보 없으면 건너뛰기
+			if(cmt.getComment_writer() == null || cmt.getComment_writer() == "") {
+				continue;
+			}
+			String commentWriterGradeImg = service.getMemberGrdaeImg(dto.getWriter());
+			commentWriterGradeImgMap.put(cmt.getComment_writer(), commentWriterGradeImg );				
+		}
+
 		//댓글 목록 불러오기
 		String str_bi = String.valueOf(board_id);
 		SearchDTO searchdto = new SearchDTO();
@@ -160,17 +197,30 @@ public class BoardController { //안휘주 작성
 			gohresult = "none";
 		}
 		
+		//소모임 채팅 생성 여부 확인
+		int gchatResult = service.Check(board_id);
+		
+		String ctgy = dto.getBoard_name_inner();
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("detaildto", dto);
-		mv.addObject("boardName", dto.getBoard_name_inner());
+		mv.addObject("boardName", ctgy);
 		mv.addObject("ti", dto.getTown_id());
 		mv.addObject("writerDto", writerDto);
+		mv.addObject("boardWriterGradeImg", boardWriterGradeImg);
 		mv.addObject("commentWriterProfileMap", commentWriterProfileMap);				
+		mv.addObject("commentWriterGradeImgMap", commentWriterGradeImgMap);
 		mv.addObject("commentCnt", commentCnt );
 		mv.addObject("searchdto", searchdto);
 		mv.addObject("response", list);
 		mv.addObject("gohresult", gohresult );
-		mv.setViewName("photoBoardDetail3");
+		mv.addObject("gchatResult", gchatResult );
+		
+		if(ctgy.equals("역대 당선작")) {
+			mv.setViewName("photoExhibitionBoardDetail");			
+		}
+		else {
+			mv.setViewName("photoBoardDetail3");			
+		}
 		return mv;	
 		}//else
 	}
@@ -265,8 +315,8 @@ public class BoardController { //안휘주 작성
 		
 		//글 수정폼 열기
 		@RequestMapping("/boardUpdateForm")
-		public ModelAndView boardUpdateForm(int board_id, int town_id) {
-			BoardDTO dto = service.getDetail(board_id);
+		public ModelAndView boardUpdateForm(int bi, int town_id) {
+			BoardDTO dto = service.getDetail(bi);
 			ModelAndView mv = new ModelAndView();
 			mv.addObject("dto", dto);
 			mv.addObject("boardTi", town_id);
@@ -332,6 +382,13 @@ public class BoardController { //안휘주 작성
 			mv.setViewName("photoBoard_Search");
 			return mv;			
 		}
+		
+		//조회수 증가
+		@RequestMapping(value="/updateViewcnt", produces = {"application/json;charset=utf-8"})
+		public @ResponseBody int updateViewcnt (int bi) {
+			return service.updateViewcnt(bi);
+		}
+		
 						
 
 		

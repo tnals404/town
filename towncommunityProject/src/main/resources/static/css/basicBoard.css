@@ -13,8 +13,8 @@ td {
 .include {
 	position: absolute;
 	top: 10px;
-	width: 19px;
-	height: 19px;
+	width: 17px;
+	height: 17px;
 	opacity: 0.4;
 }
 
@@ -23,8 +23,6 @@ td {
 }
 
 .include:nth-of-type(2) {
-	width: 17px;
-	height: 17px;
 	top: 11px;
 	right: 35px;
 }
@@ -128,16 +126,36 @@ td {
 	text-decoration: underline;
 }
 
+#order_btnBox {
+	display: flex;
+}
+#order_btnBox button {
+	font-size : 15px;
+	margin : 0.5px;
+	border: none;
+	border-right : 2px solid gray;
+	background-color: transparent;
+	cursor: pointer;
+	width: 82px;
+}
+#order_btnBox button:last-of-type {
+	border: none;
+}
+
+.activated {
+	font-weight: bold;
+}
+
 /* 글쓰기 버튼 */
 #top_btnBox{
 	width : 97%;
 	display : flex;
 	justify-content:space-between;
-	margin-bottom : 5px;
+	margin-bottom : 10px;
 	padding-left: 50px;
 	padding-right: 30px;
 }
-#writeBtn, #order_btnBox button {
+#writeBtn {
 	width:70px; height : 35px;
 	font-size : 13px;
 	border : 1px solid #8D98AA;
@@ -145,14 +163,9 @@ td {
 	background-color : transparent;	
 	cursor: pointer;
 }
-#writeBtn:hover, #order_btnBox button:hover {
+#writeBtn:hover {
 	background-color : #6D829B;
 	color : white;			
-}
-
-#order_btnBox button.activated {
-	background-color : #6D829B;
-	color : white;	
 }
 
 /* 게시판 검색창 부분 */
@@ -188,4 +201,4 @@ td {
 #board_search_btn:hover {
 	background-color : #6D829B;
 	color : white;			
-} 
+}.

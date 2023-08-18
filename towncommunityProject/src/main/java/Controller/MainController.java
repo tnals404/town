@@ -49,6 +49,14 @@ public class MainController {
 		List<BoardDTO> news = service.villageNews(ti);
 		List<BoardDTO> placeOfMeeting = service.placeOfMeeting(ti);
 		BoardDTO photo = service.todayPhoto(ti);
+		if(photo != null) {
+		int result = service.photoExhibitionCheck(photo.getBoard_contents());
+		if(result <= 1) {
+			Document doc2 = Jsoup.parse(photo.getBoard_contents());
+			photo.setBoard_preview(doc2.text());
+			service.photoExhibition(photo);		
+		}
+		}
 		int board_id = 0;
 		if(photo != null) {
 			board_id = photo.getBoard_id();

@@ -118,16 +118,202 @@ $(document).ready(function() {
 	//해당 글 보러가기
 	$(".moreDetailBtn").on('click', function(){
 		let bi = $(this).prev("#boardId").val();
-		open("/boarddetail?bi="+bi , "해당글상세조회", "width=900px, height=800px, top=200px, left=800px");
+		$.ajax({
+			url : 'updateViewcnt',
+			type : 'post',
+			data : {'bi' : bi},
+			success : function(response){
+				if(response > 0) {
+					open("/boarddetail?bi="+bi , "해당글상세조회", "width=900px, height=800px, top=200px, left=800px");
+				}
+				else {
+					alert("삭제된 글입니다. 상세 페이지로 이동 불가합니다.");
+				}
+			},
+            error: function(request,status,error) {
+	      		alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+	      		console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+	      	}
+		});//ajax	
 	});
 	
+	//해당 글 삭제
+	$(".adminDeleteBoard").on('click', function(){
+		let thisBoardId = $(this).attr('id');
+		let thisReportId = $(this).prevAll(".reportId").val();	
+		//alert("thisBoardId = " + thisBoardId + "/ thisReportId = " + thisReportId);
+		if(confirm("해당 글을 삭제하시겠습니까?") == true){
+			$.ajax({
+				url : 'deleteboard',
+				type : 'post',
+				data : {'board_id': thisBoardId},
+				success : function(response){
+					if(response > 0) {
+						$.ajax({
+							url : 'updateReportResult',
+							type : 'post',
+							data : {'report_id': thisReportId, 'report_result' : '글 삭제'},
+							success : function(response){
+								if(response > 0) {
+									alert("해당 글을 삭제 처리 하였습니다.");	
+									location.reload(); //현재 페이지 새로고침
+								}
+							},
+							error : function(request, status, e){
+								alert("코드=" + request.status + "\n" + "메시지=" + request.responseText + "\n" + "error=" + e);
+							}
+						});//ajax 	
+					}
+				},
+				error : function(request, status, e){
+					alert("코드=" + request.status + "\n" + "메시지=" + request.responseText + "\n" + "error=" + e);
+				}
+			});//ajax
+		}
+		else {
+			return ;
+		}
+	});
+	
+	//처벌 없음
+	$(".adminNoPenalty").on('click', function(){
+		let thisReportId = $(this).attr('id');
+		
+		if(confirm("해당 글을 처벌 없음으로 처리하시겠습니까?") == true){
+			$.ajax({
+				url : 'updateReportResult',
+				type : 'post',
+				data : {'report_id': thisReportId, 'report_result' : '처벌 없음'},
+				success : function(response){
+					if(response > 0) {
+						alert("처벌 없음으로 처리 하였습니다.");	
+						location.reload(); //현재 페이지 새로고침
+					}
+				},
+				error : function(request, status, e){
+					alert("코드=" + request.status + "\n" + "메시지=" + request.responseText + "\n" + "error=" + e);
+				}
+			});//ajax 	
+		}
+		else {
+			return ;
+		}
+	});
+	
+	//회원 탈퇴시키기
+	$(".adminDeleteMember").on('click', function(){
+		let memberId = $(this).prevAll(".reportedMemId").val();
+		let thisReportId = $(this).prevAll(".reportId").val();
+		
+		if(confirm("해당 회원을 강제 탈퇴처리하시겠습니까?") == true){
+			$.ajax({
+				url : 'admindeletemember',
+				type : 'post',
+				data : {'member_id': memberId},
+				success : function(response){
+					if(response == 2) {
+						$.ajax({
+							url : 'updateReportResult',
+							type : 'post',
+							data : {'report_id': thisReportId, 'report_result' : '회원 탈퇴 처리'},
+							success : function(response){
+								if(response > 0) {
+									alert("해당 회원을 탈퇴 처리 하였습니다.");	
+									location.reload(); //현재 페이지 새로고침
+								}
+							},
+							error : function(request, status, e){
+								alert("코드=" + request.status + "\n" + "메시지=" + request.responseText + "\n" + "error=" + e);
+							}
+						});//ajax 	
+					}
+					else {
+						alert("문제가 발생하였습니다. 데이터베이스를 확인하세요.");
+					}
+				},
+				error : function(request, status, e){
+					alert("코드=" + request.status + "\n" + "메시지=" + request.responseText + "\n" + "error=" + e);
+				}
+			});//ajax
+		}
+		else {
+			return ;
+		}
+	});
+	
+	//회원 정지 기능
+	$(".adminStopMember").on('click', function(){
+		let boardId = $(this).prevAll(".boardId").val();
+		let memberId = $(this).prevAll(".reportedMemId").val();
+		let thisReportId = $(this).prevAll(".reportId").val();
+		let reason = $(this).prevAll(".reportReason").val();
+		
+		let stopDateNum;
+		if(reason == "스팸/홍보/도배"){
+			stopDateNum = 2;
+		}
+		else if(reason == "음란물"){
+			stopDateNum = 3;
+		}
+		else if(reason == "불법정보"){
+			stopDateNum = 4;
+		}
+		else if(reason == "청소년유해"){
+			stopDateNum = 3;
+		}
+		else if(reason == "욕설/생명경시/혐오/차별"){
+			stopDateNum = 2;
+		}
+		else if(reason == "개인정보노출"){
+			stopDateNum = 3;			
+		}
+		else {
+			stopDateNum = 1;
+		}
+		
+		let alertWords = "내규에 따른 해당 신고 사유의 정지일은 " + stopDateNum + "일입니다. 해당 회원을 정지처리하시겠습니까? ";
+		let reportResultWords = '회원 정지 ' + stopDateNum + '일, 글 삭제';
+		
+		if(confirm(alertWords) == true){
+			$.ajax({
+				url : 'adminBoardStopMember',
+				type : 'post',
+				data : {'member_id': memberId, 'stopDateNum' : stopDateNum, 'board_id': boardId},
+				success : function(response){
+					if(response > 0) {
+						$.ajax({
+							url : 'updateReportResult',
+							type : 'post',
+							data : {'report_id': thisReportId, 'report_result' : reportResultWords},
+							success : function(response){
+								if(response > 0) {
+									alert("해당 회원은 "+ stopDateNum +"일 정지, 해당 글은 삭제 처리 하였습니다.");	
+									location.reload(); //현재 페이지 새로고침
+								}
+							},
+							error : function(request, status, e){
+								alert("코드=" + request.status + "\n" + "메시지=" + request.responseText + "\n" + "error=" + e);
+							}
+						});//ajax 	
+					}
+				},
+				error : function(request, status, e){
+					alert("코드=" + request.status + "\n" + "메시지=" + request.responseText + "\n" + "error=" + e);
+				}
+			});//ajax
+		}
+		else {
+			return ;
+		}
+	});
+
 	
 	
 }); //ready
 </script>
 </head>
 <body>
-<jsp:include page="Header.jsp" />
+<jsp:include page="AdminHeader.jsp" />
 <div id="myPage_layout">
 <jsp:include page="adminMenu.jsp" />
 	
@@ -140,7 +326,7 @@ $(document).ready(function() {
 	
 		<div id="adminList_top_btnBox">
 			<div id="notYetList">
-				 <form id="reportrfBoardListForm" action="reportedBoardList" method="post">				 			    	  	
+				 <form id="reportedBoardListForm" action="reportedBoardList" method="post">				 			    	  	
 					<input type="hidden" name="search" value="notYet" />
 					<input type="submit" id="notYetListBtn" value="미 처리 내역" />
 				 </form>
@@ -160,14 +346,14 @@ $(document).ready(function() {
 					<th style="width: 10%;">작성자</th>
 					<th style="width: 20%;">제목/내용</th>
 					<th style="width: 10%;">신고자</th>
-					<th style="width: 14%;">신고 사유</th>
+					<th style="width: 10%;">신고 사유</th>
 					<th style="width: 9%;">신고 날짜</th>
 					<c:choose>
 						<c:when test="${searchdto.searchType1 == 'notYet'}">
-							<th style="width: 17%;">신고 처리</th>
+							<th style="width: 22%;">신고 처리</th>
 						</c:when>
 						<c:otherwise>
-							<th style="width: 17%;">신고 처리 결과</th>						
+							<th style="width: 15%;">신고 처리 결과</th>						
 						</c:otherwise>					
 					</c:choose>
 				</tr>
@@ -188,10 +374,14 @@ $(document).ready(function() {
 							${regDate}
 						</td>
 						 <td>
-						 	<input type="hidden" class="reportedMemId" value="${dto.reported_member_id}" />
+						 	 <input type="hidden" class="boardId" value="${dto.board_id}" />
+						 	 <input type="hidden" class="reportId" value="${dto.report_id}" />
+						 	 <input type="hidden" class="reportedMemId" value="${dto.reported_member_id}" />
+						 	 <input type="hidden" class="reportReason" value="${dto.report_reason}" />
 							 <button class="adminDeleteBoard" id="${dto.board_id}">글삭제</button>	
 							 <button class="adminDeleteMember" id="${dto.reported_member_id}_delete">회원삭제</button>
 							 <button class="adminStopMember" id="${dto.reported_member_id}_stop">회원정지</button>
+							 <button class="adminNoPenalty" id="${dto.report_id}">처벌없음</button>
 						 </td>
 					</tr>
 					<tr class="report_detail_view"><td colspan="7" style="text-align : left; margin-left : 10px;">

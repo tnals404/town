@@ -13,10 +13,9 @@
 
 #board_main {
 	width : 80%; 
-	margin-top : 30px;
-	padding : 20px 0px;
+	padding : 33px 26px 20px 42px;
 	display : flex; 
-	justify-content: center;
+	justify-content: flex-start;
 	flex-direction: row;
 	flex-wrap: wrap;
 }
@@ -24,17 +23,24 @@
 #board_name {
 	display: flex;
 	flex-direction: row;
+	margin: 0px;
 	margin-bottom: 20px;
 }
 
 #board-name {
-	width: 150px;
+	box-sizing: border-box;
+	width: 15%;
 	height: 951px;
 	font-size: 1rem;
 	margin-right: 15px;
 	padding: 10px;
 	overflow: auto;
 }
+#notice_wrap {
+	box-sizing: border-box;
+	width: 83%;
+}
+
 #write-form { 
 	display: flex;
 	flex-direction: column;
@@ -52,6 +58,7 @@
 #board_page {
 	box-sizing: border-box;
 	display: flex;
+	margin: 0px;
 	flex-direction: column;
 }
 
@@ -101,6 +108,6 @@ div.ql-toolbar {
 
 .ql-editor img {
 	margin: 0px;
-	width: 50%;
-	height: 50%;
+	width: 500px;
+	height: auto;
 }

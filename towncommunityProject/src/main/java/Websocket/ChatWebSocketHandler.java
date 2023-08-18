@@ -27,6 +27,10 @@ public class ChatWebSocketHandler implements WebSocketHandler {
 		//연결 도중 여러번 실행
 		//1. 1개 클라이언트 메시지 수신
 		String msg = (String)message.getPayload();
+		//msg ="{messsg: xxx , sender:xxx}"
+		//msg.메소드(마지막글자 ㅅ삭제);
+		msg.replace("}", ",\"count\":list.size()}");
+		//msg += ",count:list.size +  }"
 		//2. 접속된 모든 클라이언트 메시지 송신
 		for(WebSocketSession socket : list) {
 			WebSocketMessage<String> sendmsg = new TextMessage(msg);

@@ -31,4 +31,7 @@ public interface SignDAO {
 	int getMygoodArticleCount(HashMap<String, ?> map);
 	List<BoardDTO> getMygoodPagingBoardlist(HashMap<String, ?> map);
 	public int admincnt();
+	// 회원 등급 정보(경험치바 구현)
+	HashMap<String, Object> getMemberGradeInfo(String member_id);
+	int getmyphotocnt(HashMap<String, ?> map);
 }

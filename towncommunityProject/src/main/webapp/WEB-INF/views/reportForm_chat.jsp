@@ -56,6 +56,9 @@ margin-top : 10px;
 	background-color : #182434;
 	color : white;			
 }
+#values {
+	display: none;
+}
 </style>
 <script>
 $(document).ready(function(){
@@ -65,15 +68,19 @@ $(document).ready(function(){
   		if(isChecked){
   			let report_reason = $('input:radio[name="report_reason"]:checked').val();
   			let report_detail = $("#report_detail").val();
+  			let message_id = Number("${dto.message_id}");
+  			let reported_member_id = $("#member_id").text();
+  			let reported_contents = $("#message_content").text();
+  			let reporter = $("#touser_id").text();
 
   			$.ajax({
- 				url : 'reportBoard',
+ 				url : 'reportChat',
  				type : 'post',
  				data : {
- 					'board_id' : "${dto.board_id }",
- 					'reported_member_id' : "${dto.writer }",
- 					'reported_contents' : "${dto.board_title }",
- 					'reporter' : "${member_id }",
+ 					'message_id' : message_id,
+ 					'reported_member_id' : reported_member_id,
+ 					'reported_contents' : reported_contents,
+ 					'reporter' : reporter,
  					'report_reason' : report_reason,
  					'report_detail' : report_detail
  				},
@@ -102,10 +109,15 @@ $(document).ready(function(){
 <header>신고하기</header>
 <div id="form-wrap">
 	<br>
-	<div id="writer">작성자  | ${dto.writer}</div>
-	<div id="contents"> 제목/내용  | ${dto.board_title }</div>
+	<div id="writer">작성자  | ${dto.member_id}</div>
+	<div id="contents"> 채팅내용  | ${dto.message_content }</div>
+	<div id="values">
+		<div id="member_id">${dto.member_id}</div>
+		<div id="message_content">${dto.message_content }</div>
+		<div id="touser_id">${dto.touser_id }</div>
+	</div>
 	<p>신고하시는 사유를 선택해주세요.</p>
-	<form action="reportBoard" id="reportBoard" method="post">
+	<form action="reportChat" id="reportChat" method="post">
 		<div>
 		<input type="radio" name="report_reason" value="스팸/홍보/도배">스팸/홍보/도배글입니다.<br>
 		<input type="radio" name="report_reason" value="음란물">음란물입니다.<br>
@@ -113,7 +125,7 @@ $(document).ready(function(){
 		<input type="radio" name="report_reason" value="청소년유해">청소년에게 유해한 내용입니다.<br>
 		<input type="radio" name="report_reason" value="욕설/생명경시/혐오/차별">욕설/생명경시/혐오/차별적 표현입니다.<br>
 		<input type="radio" name="report_reason" value="개인정보노출">개인정보 노출 게시물입니다.<br>
-		<input type="radio" name="report_reason" value="기타">기타<br>
+		<!-- <input type="radio" name="report_reason" value="기타">기타<br> -->
 		</div>
 		<p>신고하시는 이유를 알려주세요.</p>
 		<textarea id="report_detail" name="report_detail" rows="5" cols="55" placeholder="신고 사유를 구체적으로 작성해주세요.(선택사항)"></textarea>

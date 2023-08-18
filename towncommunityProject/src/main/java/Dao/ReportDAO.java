@@ -1,5 +1,6 @@
 package Dao;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -31,7 +32,18 @@ public interface ReportDAO { //안휘주 작성
   	public int reportedCommentCnt(SearchDTO dto);
   	public List<ReportDTO> reportedCommentList(SearchDTO dto);
   	
- 
+  	public int reportChat(ReportDTO dto);
+  	public int reportGChat(ReportDTO dto);
+  	//신고 결과 업데이트
+  	public int updateReportResult(ReportDTO dto);
   	
+  	//채팅 신고내용 조회-----------------------------------------------------------------------
+  	public int reportedChatCnt(SearchDTO dto);
+  	public List<ReportDTO> reportedChatList(SearchDTO dto);
   	
+  	public int reportedGChatCnt(SearchDTO dto);
+  	public List<ReportDTO> reportedGChatList(SearchDTO dto);
+  	
+  	//회원 정지
+  	public int updateMemberStopDate(HashMap<String, Object> map);
 }

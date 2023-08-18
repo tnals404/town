@@ -1,6 +1,8 @@
 package Controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +16,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import Dto.ChatlistDTO;
 import Dto.ChatroomDTO;
+import Dto.GChatlistDTO;
 import Dto.MessageDTO;
 import Service.ChatService;
+import Service.GChatService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -25,6 +29,10 @@ public class ChatController {
 	@Autowired
 	@Qualifier("ChatService")
 	ChatService service;
+	
+	@Autowired
+	@Qualifier("GChatService")
+	GChatService service2;
 	
 	@RequestMapping("/testchat")
 	public String testchat() {
@@ -44,9 +52,6 @@ public class ChatController {
 	    
 	    List<MessageDTO> list = service.checkNull(dto3);
 	    
-	    mv.addObject("list",list);
-	    mv.setViewName("/ChatViewVer2");
-	    
 	    if (list.size() == 0) {
 	    	ChatroomDTO dto4 = new ChatroomDTO();
 	    	ChatlistDTO dto44 = new ChatlistDTO();
@@ -64,11 +69,17 @@ public class ChatController {
 		    System.out.println(result3);
 	    }
 	    else {
-	    	System.out.println(list.get(0).getChat_id());
-		   // session.setAttribute("thisChatId", list.get(0).getChat_id());
-		    int result4 = service.readMessage(dto3);
-		    System.out.println(result4);
+            dto3.setChat_id(list.get(0).getChat_id());
+            int result4 = service.readMessage(dto3);
+            System.out.println(result4);
 	    }
+	    
+		/*
+		 * String touser_id2 = service.doestouseridexist(touser_id); if (touser_id2 ==
+		 * null) { mv.addObject("notexist","알수없음"); }
+		 */
+	    mv.addObject("list",list);
+	    mv.setViewName("/ChatViewVer2");
 		return mv;
 	}
 	
@@ -89,21 +100,28 @@ public class ChatController {
 		List<Integer> chat_id = service.selectChatid(dto5);
 		int firstchatid = chat_id.get(0);
 		dto5.setChat_id(firstchatid);
+		SimpleDateFormat dateFormat = new  SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+		String now = dateFormat.format(new Date());
+		dto5.setMessage_sendAt(now);
+		
 		System.out.println(touser_id);
 		System.out.println(firstchatid);
 		dto5.setMessage_content(message);
-		int result = service.insertMessage(dto5);
+		service.insertMessage(dto5);
+		int messageid = service.selectMessageid(dto5);
 		
-		return result;
+		return messageid;
 	}
 
 	@RequestMapping("/chatlist")
 	public ModelAndView chatlist(HttpSession session) {
 		ChatlistDTO dto6 = new ChatlistDTO();
+		GChatlistDTO dto888 = new GChatlistDTO();
 		ModelAndView mv = new ModelAndView();
 		String member_id = String.valueOf(session.getAttribute("member_id"));
 		dto6.setMember_id(member_id);
 		ArrayList<ChatlistDTO> list = service.selectChatlist(dto6);
+		
 
 		for(ChatlistDTO data : list) {
 			String touser_id = data.getTo_id();
@@ -118,6 +136,7 @@ public class ChatController {
 				String latest_content = service.latestContent(dto77);
 				data.setLatest_content(latest_content);
 				
+				dto77.setMember_id(member_id);
 				dto77.setTouser_id(member_id2);
 				int totalisread = service.countIsread(dto77);
 				
@@ -132,17 +151,29 @@ public class ChatController {
 				String latest_content = service.latestContent(dto77);
 				data.setLatest_content(latest_content);
 				
+				dto77.setMember_id(member_id);
 				dto77.setTouser_id(touser_id);
 				int totalisread = service.countIsread(dto77);
 				
 				data.setTotalisread(totalisread);
 				
 			}
+			
+			String to_id2 = service.doestouseridexist(touser_id);
+			if (to_id2 == null) {
+				data.setTo_id("알수없음");
+			}
 		}
 		
+		dto888.setMember_id(member_id);
+		ArrayList<GChatlistDTO> list2 = service2.selectGchatlist(dto888);
+		
+		System.out.println(list2.size());
+		
 		mv.addObject("list",list);
+		mv.addObject("list2",list2);
 		mv.setViewName("chatList");
 		return mv;
 	}
-
+	
 }

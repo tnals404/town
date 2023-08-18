@@ -52,11 +52,33 @@
 	<select id="getAllBoards" resultMap="BoardResultMap">
 		SELECT * FROM board
 	</select>
+<!-- 
 <select id="getPaginatedMembers" resultType="Dto.MemberDTO">
     SELECT * FROM member ORDER BY member_id LIMIT #{1}, #{20}
 </select>
+-->
+    <select id="getTotalMemberCount" resultType="int">
+        SELECT COUNT(*) FROM member;  
+    </select>
+
+    <select id="getAllMembersWithPagination" parameterType="hashmap" resultType="Dto.MemberDTO">
+        SELECT * FROM member
+        ORDER BY ${orderCol} ASC
+        LIMIT #{limitIndex}, #{limitCount};
+    </select>
 
 <update id="unbanMember" parameterType="string">
-        UPDATE member SET stop_date = 0 WHERE member_id = #{memberId}
-    </update>
+    UPDATE member SET stopclear_date = NOW() WHERE member_id = #{memberId}
+</update>
+<update id="decreaseReportCount" parameterType="string">
+    UPDATE member 
+    SET report_count = report_count - 1 
+    WHERE member_id = #{memberId} AND report_count > 0
+</update>
+<update id="adjustBanDate" parameterType="string">
+    UPDATE member
+    SET stopclear_date = DATE_SUB(stopclear_date, INTERVAL 1 DAY)
+    WHERE member_id = #{memberId}
+</update>
+
 </mapper>

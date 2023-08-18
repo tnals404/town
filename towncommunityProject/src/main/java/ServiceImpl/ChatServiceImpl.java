@@ -16,8 +16,33 @@ import Service.ChatService;
 public class ChatServiceImpl implements ChatService {
 	
 
+
 	@Autowired
 	ChatDAO dao;
+	
+	@Override
+	public int selectMessageid(MessageDTO dto) {
+		return dao.selectMessageid(dto);
+	}
+
+
+	@Override
+	public int deletechatmessage(MessageDTO dto) {
+		return dao.deletechatmessage(dto);
+	}
+
+
+	@Override
+	public String doestouseridexist(String touser_id) {
+		return dao.doestouseridexist(touser_id);
+	}
+
+
+	@Override
+	public MessageDTO selectMessagebyid(int message_id) {
+		return dao.selectMessagebyid(message_id);
+	}
+
 
 	@Override
 	public List<MessageDTO> checkNull(MessageDTO dto) {

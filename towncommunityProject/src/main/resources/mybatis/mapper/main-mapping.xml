@@ -17,6 +17,7 @@
 	<result property="board_videourl" column="board_videourl"/>
 	<result property="board_fileurl" column="board_fileurl"/>
 	<result property="place_name" column="place_name"/>
+	<result property="place_road_address" column="place_road_address"/>
 	<result property="place_lat" column="place_lat"/>
 	<result property="place_long" column="place_long"/>
 	<result property="writer" column="writer"/>
@@ -53,19 +54,19 @@ from town where town_id=#{town_id} limit 1;
 </select>
 
 <select id="popularArticles" resultMap="boardMap"  parameterType="int">
-select * from board where town_id=#{town_id} and ((board_name_inner='나의 일상') or (board_name_inner='사건, 사고 소식')) and date_format(writing_time, '%Y-%m-%d') = CURDATE() order by sum desc Limit 3;
+select * from board where printout is true and town_id=#{town_id} and ((board_name_inner='나의 일상') or (board_name_inner='사건, 사고 소식')) and date_format(writing_time, '%Y-%m-%d') = CURDATE() order by sum desc Limit 3;
 </select>
 
 <select id="villageNews" resultMap="boardMap"  parameterType="int">
-select board_id, board_title from board where town_id=#{town_id} and board_name_inner='사건, 사고 소식' order by writing_time desc Limit 4;
+select board_id, board_title from board where printout is true and town_id=#{town_id} and board_name_inner='사건, 사고 소식' order by writing_time desc Limit 4;
 </select>
 
 <select id="placeOfMeeting" resultMap="boardMap"  parameterType="int">
-select board_id, board_title from board where town_id=#{town_id} and ((board_name_inner='같이 줄서요') or (board_name_inner='같이 해요 소모임')) order by writing_time desc Limit 6;
+select board_id, board_title from board where printout is true and town_id=#{town_id} and ((board_name_inner='우리 지금 만나') or (board_name_inner='같이해요 소모임')) order by writing_time desc Limit 6;
 </select>
 
 <select id="todayPhoto" resultMap="boardMap"  parameterType="int">
-select * from board where town_id=#{town_id} and (board_name_inner='오늘의 사진') and date_format(writing_time, '%Y-%m-%d') = date_sub(CURDATE(), interval 1 day) order by sum desc Limit 1;
+select * from board where printout is true and town_id=#{town_id} and (board_name_inner='오늘의 사진') and date_format(writing_time, '%Y-%m-%d') = date_sub(CURDATE(), interval 1 day) order by sum desc Limit 1;
 </select>
 
 <select id="photoComment" resultMap="commentMap"  parameterType="int">
@@ -73,15 +74,15 @@ select * from comment where board_id=#{board_id} and parent_id = 0 and comment_s
 </select>
 
 <select id="youKnow" resultMap="boardMap"  parameterType="int">
-select * from board where town_id=#{town_id} and ((board_name_inner='행사 소식') or (board_name_inner='새로 오픈했어요')) order by sum desc Limit 1;
+select * from board where printout is true and town_id=#{town_id} and ((board_name_inner='행사 소식') or (board_name_inner='새로 오픈했어요')) order by sum desc Limit 1;
 </select>
 <select id="getContentCountByKeyword" resultType="long" parameterType="Map">
 	SELECT COUNT(*) FROM board 
-	WHERE town_id = #{town_id} AND (board_title LIKE CONCAT('%', #{keyword}, '%') OR board_contents LIKE CONCAT('%', #{keyword}, '%'));
+	WHERE printout is true and town_id = #{town_id} AND (board_title LIKE CONCAT('%', #{keyword}, '%') OR board_contents LIKE CONCAT('%', #{keyword}, '%'));
 </select>
 <select id="getContentByKeyword" resultMap="boardMap" parameterType="Map">
 	SELECT * FROM board 
-	WHERE town_id = #{town_id} AND (board_title LIKE CONCAT('%', #{keyword}, '%') OR board_contents LIKE CONCAT('%', #{keyword}, '%')) order by writing_time desc
+	WHERE printout is true and town_id = #{town_id} AND (board_title LIKE CONCAT('%', #{keyword}, '%') OR board_contents LIKE CONCAT('%', #{keyword}, '%')) order by writing_time desc
 </select>
 <select id="changeVillage" resultMap="townMap" parameterType="String">
 	SELECT * FROM town 
@@ -89,5 +90,56 @@ select * from board where town_id=#{town_id} and ((board_name_inner='행사 소�
 </select>
 <select id="profile" resultType="memberdto" parameterType="String">
 	select * from member where member_id=#{member_id}
+</select>
+<insert id="photoExhibition" parameterType="boarddto">
+	insert into board
+	(
+		board_name_inner, 
+		board_title, 
+		board_contents, 
+		board_preview,
+		board_imgurl, 
+		board_videourl, 
+		board_fileurl, 
+		place_name, 
+		place_road_address, 
+		place_address,
+		place_tel, 
+		place_lat, 
+		place_long,
+		writer, 
+		town_id,
+		good_cnt,
+		hate_cnt,
+		view_cnt,
+		sum,
+		writing_time
+	)
+	values 
+	(
+		'역대 당선작', 
+		#{board_title}, 
+		#{board_contents}, 
+		#{board_preview},
+		#{board_imgurl}, 
+		#{board_videourl}, 
+		#{board_fileurl}, 
+		#{place_name}, 
+		#{place_road_address}, 
+		#{place_address},
+		#{place_tel}, 
+		#{place_lat}, 
+		#{place_long},
+		#{writer}, 
+		#{town_id},
+		#{good_cnt}, 
+		#{hate_cnt}, 
+		#{view_cnt},
+		#{sum},
+		#{writing_time}
+	)
+</insert>
+<select id="photoExhibitionCheck" parameterType="String" resultType="int">
+select count(board_contents) from board where printout is true and board_contents = #{board_contents}
 </select>
 </mapper>

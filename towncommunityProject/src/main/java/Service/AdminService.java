@@ -1,5 +1,6 @@
 package Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,16 @@ import Dto.MemberDTO;
 
 public interface AdminService {
     public List<MemberDTO> getAllMembers(); 
-    public List<BlameTableDTO> getAllBlames(); 
+    void adjustBanDate(String memberId);
+	void decreaseReportCount(String memberId);
+	public List<BlameTableDTO> getAllBlames(); 
     public List<BoardDTO> getAllBoards(); 
     public void unbanMember(String memberId);
-    
+    public List<MemberDTO> getAllMembers(int offset, int size);
+	public int getTotalMemberCount();
+	public List<MemberDTO> getAllMembersWithPagination(HashMap<String, Object> paramMap);
+	
+	
    }
 
 
@@ -23,12 +30,12 @@ public interface AdminService {
 class AdminServiceImpl implements AdminService {
     @Autowired
     private AdminDAO adminDAO;
-
+    
     @Override
-    public List<MemberDTO> getAllMembers() {
-        return adminDAO.getAllMembers();
+    public List<MemberDTO> getAllMembers(int pageNo, int pageSize) {
+        int offset = (pageNo - 1) * pageSize; // pageNo를 offset으로 변환합니다.
+        return adminDAO.getAllMembers(offset, pageSize);
     }
-
     @Override
     public List<BlameTableDTO> getAllBlames() {
         return adminDAO.getAllBlames();
@@ -43,5 +50,29 @@ class AdminServiceImpl implements AdminService {
     public void unbanMember(String memberId) {
         adminDAO.unbanMember(memberId);
     }
-    
+	
+	@Override
+	public void decreaseReportCount(String memberId) {
+	    adminDAO.decreaseReportCount(memberId);  // 새로운 코드: DAO에서 리포트 카운트 감소
+	}
+
+	@Override
+	public void adjustBanDate(String memberId) {
+        adminDAO.adjustBanDate(memberId);
+    }
+
+	@Override
+    public int getTotalMemberCount() {
+        return adminDAO.getTotalMemberCount(); 
+    }
+
+    @Override
+    public List<MemberDTO> getAllMembersWithPagination(HashMap<String, Object> paramMap) {
+        return adminDAO.getAllMembersWithPagination(paramMap); 
+    }
+	@Override
+	public List<MemberDTO> getAllMembers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

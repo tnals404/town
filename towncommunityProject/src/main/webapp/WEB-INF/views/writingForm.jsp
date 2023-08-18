@@ -30,13 +30,13 @@
 			<select id="board-name">
 				<option>나의 일상</option>
 				<option>사건, 사고 소식</option>
-				<option>오늘의 사진</option>
-				<option>같이 줄서요</option>
-				<option>같이해요 소모임</option>
 				<option>분실물센터</option>
-				<option>심부름센터</option>
+				<option>오늘의 사진</option>
+				<option>우리 지금 만나</option>
+				<option>같이해요 소모임</option>
 				<option>행사 소식</option>
 				<option>새로 오픈했어요</option>
+				<option>여기 추천!</option>
 			</select>
 			<input id="write-title" type="text" placeholder="제목"/>
 		</div>
@@ -72,7 +72,7 @@
 <script>
 $(document).ready(function() {
 	// 에디터 placeholder 추가
-	$(".ql-editor").attr("data-placeholder", "게시글 내용을 입력해주세요!\n파일 용량 제한은 5MB이고 한 게시글당 최대 10개까지 업로드할 수 있습니다.\n장소 추가는 하나만 가능합니다.");
+	$(".ql-editor").attr("data-placeholder", "게시글 내용을 입력해주세요!\n이미지 파일 용량 제한은 5MB이고 장소 추가는 하나만 가능합니다.");
 	
 	// 게시판에서 글 작성 페이지로 이동시 자동으로 게시판 소분류 선택
 	$("#board-name option").each(function(index, item) {
@@ -120,13 +120,6 @@ $(document).ready(function() {
 			board_imgurl = $($(".ql-editor img")[0]).attr("src");
 		}	
 		
-		// 이미지를 10장 이상 추가하면 alert 띄우기
-		let imgTagIdx = $(".ql-editor img").length; // img 태그의 개수
-		if (imgTagIdx > 10) {
-			alert("사진은 최대 10개까지 업로드 가능합니다. 사진 개수를 조정해주세요.");
-			return;
-		}
-		
 		$.ajax({
 			url: "/writingForm",
 			data: {
@@ -155,6 +148,7 @@ $(document).ready(function() {
 						alertResult += " 포인트 5점이 지급되었습니다.";
 					}
 					alert(alertResult);
+					if (response.gradeUpResult) alert("축하드립니다! 회원 등급이 올랐습니다.");
 					if (board_name_inner === "오늘의 사진" || 
 							board_name_inner === "역대 당선작" || 
 							board_name_inner === "분실물센터") {

@@ -10,6 +10,7 @@ public class BoardDTO { //안휘주 작성
 	int good_cnt, hate_cnt, view_cnt;
 	String board_imgurl, board_videourl, board_fileurl, place_name, place_road_address, place_address, place_tel, place_lat, place_long, writer;
 	int town_id, sum;
+	boolean printout;
 	String comment_writer, comment_contents, comment_time;
 	TownDTO town;
 	CommentDTO comment;
@@ -176,6 +177,12 @@ public class BoardDTO { //안휘주 작성
 	}
 	public void setTown_id(int town_id) {
 		this.town_id = town_id;
+	}
+	public boolean isPrintout() {
+		return printout;
+	}
+	public void setPrintout(boolean printout) {
+		this.printout = printout;
 	}
 	
 	

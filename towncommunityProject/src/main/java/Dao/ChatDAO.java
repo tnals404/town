@@ -22,5 +22,9 @@ public interface ChatDAO {
 	public String latestContent(MessageDTO dto);
 	public int readMessage(MessageDTO dto);
 	public List<Integer> selectChatid(MessageDTO dto);
+	public int selectMessageid(MessageDTO dto);
+	public MessageDTO selectMessagebyid(int message_id);
+	public int deletechatmessage(MessageDTO dto);
+	public String doestouseridexist(String touser_id);
 }
 	

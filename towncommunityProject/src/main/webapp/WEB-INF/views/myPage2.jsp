@@ -97,7 +97,7 @@ $(document).ready(function() {
 									: totalPostCnt - (param.page - 1) * postCntPerPage - vs.index}
 								</td>
 								<td>${boardlist.board_name_inner}</td>
-								<td><a href="/boarddetail?bi=${boardlist.board_id}" class="writing-title">${boardlist.board_title}</a></td>
+								<td><a href="/boarddetail?bi=${boardlist.board_id}" class="writing-title" id="${boardlist.board_id}">${boardlist.board_title}</a></td>
 								<td>${boardlist.writer}</td>
 								<td>${fn:split(boardlist.writing_time, " ")[0]}</td>
 								<td>${boardlist.view_cnt}</td>
@@ -109,7 +109,7 @@ $(document).ready(function() {
 									: totalPostCnt - (param.page - 1) * postCntPerPage - vs.index}
 								</td>
 								<td>${boardlist.board_name_inner}</td>
-								<td><a href="/boarddetail?bi=${boardlist.board_id}" class="writing-title">${boardlist.comment_contents}</a></td>
+								<td><a href="/boarddetail?bi=${boardlist.board_id}" class="writing-title" id="${boardlist.board_id}">${boardlist.comment_contents}</a></td>
 								<td>${boardlist.board_title}</td>
 								<td>${boardlist.comment_writer}</td>
 								<td>${fn:split(boardlist.comment_time, " ")[0]}</td>
@@ -149,6 +149,26 @@ $(document).ready(function() {
 </div>
 </body>
 <script>
+	//글 누르면 조회수+1, 해당 글 상세페이지로 이동
+	$(".writing-title").on('click', function(){
+	    const boardId = $(this).attr('id');
+	    $.ajax({
+	        url : 'updateViewcnt',
+	        type : 'post',
+	        data : {'bi' : boardId},
+	        success : function(response){
+	            if(response > 0) {}
+	            else {
+	                alert("문제가 발생했습니다.");
+	            }
+	        },
+	        error: function(request,status,error) {
+	              alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+	              console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+	          }
+	    });//ajax
+	});//글 1개 조회
+
 	//비밀번호 변경 클릭
 	function updatepasswordopen() {
   	var win =window.open("/Updatepassword", "PopupWin", "width=980,height=500");

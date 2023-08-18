@@ -78,11 +78,10 @@ public class BoardController1 { //김종인 작성
 		mv.setViewName("basicBoard");
 		
 		// ctgy 파라미터 검사
-		if (ctgy.equals("공지사항") || ctgy.equals("HOT 게시판") ||
+		if (ctgy.equals("공지사항") || ctgy.equals("우리 지금 만나") || ctgy.equals("여기 추천!") ||
 			ctgy.equals("나의 일상") || ctgy.equals("사건, 사고 소식") ||
 			ctgy.equals("오늘의 사진") || ctgy.equals("역대 당선작") ||
-			ctgy.equals("같이 줄서요") || ctgy.equals("같이해요 소모임") ||
-			ctgy.equals("분실물센터") || ctgy.equals("심부름센터") ||
+			ctgy.equals("같이해요 소모임") || ctgy.equals("분실물센터") || 
 			ctgy.equals("행사 소식") || ctgy.equals("새로 오픈했어요")) {
 			mv.addObject("boardName", ctgy);
 		} else {
@@ -252,7 +251,11 @@ public class BoardController1 { //김종인 작성
 		pointmap.put("point_method", "글작성");
 		pointmap.put("point_time", formatDate);
 		pointmap.put("point_get", 5);
-		boolean pointResult = service.addMemberPointOrNot(pointmap);
+		boolean pointResult = service.addMemberPointOrNot(pointmap); // 포인트를 부여했는지 안 했는지
+		boolean gradeUpResult = false; // 회원이 등급 업 했는지 안 했는지
+		if (pointResult) { // 포인트가 부여 됐을 때
+			gradeUpResult = service.memberGradeUp((String) session.getAttribute("member_id"));
+		}
 		
 		// board 테이블에 게시글 insert 하기
 		HashMap<String, Object> result = new HashMap<>();
@@ -268,6 +271,7 @@ public class BoardController1 { //김종인 작성
 		insertResult = service.insertBoard(dto);
 		result.put("insertResult", insertResult);
 		result.put("pointResult", pointResult);
+		result.put("gradeUpResult", gradeUpResult);
 		return result;
 	}
 	
@@ -346,7 +350,7 @@ public class BoardController1 { //김종인 작성
 	}
 	
 	// 프로필 사진 변경 폼 열기
-	@RequestMapping("/changeProfileImg")
+	@GetMapping("/changeProfileImg")
 	public String changeProfileImg() {
 		return "changeProfileImg";
 	}
@@ -366,14 +370,14 @@ public class BoardController1 { //김종인 작성
 		
 		return resultMap;
 	}
-	
-	@RequestMapping("/noticeWritingForm")
+	/*--------------------------------- 관리자 페이지 공지사항 컨트롤러 ---------------------------------*/
+	@GetMapping("/noticeWritingForm")
 	public ModelAndView noticeWritingForm(HttpSession session) {
 		ModelAndView mv = new ModelAndView();
 		if (session.getAttribute("member_id") == null) {
 			mv.setViewName("redirect:/");
 			return mv;
-		} else if (!service.isAdmin(String.valueOf(session.getAttribute("member_id")))) { // 관리자가 아니면 Main으로 이동
+		} else if ((int) session.getAttribute("member_role") != 1) { // 관리자가 아니면 Main으로 이동
 			mv.setViewName("redirect:/main");
 			return mv;
 		}
@@ -417,6 +421,7 @@ public class BoardController1 { //김종인 작성
 		for (String town_id : town_ids) {
 			town_ids_str += town_id + ",";
 		}
+		town_ids_str = town_ids_str.substring(0, town_ids_str.length() - 1);
 		noticemap.put("town_ids", town_ids_str);
 		insertResult += service.insertNoticeBoard(noticemap);
 		
@@ -436,7 +441,7 @@ public class BoardController1 { //김종인 작성
 		if (session.getAttribute("member_id") == null) {
 			mv.setViewName("redirect:/");
 			return mv;
-		} else if (!service.isAdmin(String.valueOf(session.getAttribute("member_id")))) { // 관리자가 아니면 Main으로 이동
+		} else if ((int) session.getAttribute("member_role") != 1) { // 관리자가 아니면 Main으로 이동
 			mv.setViewName("redirect:/main");
 			return mv;
 		}
@@ -468,14 +473,16 @@ public class BoardController1 { //김종인 작성
 			pagingResult = paging(page, totalPostCnt);
 		}
 		
-		ArrayList<String> town_ids = new ArrayList<>();
-		for (BoardDTO dto : boardlist) {
-			int tempBi = dto.getBoard_id();
-			String tempTownIds = service.getNoticeTownIds(tempBi);
-			town_ids.add(tempTownIds);
+		if (!boardlist.isEmpty()) {
+			ArrayList<String> town_ids = new ArrayList<>();
+			for (BoardDTO dto : boardlist) {
+				int tempBi = dto.getBoard_id();
+				String tempTownIds = service.getNoticeTownIds(tempBi);
+				town_ids.add(tempTownIds);
+			}
+			mv.addObject("town_ids", town_ids);
 		}
 
-		mv.addObject("town_ids", town_ids);
 		mv.addObject("selectedPageNum", page);
 		mv.addObject("postCntPerPage", postCntPerPage);
 		mv.addObject("totalPostCnt", totalPostCnt);
@@ -489,6 +496,69 @@ public class BoardController1 { //김종인 작성
 		return mv;
 	}
 	
+	@PostMapping("/noticeUpdateForm")
+	public ModelAndView noticeUpdateForm(
+			HttpSession session,
+			@RequestParam(value="bi", required=false, defaultValue="0") int board_id
+	) {
+		ModelAndView mv = new ModelAndView();
+		if (session.getAttribute("member_id") == null) {
+			mv.setViewName("redirect:/");
+			return mv;
+		} else if ((int) session.getAttribute("member_role") != 1) { // 관리자가 아니면 Main으로 이동
+			mv.setViewName("redirect:/main");
+			return mv;
+		}
+		// # 공지사항이 삭제된 경우 게시글이 존재하지 않습니다 페이지로 이동
+//		if (board_id == 0) {
+//			mv.setViewName("");
+//			return mv;
+//		}
+		String town_ids = service.getNoticeTownIds(board_id);
+		BoardDTO dto = service.getNoticeDetail(board_id);
+		List<String> townNameList = service.getAllTownName();
+		mv.addObject("townNameList", townNameList);
+		mv.addObject("dto", dto);
+		mv.addObject("town_ids", town_ids);
+		mv.setViewName("noticeUpdateForm");
+		return mv;
+	}
+	
+	@PostMapping("/noticeUpdateEnd")
+	@ResponseBody
+	public HashMap<String, Object> noticeUpdateEnd(
+			BoardDTO dto, HttpSession session,
+			@RequestParam(value="town_ids[]", required=false, defaultValue="") ArrayList<String> town_ids
+	) {
+		HashMap<String, Object> result = new HashMap<>();
+		int updateResult = 0;
+		if (dto.getBoard_title().equals("")) { // 제목을 입력하지 않았을 경우
+			updateResult = -1;
+			result.put("updateResult", updateResult);
+			return result;
+		} 
+		if (town_ids.isEmpty()) { // 공지사항을 올릴 동네를 선택하지 않은 경우
+			updateResult = -2;
+			result.put("updateResult", updateResult);
+			return result;
+		}
+		
+		HashMap<String, Object> noticemap = new HashMap<>();
+		noticemap.put("board_id", dto.getBoard_id());
+		String town_ids_str = "";
+		for (String town_id : town_ids) {
+			town_ids_str += town_id + ",";
+		}
+		town_ids_str = town_ids_str.substring(0, town_ids_str.length() - 1);
+		noticemap.put("town_ids", town_ids_str);
+		updateResult = service.updateNotice(dto, noticemap);
+		
+		// ajax 통신 결과 전송
+		result.put("updateResult", updateResult);
+		return result;
+	}
+	
+	/*--------------------------------- 공통으로 사용하는 함수들 ---------------------------------*/
 	// 게시글 페이징 처리하는 메소드
 	public HashMap<String, Object> paging(int page, int totalPostCnt) {
 		HashMap<String, Object> pagingResult = new HashMap<>();

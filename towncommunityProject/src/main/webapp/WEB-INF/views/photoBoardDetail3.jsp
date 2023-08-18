@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>동네일보 게시판</title>
 <script src="/js/jquery-3.6.4.min.js"></script>
 <link rel="stylesheet" href="/css/BoardCommon.css" />
 <link rel="stylesheet" href="/css/BoardDetail.css" />
@@ -147,10 +147,13 @@ $(document).ready(function(){
 	 					'board_id' : $('#board_id').val(),
 	 					'comment_contents' : text,
 	 					'comment_imgurl' : $("#comment_img_preview").attr("src"),
-	 					'comment_secret' : $("#comment_secret").is(":checked")
 	 				},
 	 				success : function(response){ 
-	 					if(response > 0) {
+	 					if(response.insertResult > 0 ) {
+	 						alert("댓글 작성이 완료되었습니다. 포인트 3점이 지급되었습니다.");
+	 						if (response.gradeUpResult) {
+	 							alert("축하드립니다! 회원 등급이 올랐습니다.");
+	 						}
 	 						location.reload(); //현재 페이지 새로고침
 	 					}
 	 				}, 
@@ -168,10 +171,13 @@ $(document).ready(function(){
 	 					'comment_writer' : $('#comment_writer').val(),
 	 					'board_id' : $('#board_id').val(),
 	 					'comment_contents' : text,
-	 					'comment_secret' : $("#comment_secret").is(":checked")
 	 				},
 	 				success : function(response){ 
-	 					if(response > 0) {
+	 					if(response.insertResult > 0 ) {
+	 						alert("댓글 작성이 완료되었습니다. 포인트 3점이 지급되었습니다.");
+	 						if (response.gradeUpResult) {
+	 							alert("축하드립니다! 회원 등급이 올랐습니다.");
+	 						}
 	 						location.reload(); //현재 페이지 새로고침
 	 					}
 	 				}, 
@@ -216,48 +222,18 @@ $(document).ready(function(){
 		 const commentId = $(this).parent().siblings(".comment_btns_open").attr('id');
 		 
 		 if(confirm("정말 삭제하시겠습니까?") == true){
-			 $.ajax({
-	 				url : 'recommentCnt',
+			  $.ajax({
+	 				url : 'deletecomment',
 	 				type : 'post',
 	 				data : {'comment_id' : commentId },
 	 				success : function(response){
-	 					if(response > 0) {
-						  $.ajax({
-				 				url : 'deleteUpdateComment',
-				 				type : 'post',
-				 				data : {
-				 					'comment_id' : commentId, 
-				 					'comment_contents' : "삭제된 댓글입니다.",
-				 				},
-				 				success : function(response){
-				 					alert("댓글이 삭제되었습니다.");
-				 					location.reload();
-				 				}, 
-				 				error : function(request, status, e) {
-				 					alert("코드=" + request.status + "\n" + "메시지=" + request.responseText + "\n" + "error=" + e); 
-				 				}
-				 			});//ajax			
-	 					}
-	 					else {
-						  $.ajax({
-				 				url : 'deletecomment',
-				 				type : 'post',
-				 				data : {'comment_id' : commentId },
-				 				success : function(response){
-				 					alert("댓글이 삭제되었습니다.");
-				 					location.reload();
-				 				}, 
-				 				error : function(request, status, e) {
-				 					alert("코드=" + request.status + "\n" + "메시지=" + request.responseText + "\n" + "error=" + e); 
-				 				}
-				 			});//ajax
-	 					}
+	 					alert("댓글이 삭제되었습니다.");
+	 					location.reload();
 	 				}, 
 	 				error : function(request, status, e) {
 	 					alert("코드=" + request.status + "\n" + "메시지=" + request.responseText + "\n" + "error=" + e); 
 	 				}
-	 			});//ajax 
-	 			
+	 			});//ajax
 	    }
 	    else{
 	        return ;
@@ -507,7 +483,6 @@ $(document).ready(function(){
 		const recmt_writer = $(this).parents().siblings(".recomment_writer").val();
 		const recmt_boardId = $(this).parents().siblings(".recomment_board_id").val();
 		const recmt_parentId = $(this).parents().siblings(".recomment_parent_id").val();
-		const recmt_secretVal = $(this).prev().children(".recomment_secret").is(":checked");
 		const recmt_imgUrl = $(this).parents().siblings().children(".recomment_img_preview").attr("src");
 		//alert(recmt_imgUrl);
 		
@@ -525,7 +500,6 @@ $(document).ready(function(){
 	 					'parent_id' : recmt_parentId,
 	 					'comment_contents' : recmt_contents,
 	 					'comment_imgurl' : recmt_imgUrl,
-	 					'comment_secret' : recmt_secretVal
 	 				},
 	 				success : function(response){ 
 	 					if(response > 0) {
@@ -546,7 +520,6 @@ $(document).ready(function(){
 	 					'board_id' : recmt_boardId,
 	 					'parent_id' : recmt_parentId,
 	 					'comment_contents' : recmt_contents,
-	 					'comment_secret' : recmt_secretVal
 	 				},
 	 				success : function(response){ 
 	 					if(response > 0) {
@@ -644,7 +617,6 @@ $(document).ready(function(){
 	 					'comment_id' : cmt_update_commentId,
 	 					'comment_contents' : cmt_update_contents,
 	 					'comment_imgurl' : cmt_update_imgUrl,
-	 					'comment_secret' : cmt_update_secretVal
 	 				},
 	 				success : function(response){ 
 	 					if(response > 0) {
@@ -664,7 +636,6 @@ $(document).ready(function(){
 	 				data : {
 	 					'comment_id' : cmt_update_commentId,
 	 					'comment_contents' : cmt_update_contents,
-	 					'comment_secret' : cmt_update_secretVal
 	 				},
 	 				success : function(response){ 
 	 					if(response > 0) {
@@ -802,13 +773,22 @@ $(document).ready(function(){
 	
 	//글 수정하기
 	$("#board_update_btn").on('click', function(){
-		$("#boardUpdateForm").submit();
+		let ctgy = "${detaildto.board_name_inner}";
+		let bi = "${detaildto.board_id}";
+		if (ctgy == '공지사항') {
+			$("#boardUpdateForm").attr("action", "noticeUpdateForm");
+			$("#boardUpdateForm").submit();						
+		}
+		else {
+			$("#boardUpdateForm").attr("action", "boardUpdateForm");
+			$("#boardUpdateForm").submit();			
+		}
 	});//글 수정
 	
 	
 	//글 신고
 	$("#board_blame_btn").on('click', function(){
-		let bi = "${detaildto.board_id}"
+		let bi = "${detaildto.board_id}";
 		open("/boardReportForm?bi="+bi , "신고하기", "width=540px, height=530px, top=200px, left=800px, scrollbars=no");
 	});//글 신고
 	
@@ -818,11 +798,25 @@ $(document).ready(function(){
 		open("/commentReportForm?ci="+commentId , "신고하기", "width=540px, height=530px, top=200px, left=800px, scrollbars=no");
 	});//댓글 신고
 	
-	//채팅생성(일단 bi값 넘기는것만 확인)
+	//그룹채팅생성
 	$("#open_groupChat_btn").on('click', function(){
 		let bi = "${detaildto.board_id}";
-		alert("board_id = " + bi);		
+		open("/gchatstart?board_id="+bi , "그룹채팅", "width=400px, height=650px, top=200px, left=800px, scrollbars=no");	
+		location.reload();
 	});
+	
+	//그룹채팅참가
+	$("#join_groupChat_btn").on('click', function(){
+		let bi = "${detaildto.board_id}";
+		open("/entergchat?board_id="+bi , "그룹채팅", "width=400px, height=650px, top=200px, left=800px, scrollbars=no");	
+	});
+	
+	//개인채팅생성
+	$(".chatTo_btn").on('click', function(){
+		let memberId = $(this).prevAll(".memId").val();
+		open("/chatstart?touser_id="+memberId , "일대일채팅", "width=400px, height=650px, top=200px, left=800px, scrollbars=no");	
+	});
+	
 	
 	
 });//ready
@@ -843,11 +837,20 @@ $(document).ready(function(){
 			<!-- 소모임 게시판만 채팅버튼 나오도록 -->
 			<c:if test="${boardName == '같이해요 소모임'}">
 				<c:choose>
-					<c:when test="${detaildto.writer == member_id }">										
-						<input type="button" id="open_groupChat_btn" class="groupChatBtn" value="채팅 생성" />
+					<c:when test="${detaildto.writer == member_id }">
+						<c:choose>
+							<c:when test="${gchatResult == 0 }">
+						        <input type="button" id="open_groupChat_btn" class="groupChatBtn" value="채팅 생성" />
+							</c:when>
+							<c:otherwise>
+								<input type="button" id="join_groupChat_btn" class="groupChatBtn" value="채팅 참여" />
+							</c:otherwise>							
+						</c:choose>
 					</c:when>
 					<c:otherwise>
-						<input type="button" id="join_groupChat_btn" class="groupChatBtn" value="채팅 참여" />
+							<c:if test="${gchatResult != 0 }">
+								<input type="button" id="join_groupChat_btn" class="groupChatBtn" value="채팅 참여" />
+							</c:if>					
 					</c:otherwise>
 				</c:choose>
 			</c:if>
@@ -855,7 +858,7 @@ $(document).ready(function(){
 				<input type="button" id="board_btns_open" value="···" />
 				<div id="board_btns_parentDiv" >
 					<form action="boardUpdateForm" id="boardUpdateForm" method="post">
-					<input type="hidden" id="boardIdToUpdate" name="board_id" value="${detaildto.board_id}">
+					<input type="hidden" id="boardIdToUpdate" name="bi" value="${detaildto.board_id}">
 					<input type="hidden" id="boardTi" name="town_id" value="${detaildto.town_id}">
 					</form>
 					<input type="button" id="board_update_btn" value="수정" />
@@ -872,16 +875,24 @@ $(document).ready(function(){
 		<div id="oneboard_info">
 			<div id="oneboard_writerinfo">
 				<div id="oneboard_profileImg"><img src="${writerDto.profile_image}"></div>
-				<div id="oneboard_writer">${detaildto.writer}</div>
-				<div class="yourInfo_btnBox">						
-					<input type="hidden" class="memId" value="${detaildto.writer}" />
-					<input type="button" class="yourInfo_btn" value="회원정보" />
-					<hr style="margin:2px 0px;">
-					<input type="button" class="chatTo_btn" value="채팅하기" />
-				</div>
-				<div class="myInfo_btnBox">						
-					<input type="button" class="myInfo_btn" value="내정보" />
-				</div>
+				<c:choose>
+					<c:when test="${boardName == '공지사항'}">
+						<div id="oneboard_writer_admin">관리자</div>
+					</c:when>
+					<c:otherwise>
+						<div id="oneboard_memberGrade"><img src="${boardWriterGradeImg }"></div>
+						<div id="oneboard_writer">${detaildto.writer}</div>
+						<div class="yourInfo_btnBox">						
+							<input type="hidden" class="memId" value="${detaildto.writer}" />
+							<input type="button" class="yourInfo_btn" value="회원정보" />
+							<hr style="margin:2px 0px;">
+							<input type="button" class="chatTo_btn" value="채팅하기" />
+						</div>
+						<div class="myInfo_btnBox">						
+							<input type="button" class="myInfo_btn" value="내정보" />
+						</div>
+					</c:otherwise>
+				</c:choose>
 			</div>
 			<div class="info" id="view_cnt">조회 ${detaildto.view_cnt}</div>
 			<div class="info" id="writingtime">
@@ -971,7 +982,7 @@ $(document).ready(function(){
 		 	
 			<c:set var="refer_cmtId" value="${dto.comment_id}" />
 			<c:choose>
-		 	<c:when test="${dto.comment_writer != null}">
+		 	<c:when test="${dto.printout}">
 				
 				<!-- one_comment start -->
 					<div class="one_comment">
@@ -981,6 +992,7 @@ $(document).ready(function(){
 									<img src="${commentWriterProfileMap[dto.comment_writer] }">
 								</div>
 								<div class="comment_info">
+									<div class="writer_memberGrade"><img src="${commentWriterGradeImgMap[dto.comment_writer]}"></div>
 									<div class="comment_writer">${dto.comment_writer}</div>
 									<div class="yourInfo_btnBox" style="margin-left : 0px;">						
 										<input type="hidden" class="memId" value="${dto.comment_writer}" />
@@ -1106,7 +1118,7 @@ $(document).ready(function(){
 		<c:otherwise>
 				<div class="one_comment">
 					<div class="comment_content" style="margin-left : 0px">
-					${dto.comment_contents} 					
+						삭제된 댓글입니다.				
 					</div>
 				</div>
 		 </c:otherwise>
@@ -1116,7 +1128,7 @@ $(document).ready(function(){
 	</c:when>
 				<c:otherwise>
 					<c:choose>
-		 				<c:when test="${dto.comment_writer != null}">
+		 				<c:when test="${dto.printout}">
 				
 						<div class="one_recomment">	
 						
@@ -1128,6 +1140,7 @@ $(document).ready(function(){
 									<img src="${commentWriterProfileMap[dto.comment_writer] }">
 								</div>
 								<div class="recomment_info">
+									<div class="writer_memberGrade"><img src="/img/star_1_red.svg"></div>
 									<div class="recomment_writer">${dto.comment_writer}</div>
 									<div class="yourInfo_btnBox" style="margin-left : 0px;">						
 										<input type="hidden" class="memId" value="${dto.comment_writer}" />
@@ -1249,9 +1262,9 @@ $(document).ready(function(){
 			</c:when>
 
 		 	<c:otherwise>
-				<div class="one_comment">
-					<div class="comment_content" style="margin-left : 0px">
-					${dto.comment_contents} 					
+				<div class="one_recomment">	
+					<div class="recomment_content" style="margin-left : 0px">
+					 &nbsp;&nbsp;└&nbsp;&nbsp;&nbsp; 삭제된 댓글입니다. 					
 					</div>
 				</div>
 		 	</c:otherwise> 	

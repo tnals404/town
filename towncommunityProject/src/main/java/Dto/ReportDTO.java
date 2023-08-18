@@ -6,11 +6,17 @@ import org.springframework.stereotype.Component;
 public class ReportDTO { //안휘주 작성
 	
 	int report_id, board_id, comment_id, message_id, gmessage_id;
-	String reported_member_id, reporter, reported_contents, report_reason, report_detail, report_time, report_result;
+	String reported_member_id, reporter, reported_contents, report_reason, report_detail, report_time, report_result, result_time;
 	BoardDTO boarddto;
 	CommentDTO commentdto;
 	MessageDTO messagedto;
 	
+	public String getResult_time() {
+		return result_time;
+	}
+	public void setResult_time(String result_time) {
+		this.result_time = result_time;
+	}
 	public String getReport_result() {
 		return report_result;
 	}

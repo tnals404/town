@@ -16,7 +16,7 @@
 	</insert>
 	
 	<insert id="insertMessage" parameterType="messagedto">
-	INSERT INTO chat_message() VALUES (default, #{message_content}, default, #{member_id}, #{chat_id}, #{touser_id}, default);
+	INSERT INTO chat_message() VALUES (default, #{message_content}, #{message_sendAt}, #{member_id}, #{chat_id}, #{touser_id}, default);
 	</insert>
 	
 	<insert id="createChatlist" parameterType="chatlistdto">
@@ -28,7 +28,7 @@
 	</select>
 
 	<select id="countIsread" parameterType="messagedto">
-	SELECT COUNT(*) FROM chat_message where (chat_id = #{chat_id}) and (isread = 0);
+	SELECT COUNT(*) FROM chat_message where (chat_id = #{chat_id}) and (isread = 0) and (member_id != #{member_id});
 	</select>
 	
 	<select id="latestContent" parameterType="messagedto">
@@ -37,11 +37,27 @@
 	limit 1 offset 0;
 	</select>
 	
-	<update id="readMessage" parameterType="messagedto">
-	UPDATE chat_message SET isread = 1 where touser_id = #{member_id};
-	</update>
+    <update id="readMessage" parameterType="messagedto">
+    UPDATE chat_message SET isread = 1 where touser_id = #{member_id} and chat_id = #{chat_id};
+    </update>
 	
 	<select id="selectChatid" parameterType="messagedto">
 	SELECT chat_id FROM chat_message where ((member_id = #{member_id}) and (touser_id = #{touser_id})) or ((member_id = #{touser_id}) and (touser_id = #{member_id}));
-	</select>	
+	</select>
+	
+	<select id="selectMessageid" parameterType="messagedto">
+	SELECT message_id FROM chat_message where ((message_sendAt = #{message_sendAt}) and (member_id = #{member_id}) and (touser_id = #{touser_id}));
+	</select>
+	
+	<select id="selectMessagebyid" parameterType="int" resultType="messagedto">
+	SELECT * FROM chat_message WHERE (message_id = #{message_id});
+	</select>
+	
+	<update id="deletechatmessage" parameterType="messagedto">
+		UPDATE chat_message SET message_content = #{message_content} WHERE message_id = #{message_id}; 
+	</update>
+	
+	<select id="doestouseridexist" parameterType="string">
+		SELECT member_id FROM member WHERE (member_id = #{touser_id});
+	</select>
   </mapper>

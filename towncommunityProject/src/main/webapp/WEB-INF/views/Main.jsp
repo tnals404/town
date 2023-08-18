@@ -8,6 +8,31 @@
 <meta charset="UTF-8">
 <title>towncommunity</title>
 <script src="js/jquery-3.6.4.min.js" ></script>
+<style type="text/css">
+#mapInfoBox {
+	background-color : #E8E7E5;
+	width : 274px;
+	height : 274px;
+	/* margin : 0 auto; */
+	padding : 5px;
+	
+}
+#staticMap {
+	width:274px; height:224px;
+	margin-bottom:5px;
+}
+#placeName {
+	width:300px; height:20px;
+	font-weight : bold;
+	margin-bottom:2px;
+}
+#placeAddress {
+	width:300px; height:20px;
+	font-size : 13px;
+	color : gray;
+	margin-bottom:2px;
+}
+</style>
 </head>
 <body>
 	<jsp:include page="Header.jsp" />
@@ -20,11 +45,15 @@
 	<div id="menu"> 
 		<div id="board_menu">
 			<ul class="outerMenu">
+			  <li class="innerMenu notice">
+			    공지사항
+			  </li>			
 			  <li>
 			    지금 우리 동네
 			    <ul class="innerMenu">
 			      <li class="innerMenu">나의 일상</li>
-			      <li class="innerMenu">사건,사고 소식</li>
+			      <li class="innerMenu">사건, 사고 소식</li>
+				  <li class="innerMenu">분실물센터</li>			      
 			    </ul>
 			  </li>
 			  <li>
@@ -37,15 +66,8 @@
 			    <li>
 			    만남의 광장
 			    <ul class="innerMenu">
-			      <li class="innerMenu">같이 줄서요</li>
+			      <li class="innerMenu">우리 지금 만나</li>
 			      <li class="innerMenu">같이해요 소모임</li>
-			    </ul>
-			  </li>
-			    <li>
-			    도움이 필요해요
-			    <ul class="innerMenu">
-			      <li class="innerMenu">분실물센터</li>
-			      <li class="innerMenu">심부름센터</li>
 			    </ul>
 			  </li>
 			    <li>
@@ -53,9 +75,9 @@
 			    <ul class="innerMenu">
 			      <li class="innerMenu">행사 소식</li>
 			      <li class="innerMenu">새로 오픈했어요</li>
+			      <li class="innerMenu">여기 추천!</li>
 			    </ul>
 			  </li>
-			  <li>HOT 게시판</li>
 			</ul>
 		</div>
 	</div>
@@ -82,22 +104,22 @@
 			<c:forEach items="${popular }" var="popular">
 			<div class="contentBox">
 				<p class="contentTitle">${popular.board_title }</p>
-				<div style="position: relative; width:274px; height:274px; overflow: hidden; background: white;">
+				<div style="position: relative; width:274px; height:230px; overflow: hidden; background: white;">
 					<img style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%);" src="${popular.board_imgurl }" width=274 />
 				</div>
 				<div class="content">
 				${popular.board_contents }
 				</div>
-				<button type="submit" class="button" onclick="document.location.href='/boarddetail?bi=${popular.board_id}'" style="">게시물 전체보기</button>
+				<button type="submit"  id="${popular.board_id}" class="button one_board">게시물 전체보기</button>
 			</div>
 			</c:forEach>
 		</div>
 		<div class="secondBox">
 			<div class="photoFrame" style="height:482px; position: relative; width:864px; overflow: hidden; background: white;">
-				<c:if test="${photo != null}">
+				<c:if test="${photo.board_imgurl != null}">
 					<img src="${photo.board_imgurl }" style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%);" height=481/>
 				</c:if>
-				<c:if test="${photo == null}">
+				<c:if test="${photo.board_imgurl == null}">
 					<img src="img/displayimg.png" height=481/>
 				</c:if>				
 			</div>
@@ -114,7 +136,7 @@
 						</c:if>							
 						</div>
 						<c:if test="${photo != null}">
-							<button type="submit" onclick="document.location.href='/boarddetail?bi=${photo.board_id}'" class="button">게시물 전체보기</button>
+							<button type="submit" id="${photo.board_id}" class="button one_board">게시물 전체보기</button>
 						</c:if>	
 						<c:if test="${photo == null && town_id == ti}">
 							<button type="submit" onclick="document.location.href='/writingForm?ti=${ti}&ctgy=오늘의%20사진'" class="button">글 작성하기</button>
@@ -171,7 +193,7 @@
 								아직 작성된 글이 없습니다.			
 						</c:if>					
 						<c:forEach items="${news }" var="news">
-							<div class="news" onclick="document.location.href='/boarddetail?bi=${news.board_id}'">
+							<div class="news one_board" id="${news.board_id}">
 								<svg style="margin-left:10px;" width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<path d="M12.8762 7L0.59201 13.9282L0.59201 0.0717969L12.8762 7Z" fill="#182434"/>
 								</svg>
@@ -195,7 +217,7 @@
 							</div>		
 						</c:if>	
 					<c:forEach items="${placeOfMeeting }" var="place">
-						<div class="nowrap overflow ellipsis content" onclick="document.location.href='/boarddetail?bi=${place.board_id}'">
+						<div class="nowrap overflow ellipsis content one_board" id="${place.board_id}">
 							${place.board_title }
 						</div>
 					</c:forEach>																	 
@@ -240,21 +262,28 @@
 				${youKnow.board_contents }
 				</div>
 				<c:if test="${youKnow != null}">
-					<button type="submit" class="button" onclick="document.location.href='/boarddetail?bi=${youKnow.board_id}'" style="">게시물 전체보기</button>
+					<button type="submit" class="button class one_board" id="${youKnow.board_id}" style="">게시물 전체보기</button>
 				</c:if>
 				<c:if test="${youKnow.board_imgurl != null}">
-					<p class="subtitle">카페 전경</p>
+					<p class="subtitle">전경</p>
 					<div style="position: relative; width:274px; height:274px; overflow: hidden; background: white">
 						<img style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); background: white;" src="${youKnow.board_imgurl }" width=274 />
 					</div>
 				</c:if>
 				<c:if test="${youKnow.place_lat != null && youKnow.place_long != null}">
-					<p class="subtitle">카페 위치</p>
-					${youKnow.place_lat},${youKnow.place_long}
+					<p class="subtitle">위치</p>
+					<div id="mapInfoBox">
+					<div id="staticMap"></div>
+					<div id="placeName">${youKnow.place_name}</div>
+					<div id="placeAddress">${youKnow.place_road_address}</div>
+				</div>
+				<input type="hidden" id="placeLat" value="${youKnow.place_lat}">
+				<input type="hidden" id="placeLong" value="${youKnow.place_long}">
 				</c:if>
 			</div>	
 		</div>
 	</div>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4f7e1f2c70926d22aa160d0a0685b14c&libraries=services"></script>
 <script>
 $("#menuBtn").click(function () {
     $("#menu,.page_cover,html").addClass("open"); // 메뉴 버튼을 눌렀을때 메뉴, 커버, html에 open 클래스를 추가해서 효과를 준다.
@@ -286,6 +315,50 @@ $(document).ready(function() {
         e.stopPropagation();
 	}); //onclick
 });
+
+$(".one_board").on('click', function(){
+    const boardId = $(this).attr('id');
+    $.ajax({
+        url : 'updateViewcnt',
+        type : 'post',
+        data : {'bi' : boardId},
+        success : function(response){
+            if(response > 0) {
+                location.href = "/boarddetail?bi="+boardId;
+            }
+            else {
+                alert("문제가 발생했습니다.");
+            }
+        },
+        error: function(request,status,error) {
+              alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+              console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+          }
+    });//ajax
+});//글 1개 조회
+
+//위도, 경도값
+let placeLat = $("#placeLat").val();
+let placeLong = $("#placeLong").val();
+
+// 이미지 지도에서 마커가 표시될 위치입니다 
+var markerPosition  = new kakao.maps.LatLng(placeLat, placeLong); 
+
+// 이미지 지도에 표시할 마커입니다
+// 이미지 지도에 표시할 마커는 Object 형태입니다
+var marker = {
+    position: markerPosition
+};
+
+var staticMapContainer  = document.getElementById('staticMap'), // 이미지 지도를 표시할 div  
+    staticMapOption = { 
+        center: new kakao.maps.LatLng(placeLat, placeLong), // 이미지 지도의 중심좌표
+        level: 3, // 이미지 지도의 확대 레벨
+        marker: marker // 이미지 지도에 표시할 마커 
+    };    
+
+// 이미지 지도를 생성합니다
+var staticMap = new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
 </script>
 </body>
 </html>

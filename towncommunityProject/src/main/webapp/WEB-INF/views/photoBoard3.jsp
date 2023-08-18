@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>동네일보 게시판</title>
 <script src="/js/jquery-3.6.4.min.js"></script>
 <link rel="stylesheet" href="/css/BoardCommon.css" />
 <Style>
@@ -175,11 +175,23 @@ $(document).ready(function(){
 		location.href = location.pathname + '?' + new URLSearchParams(queryparamsPage).toString();
 	});//pageNumBtn클릭
 	
-	//글 누르면 해당 글 상세페이지로 이동
+	//글 누르면 조회수+1, 해당 글 상세페이지로 이동
 	$(".one_board").on('click', function(){
 		const boardId = $(this).attr('id');
-		location.href = "/boarddetail?bi="+boardId;
-		//location.href = "/existBoard?bi="+boardId;		
+		$.ajax({
+			url : 'updateViewcnt',
+			type : 'post',
+			data : {'bi' : boardId},
+			success : function(response){
+				if(response > 0) {
+					location.href = "/boarddetail?bi="+boardId;									
+				}
+			},
+            error: function(request,status,error) {
+	      		alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+	      		console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+	      	}
+		});//ajax	
 	});//글 1개 조회
 	
 	

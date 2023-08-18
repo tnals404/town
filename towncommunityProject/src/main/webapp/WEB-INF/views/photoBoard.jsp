@@ -75,7 +75,7 @@ $(document).ready(function(){
 		    지금 우리 동네
 		    <ul class="innerMenu">
 		      <li class="innerMenu">나의 일상</li>
-		      <li class="innerMenu">사건,사고 소식</li>
+		      <li class="innerMenu">사건, 사고 소식</li>
 		    </ul>
 		  </li>
 		  <li>
